@@ -654,6 +654,7 @@ document.head.appendChild(link);
     <button onclick="switchAdminTab('services')" id="tab-services" style="background:none;border:none;color:var(--grey);padding:14px 16px;font-family:'Heebo',sans-serif;font-size:17px;cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap">✂️ שירותים</button>
     <button onclick="switchAdminTab('hours')" id="tab-hours" style="background:none;border:none;color:var(--grey);padding:14px 16px;font-family:'Heebo',sans-serif;font-size:17px;cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap">🕐 תכנית עבודה</button>
     <button onclick="switchAdminTab('blocked')" id="tab-blocked" style="background:none;border:none;color:var(--grey);padding:14px 16px;font-family:'Heebo',sans-serif;font-size:17px;cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap">🏖️ ימי חופש</button>
+    <button onclick="switchAdminTab('shortdays')" id="tab-shortdays" style="background:none;border:none;color:var(--grey);padding:14px 16px;font-family:'Heebo',sans-serif;font-size:17px;cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap">⏱️ ימים מקוצרים</button>
     <button onclick="switchAdminTab('settings')" id="tab-settings" style="background:none;border:none;color:var(--text-soft);padding:14px 16px;font-family:'Heebo',sans-serif;font-size:17px;cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap">⚙️ הגדרות</button>
     <button onclick="switchAdminTab('reports')" id="tab-reports" style="background:none;border:none;color:var(--text-soft);padding:14px 16px;font-family:'Heebo',sans-serif;font-size:17px;cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap">📊 דוחות</button>
     <button onclick="switchAdminTab('images')" id="tab-images" style="background:none;border:none;color:var(--text-soft);padding:14px 16px;font-family:'Heebo',sans-serif;font-size:17px;cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap">🖼️ תמונות</button>
@@ -755,6 +756,41 @@ document.head.appendChild(link);
       <input type="text" id="blockReason" placeholder="סיבה (אופציונלי — חופשה, מחלה...)"
         style="width:100%;background:#111;border:1px solid rgba(230,57,70,0.15);color:var(--white);padding:12px;font-family:'Heebo',sans-serif;font-size:17px;outline:none;margin-bottom:12px">
       <button onclick="addBlockedDay()" style="width:100%;background:rgba(230,57,70,0.12);border:1px solid rgba(230,57,70,0.4);color:#e63946;padding:14px;font-family:'Heebo',sans-serif;font-size:18px;font-weight:700;cursor:pointer;clip-path:polygon(6px 0%,100% 0%,calc(100% - 6px) 100%,0% 100%)">הוסף יום חופש</button>
+    </div>
+  </div>
+
+  <!-- TAB: SHORT DAYS -->
+  <div id="admintab-shortdays" style="display:none;flex:1;overflow-y:auto;padding:16px 20px">
+    <div style="font-family:'Bebas Neue',sans-serif;font-size:28px;letter-spacing:2px;margin-bottom:4px">ימים מקוצרים</div>
+    <div style="font-size:18px;color:var(--grey);margin-bottom:16px">הגדר ימים ספציפיים עם שעות עבודה שונות</div>
+    <div id="shortDaysList"></div>
+    <div style="background:var(--card);border:1px solid rgba(201,168,76,0.2);padding:16px;margin-top:8px;border-radius:12px">
+      <div style="font-size:17px;color:var(--primary);letter-spacing:2px;margin-bottom:12px;font-weight:700">הוסף יום מקוצר</div>
+      <div style="font-size:15px;color:var(--grey);margin-bottom:6px">תאריך</div>
+      <input type="date" id="shortDayDate" style="width:100%;background:#111;border:1px solid rgba(201,168,76,0.2);color:var(--white);padding:12px;font-family:'Heebo',sans-serif;font-size:17px;outline:none;margin-bottom:12px;color-scheme:dark;border-radius:8px">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px">
+        <div>
+          <div style="font-size:15px;color:var(--grey);margin-bottom:6px">משעה</div>
+          <input type="time" id="shortDayFrom" style="width:100%;background:#111;border:1px solid rgba(201,168,76,0.2);color:var(--white);padding:12px;font-family:'Heebo',sans-serif;font-size:17px;outline:none;border-radius:8px;color-scheme:dark">
+        </div>
+        <div>
+          <div style="font-size:15px;color:var(--grey);margin-bottom:6px">עד שעה</div>
+          <input type="time" id="shortDayTo" style="width:100%;background:#111;border:1px solid rgba(201,168,76,0.2);color:var(--white);padding:12px;font-family:'Heebo',sans-serif;font-size:17px;outline:none;border-radius:8px;color-scheme:dark">
+        </div>
+      </div>
+      <div style="font-size:15px;color:var(--grey);margin-bottom:8px">הפסקה (אופציונלי)</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px">
+        <div>
+          <div style="font-size:13px;color:var(--grey);margin-bottom:4px">מ</div>
+          <input type="time" id="shortDayBreakFrom" style="width:100%;background:#111;border:1px solid rgba(201,168,76,0.1);color:var(--white);padding:10px;font-family:'Heebo',sans-serif;font-size:16px;outline:none;border-radius:8px;color-scheme:dark">
+        </div>
+        <div>
+          <div style="font-size:13px;color:var(--grey);margin-bottom:4px">עד</div>
+          <input type="time" id="shortDayBreakTo" style="width:100%;background:#111;border:1px solid rgba(201,168,76,0.1);color:var(--white);padding:10px;font-family:'Heebo',sans-serif;font-size:16px;outline:none;border-radius:8px;color-scheme:dark">
+        </div>
+      </div>
+      <input type="text" id="shortDayNote" placeholder="הערה (אופציונלי — לדוגמה: לפני חג)" style="width:100%;background:#111;border:1px solid rgba(201,168,76,0.1);color:var(--white);padding:12px;font-family:'Heebo',sans-serif;font-size:16px;outline:none;margin-bottom:12px;border-radius:8px">
+      <button onclick="addShortDay()" style="width:100%;background:rgba(201,168,76,0.12);border:1px solid rgba(201,168,76,0.4);color:var(--primary);padding:14px;font-family:'Heebo',sans-serif;font-size:18px;font-weight:700;cursor:pointer;border-radius:8px">הוסף יום מקוצר</button>
     </div>
   </div>
 
@@ -1316,6 +1352,15 @@ function saveBlockedDays(b) {
   pushConfigToSheets();
 }
 
+function getShortDays() {
+  try { return JSON.parse(localStorage.getItem('gm_short_days') || '[]'); }
+  catch(e) { return []; }
+}
+function saveShortDays(s) {
+  localStorage.setItem('gm_short_days', JSON.stringify(s));
+  pushConfigToSheets();
+}
+
 // ─── CONFIG SYNC WITH SHEETS ───
 function pushConfigToSheets() {
   const payload = {
@@ -1323,7 +1368,8 @@ function pushConfigToSheets() {
     services: getServices(),
     hours: getWorkingHours(),
     homeVisits: getHomeVisits(),
-    blockedDays: getBlockedDays()
+    blockedDays: getBlockedDays(),
+    shortDays: getShortDays()
   };
   // mode: no-cors נדרש כדי לעקוף מגבלות CORS של Apps Script
   fetch(APPS_SCRIPT_URL, {
@@ -1344,6 +1390,7 @@ async function initConfig() {
       if (c.hours      && c.hours.length)        localStorage.setItem('gm_hours',       JSON.stringify(c.hours));
       if (c.homeVisits && c.homeVisits.length)   localStorage.setItem('gm_home_visits', JSON.stringify(c.homeVisits));
       if (c.blockedDays)                         localStorage.setItem('gm_blocked_days',JSON.stringify(c.blockedDays));
+      if (c.shortDays)                           localStorage.setItem('gm_short_days',  JSON.stringify(c.shortDays));
     }
   } catch(e) { console.warn('Config load error:', e); }
 }
@@ -1538,7 +1585,9 @@ function renderCalendar() {
       homeVisits.some(v => v.date === dateStr) ||
       (workDay && workDay.open && workDay.homeFrom && workDay.homeTo)
     );
-    const isWorkDay = !state.isHomeVisit && workDay && workDay.open && !isDateBlocked(dateStr);
+    const shortDayOverride = getShortDays().find(s => s.date === dateStr);
+    const effectiveWorkDay = shortDayOverride ? { open: true, from: shortDayOverride.from, to: shortDayOverride.to } : workDay;
+    const isWorkDay = !state.isHomeVisit && effectiveWorkDay && effectiveWorkDay.open && !isDateBlocked(dateStr);
     const isAvailable = isHomeVisitDay || isWorkDay;
 
     cell.className = 'cal-cell';
@@ -1568,15 +1617,17 @@ function renderCalendar() {
 }
 
 function isDayFullyBooked(dateStr, workDay, duration) {
-  if (!workDay || !workDay.from || !workDay.to) return false;
+  const shortDay = getShortDays().find(s => s.date === dateStr);
+  const effectiveDay = shortDay ? { from: shortDay.from, to: shortDay.to } : workDay;
+  if (!effectiveDay || !effectiveDay.from || !effectiveDay.to) return false;
   const bookings = JSON.parse(localStorage.getItem('gm_bookings') || '[]');
   const dayBookings = bookings.filter(b => b.date === dateStr && !b.cancelled);
   const takenIntervals = dayBookings.map(b => ({
     start: toMinutesSimple(b.time),
     end: toMinutesSimple(b.time) + (parseInt(b.serviceDuration) || 30)
   }));
-  const rangeStart = toMinutesSimple(workDay.from);
-  const rangeEnd = toMinutesSimple(workDay.to);
+  const rangeStart = toMinutesSimple(effectiveDay.from);
+  const rangeEnd = toMinutesSimple(effectiveDay.to);
   let cur = rangeStart;
   while (cur + duration <= rangeEnd) {
     const overlaps = takenIntervals.some(t => cur < t.end && (cur + duration) > t.start);
@@ -1639,7 +1690,10 @@ function renderSlots(dateStr) {
   title.textContent = `שעות פנויות — יום ${dayNames[dayOfWeek]}`;
   title.style.display = 'block';
 
-  const workDay = hours[dayOfWeek];
+  const shortDay = getShortDays().find(s => s.date === dateStr);
+  let workDay = shortDay
+    ? { open: true, from: shortDay.from, to: shortDay.to, breaks: (shortDay.breakFrom && shortDay.breakTo) ? [{ from: shortDay.breakFrom, to: shortDay.breakTo }] : [] }
+    : hours[dayOfWeek];
   const specificVisit = homeVisits.find(v => v.date === dateStr);
   const breaks = workDay ? (workDay.breaks || []) : [];
 
@@ -1946,7 +2000,7 @@ function addToCalendar() {
 
 // ─── ADMIN TABS ───
 function switchAdminTab(tab) {
-  ['bookings','services','hours','blocked','settings','email','images','reports'].forEach(t => {
+  ['bookings','services','hours','blocked','shortdays','settings','email','images','reports'].forEach(t => {
     const el = document.getElementById('admintab-' + t);
     if (el) el.style.display = t === tab ? 'block' : 'none';
     const btn = document.getElementById('tab-' + t);
@@ -1961,6 +2015,7 @@ function switchAdminTab(tab) {
   if (tab === 'services') renderAdminServices();
   if (tab === 'hours') { renderAdminHours(); renderAdminHomeVisits(); }
   if (tab === 'blocked') renderBlockedDays();
+  if (tab === 'shortdays') renderShortDays();
   if (tab === 'email') loadEmailSettings();
   if (tab === 'images') loadImagesTab();
   if (tab === 'reports') initReportsTab();
@@ -2306,6 +2361,61 @@ function deleteBlockedDay(i) {
   blocked.splice(i, 1);
   saveBlockedDays(blocked);
   renderBlockedDays();
+}
+
+function renderShortDays() {
+  const shortDays = getShortDays();
+  const list = document.getElementById('shortDaysList');
+  const today = new Date(); today.setHours(0,0,0,0);
+  const future = shortDays.filter(s => parseDateLocal(s.date) >= today)
+    .sort((a,b) => a.date.localeCompare(b.date));
+
+  if (future.length === 0) {
+    list.innerHTML = '<div style="text-align:center;padding:24px;color:var(--grey);font-size:17px">אין ימים מקוצרים מוגדרים</div>';
+    return;
+  }
+
+  const dayNames = ['ראשון','שני','שלישי','רביעי','חמישי','שישי','שבת'];
+  list.innerHTML = future.map((s) => {
+    const d = parseDateLocal(s.date);
+    const label = 'יום ' + dayNames[d.getDay()] + ', ' + d.getDate() + ' ב' + HEBREW_MONTHS[d.getMonth()];
+    const breakLabel = s.breakFrom && s.breakTo ? ' | הפסקה: ' + s.breakFrom + '-' + s.breakTo : '';
+    return \`
+    <div style="background:rgba(201,168,76,0.06);border:1px solid rgba(201,168,76,0.2);padding:14px 16px;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center;border-radius:10px">
+      <div>
+        <div style="font-weight:700;font-size:17px;color:var(--primary)">⏱️ \${label}</div>
+        <div style="font-size:15px;color:var(--grey);margin-top:3px">\${s.from} - \${s.to}\${breakLabel}</div>
+        \${s.note ? \`<div style="font-size:14px;color:var(--grey);margin-top:2px">\${s.note}</div>\` : ''}
+      </div>
+      <button onclick="deleteShortDay('\${s.date}')" style="background:rgba(230,57,70,0.1);border:1px solid rgba(230,57,70,0.3);color:#e63946;padding:6px 12px;font-size:15px;cursor:pointer;font-family:'Heebo',sans-serif;border-radius:6px">הסר</button>
+    </div>\`;
+  }).join('');
+}
+
+function addShortDay() {
+  const date = document.getElementById('shortDayDate').value;
+  const from = document.getElementById('shortDayFrom').value;
+  const to = document.getElementById('shortDayTo').value;
+  const breakFrom = document.getElementById('shortDayBreakFrom').value;
+  const breakTo = document.getElementById('shortDayBreakTo').value;
+  const note = document.getElementById('shortDayNote').value.trim();
+  if (!date || !from || !to) { alert('נא למלא תאריך, שעת התחלה ושעת סיום'); return; }
+  const shortDays = getShortDays().filter(s => s.date !== date); // replace if exists
+  shortDays.push({ date, from, to, breakFrom: breakFrom||'', breakTo: breakTo||'', note });
+  saveShortDays(shortDays);
+  document.getElementById('shortDayDate').value = '';
+  document.getElementById('shortDayFrom').value = '';
+  document.getElementById('shortDayTo').value = '';
+  document.getElementById('shortDayBreakFrom').value = '';
+  document.getElementById('shortDayBreakTo').value = '';
+  document.getElementById('shortDayNote').value = '';
+  renderShortDays();
+}
+
+function deleteShortDay(date) {
+  const shortDays = getShortDays().filter(s => s.date !== date);
+  saveShortDays(shortDays);
+  renderShortDays();
 }
 
 // ─── ADMIN HOURS (toggle/update) ───
