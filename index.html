@@ -609,11 +609,6 @@ document.head.appendChild(link);
     </div>
     <div class="splash-tagline" style="font-size:22px;letter-spacing:4px">LOOK SHARP FEEL SHARP</div><div class="splash-divider"></div>
     <button class="splash-btn" onclick="goTo('home')">קבע תור עכשיו</button>
-    <div style="margin-top:16px">
-      <button onclick="shareApp()" style="background:none;border:1px solid rgba(232,213,176,0.3);color:var(--primary-dark);padding:12px 32px;font-family:'Heebo',sans-serif;font-size:13px;font-weight:600;letter-spacing:2px;cursor:pointer;border-radius:50px;transition:all 0.2s">
-        📲 שתף עם חבר
-      </button>
-    </div>
 
     <div style="margin-top:32px;display:flex;flex-direction:column;align-items:center;gap:12px">
       <button onclick="showInstallModal()" style="background:transparent;border:1px solid rgba(232,213,176,0.25);color:rgba(232,213,176,0.7);padding:10px 24px;font-family:'Heebo',sans-serif;font-size:18px;cursor:pointer;border-radius:50px;letter-spacing:2px">
@@ -1282,25 +1277,67 @@ function getServices() {
   try { return JSON.parse(localStorage.getItem('gm_services') || 'null') || DEFAULT_SERVICES; }
   catch(e) { return DEFAULT_SERVICES; }
 }
-function saveServices(s) { localStorage.setItem('gm_services', JSON.stringify(s)); }
+function saveServices(s) {
+  localStorage.setItem('gm_services', JSON.stringify(s));
+  pushConfigToSheets();
+}
 
 function getWorkingHours() {
   try { return JSON.parse(localStorage.getItem('gm_hours') || 'null') || DEFAULT_HOURS; }
   catch(e) { return DEFAULT_HOURS; }
 }
-function saveWorkingHoursData(h) { localStorage.setItem('gm_hours', JSON.stringify(h)); }
+function saveWorkingHoursData(h) {
+  localStorage.setItem('gm_hours', JSON.stringify(h));
+  pushConfigToSheets();
+}
 
 function getHomeVisits() {
   try { return JSON.parse(localStorage.getItem('gm_home_visits') || '[]'); }
   catch(e) { return []; }
 }
-function saveHomeVisits(v) { localStorage.setItem('gm_home_visits', JSON.stringify(v)); }
+function saveHomeVisits(v) {
+  localStorage.setItem('gm_home_visits', JSON.stringify(v));
+  pushConfigToSheets();
+}
 
 function getBlockedDays() {
   try { return JSON.parse(localStorage.getItem('gm_blocked_days') || '[]'); }
   catch(e) { return []; }
 }
-function saveBlockedDays(b) { localStorage.setItem('gm_blocked_days', JSON.stringify(b)); }
+function saveBlockedDays(b) {
+  localStorage.setItem('gm_blocked_days', JSON.stringify(b));
+  pushConfigToSheets();
+}
+
+// ─── CONFIG SYNC WITH SHEETS ───
+function pushConfigToSheets() {
+  const payload = {
+    action: 'saveConfig',
+    services: getServices(),
+    hours: getWorkingHours(),
+    homeVisits: getHomeVisits(),
+    blockedDays: getBlockedDays()
+  };
+  fetch(APPS_SCRIPT_URL, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload)
+  }).catch(e => console.warn('Config save error:', e));
+}
+
+async function initConfig() {
+  try {
+    const res = await fetch(APPS_SCRIPT_URL + '?action=getConfig');
+    const data = await res.json();
+    if (data.success && data.config) {
+      const c = data.config;
+      if (c.services   && c.services.length)    localStorage.setItem('gm_services',    JSON.stringify(c.services));
+      if (c.hours      && c.hours.length)        localStorage.setItem('gm_hours',       JSON.stringify(c.hours));
+      if (c.homeVisits && c.homeVisits.length)   localStorage.setItem('gm_home_visits', JSON.stringify(c.homeVisits));
+      if (c.blockedDays)                         localStorage.setItem('gm_blocked_days',JSON.stringify(c.blockedDays));
+    }
+  } catch(e) { console.warn('Config load error:', e); }
+}
 
 function isDateBlocked(dateStr) {
   const blocked = getBlockedDays();
@@ -1523,11 +1560,11 @@ function renderCalendar() {
 
 function isDayFullyBooked(dateStr, workDay, duration) {
   if (!workDay || !workDay.from || !workDay.to) return false;
-  // Use getTakenSlots which combines both localStorage AND Sheets cache
-  const taken = getTakenSlots(dateStr);
-  const takenIntervals = taken.map(b => ({
+  const bookings = JSON.parse(localStorage.getItem('gm_bookings') || '[]');
+  const dayBookings = bookings.filter(b => b.date === dateStr && !b.cancelled);
+  const takenIntervals = dayBookings.map(b => ({
     start: toMinutesSimple(b.time),
-    end: toMinutesSimple(b.time) + (parseInt(b.duration) || 30)
+    end: toMinutesSimple(b.time) + (parseInt(b.serviceDuration) || 30)
   }));
   const rangeStart = toMinutesSimple(workDay.from);
   const rangeEnd = toMinutesSimple(workDay.to);
@@ -1558,27 +1595,12 @@ function changeMonth(dir) {
   renderCalendar();
 }
 
-async function selectDate(dateStr, cell) {
+function selectDate(dateStr, cell) {
   document.querySelectorAll('.cal-cell').forEach(c => c.classList.remove('selected'));
   cell.classList.add('selected');
   state.selectedDate = dateStr;
   state.selectedTime = null;
   document.getElementById('nextBtn2').classList.remove('enabled');
-
-  // Show loading while fetching live data from Sheets
-  const grid = document.getElementById('slotsGrid');
-  const title = document.getElementById('timeSectionTitle');
-  if (grid) grid.innerHTML = '<div style="text-align:center;padding:28px;color:var(--text-soft);font-size:14px">⏳ טוען שעות פנויות...</div>';
-  if (title) title.style.display = 'none';
-
-  // Always fetch fresh data from Sheets so booked slots from any device show correctly
-  try {
-    const sheetsBookings = await loadBookingsFromSheets(dateStr);
-    if (sheetsBookings) {
-      localStorage.setItem('gm_sheets_cache_' + dateStr, JSON.stringify(sheetsBookings));
-    }
-  } catch(e) { /* fallback to local cache */ }
-
   renderSlots(dateStr);
 }
 
@@ -2477,31 +2499,15 @@ async function filterAdminByDate() {
       const isDone = isAppointmentDone(b.date || dateStr, b.time || b.Time || '');
       return `
       <div id="booking-${b.time||b.Time}" style="background:var(--card);border:1px solid ${isDone ? 'var(--success)' : 'var(--border)'};padding:16px;margin-bottom:10px;border-radius:12px;opacity:${isDone ? '0.7' : '1'}">
-        <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:10px">
+        <div style="display:flex;justify-content:space-between;align-items:center">
           <div style="flex:1">
-            <div style="font-size:13px;color:var(--text-soft);margin-bottom:10px;font-weight:600;letter-spacing:1px">#${b.confirmNum||''}</div>
-            <div style="display:grid;gap:6px">
-              <div style="display:flex;gap:6px;align-items:center">
-                <span style="font-size:13px;color:var(--text-soft);min-width:44px">לקוח:</span>
-                <span style="font-weight:700;font-size:16px;${isDone ? 'text-decoration:line-through;color:var(--text-soft)' : ''}">${b.name}</span>
-              </div>
-              <div style="display:flex;gap:6px;align-items:center">
-                <span style="font-size:13px;color:var(--text-soft);min-width:44px">שעה:</span>
-                <span style="font-weight:700;font-size:16px;color:var(--primary)">${b.time}</span>
-              </div>
-              <div style="display:flex;gap:6px;align-items:center">
-                <span style="font-size:13px;color:var(--text-soft);min-width:44px">טיפול:</span>
-                <span style="font-size:15px">${b.service}</span>
-              </div>
-              <div style="display:flex;gap:6px;align-items:center">
-                <span style="font-size:13px;color:var(--text-soft);min-width:44px">טלפון:</span>
-                <span style="font-size:15px">${b.phone}</span>
-              </div>
-              ${b.homeVisit === 'כן' ? '<div style="font-size:14px;color:#7ec8ff;margin-top:2px">🏠 הגעה לבית</div>' : ''}
-              ${b.notes ? `<div style="font-size:14px;color:var(--text-soft);margin-top:2px">💬 ${b.notes}</div>` : ''}
-            </div>
+            <div style="font-weight:700;font-size:17px;margin-bottom:5px;${isDone ? 'text-decoration:line-through;color:var(--text-soft)' : ''}">${b.name}</div>
+            <div style="font-size:18px;color:var(--text-soft)">${b.service} · ${b.time}</div>
+            <div style="font-size:17px;color:var(--text-soft);margin-top:3px">${b.phone}</div>
+            ${b.homeVisit === 'כן' ? '<div style="font-size:17px;color:#7ec8ff;margin-top:3px">🏠 הגעה לבית</div>' : ''}
+            ${b.notes ? `<div style="font-size:17px;color:var(--text-soft);margin-top:3px">💬 ${b.notes}</div>` : ''}
           </div>
-          <div style="display:flex;flex-direction:column;align-items:flex-end;gap:8px;min-width:100px">
+          <div style="display:flex;flex-direction:column;align-items:flex-end;gap:8px">
             <div style="font-size:22px;font-weight:900;color:var(--primary)">₪${b.price||''}</div>
             <button onclick="toggleAppointmentDone('${b.date||dateStr}','${b.time||b.Time||''}',${b.price||0},this)"
               style="padding:10px 18px;border-radius:10px;border:none;background:${isDone ? '#2e7d4f' : '#c0392b'};color:white;font-family:'Heebo',sans-serif;font-size:15px;font-weight:700;cursor:pointer;min-width:90px">
@@ -2532,48 +2538,10 @@ function saveBookingHistory(booking) {
   localStorage.setItem('gm_my_bookings', JSON.stringify(history.slice(0, 20))); // Keep last 20
 }
 
-async function renderMyBookings() {
+function renderMyBookings() {
+  const history = getBookingHistory();
   const list = document.getElementById('myBookingsList');
   const today = new Date().toISOString().split('T')[0];
-
-  // Show local data immediately while loading from Sheets
-  let history = getBookingHistory();
-  list.innerHTML = '<div style="text-align:center;padding:24px;color:var(--text-soft);font-size:14px">⏳ טוען תורים...</div>';
-
-  // Try to fetch from Sheets by phone (so bookings from any device show up)
-  try {
-    const lastCustomer = JSON.parse(localStorage.getItem('gm_last_customer') || 'null');
-    const phone = lastCustomer && lastCustomer.phone;
-    if (phone) {
-      const res = await fetch(APPS_SCRIPT_URL + '?action=getByPhone&phone=' + encodeURIComponent(phone));
-      const data = await res.json();
-      if (data.success && data.appointments && data.appointments.length > 0) {
-        const HEBREW_MONTHS_SHORT = ['ינואר','פברואר','מרץ','אפריל','מאי','יוני','יולי','אוגוסט','ספטמבר','אוקטובר','נובמבר','דצמבר'];
-        const sheetsBookings = data.appointments.map(a => {
-          const d = a.date ? new Date(a.date + 'T12:00:00') : null;
-          const dateLabel = d ? 'יום ' + ['ראשון','שני','שלישי','רביעי','חמישי','שישי','שבת'][d.getDay()] + ', ' + d.getDate() + ' ב' + HEBREW_MONTHS_SHORT[d.getMonth()] : a.date;
-          return {
-            confirmNum: a.confirmNum || '',
-            date: a.date || '',
-            time: a.time || '',
-            service: a.service || '',
-            price: a.price || 0,
-            dateLabel: dateLabel,
-            cancelled: false
-          };
-        });
-        // Merge: Sheets is source of truth; keep local only for cancelled flags
-        const cancelledNums = new Set(history.filter(b => b.cancelled).map(b => String(b.confirmNum)));
-        const merged = sheetsBookings.map(b => ({ ...b, cancelled: cancelledNums.has(String(b.confirmNum)) }));
-        // Add any local entries not in Sheets (e.g. very recent bookings not yet visible)
-        const sheetsNums = new Set(sheetsBookings.map(b => String(b.confirmNum)));
-        const localOnly = history.filter(b => !sheetsNums.has(String(b.confirmNum)));
-        history = [...merged, ...localOnly];
-        // Update local storage with merged result
-        localStorage.setItem('gm_my_bookings', JSON.stringify(history.slice(0, 20)));
-      }
-    }
-  } catch(e) { /* use local history */ }
 
   if (history.length === 0) {
     list.innerHTML = '<div style="text-align:center;padding:32px;color:var(--grey);font-size:18px">אין תורים</div>';
@@ -4554,19 +4522,11 @@ function renderDetailsScreen() {
   if (dateEl && state.selectedDate) dateEl.value = state.selectedDate;
 }
 
-function shareApp() {
-  const url = 'https://gm-barbershop.pages.dev';
-  const text = 'קבע תור במספרה GM בקלות ובמהירות 💈\n' + url;
-  if (navigator.share) {
-    navigator.share({ title: 'GM המספרה', text: text, url: url });
-  } else {
-    window.open('https://wa.me/?text=' + encodeURIComponent(text), '_blank');
-  }
-}
-
-// Init
-renderCalendar();
-renderServicesGrid();
+// Init — load settings from Sheets first, then render
+initConfig().then(() => {
+  renderCalendar();
+  renderServicesGrid();
+});
 applyImagesToApp();
 handleDeepLink();
 
