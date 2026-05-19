@@ -4,8 +4,8 @@
 <html lang="he" dir="rtl">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="theme-color" content="#181818">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#0b0d11">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -14,26 +14,35 @@
 <link rel="icon" type="image/jpeg" href="https://res.cloudinary.com/dyvx2rz4s/image/upload/q_auto/f_auto/v1776721264/%D7%9C%D7%95%D7%92%D7%95_%D7%92%D7%95%D7%9C%D7%9F_%D7%94%D7%A1%D7%A4%D7%A8_jhd89p.jpg">
 <link rel="apple-touch-icon" href="https://res.cloudinary.com/dyvx2rz4s/image/upload/q_auto/f_auto/v1776721264/%D7%9C%D7%95%D7%92%D7%95_%D7%92%D7%95%D7%9C%D7%9F_%D7%94%D7%A1%D7%A4%D7%A8_jhd89p.jpg">
 
-<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Heebo:wght@300;400;600;700;900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Heebo:wght@300;400;500;600;700;800;900&family=Bebas+Neue&display=swap" rel="stylesheet">
 <style>
   :root {
-    --bg: #181818;
-    --bg2: #222222;
-    --card: #242424;
-    --card2: #2a2a2a;
-    --primary: #e8d5b0;
-    --primary-dark: #c9b48a;
-    --text: #f0ece4;
-    --text-soft: #9a9490;
-    --border: rgba(255,255,255,0.08);
-    --red: #e05c5c;
-    --success: #4caf7d;
-    --shadow: 0 2px 12px rgba(0,0,0,0.3);
-    --shadow-lg: 0 8px 32px rgba(0,0,0,0.4);
-    --disabled: #3a3a3a;
-    --disabled-border: #2a2a2a;
-    --muted: #333;
-    --placeholder: #444;
+    --bg: #0b0d11;
+    --bg2: #12151b;
+    --card: #161a22;
+    --card2: #1c2028;
+    --primary: #c9a55c;
+    --primary-dark: #a8883f;
+    --primary-glow: rgba(201,165,92,0.15);
+    --text: #edeef0;
+    --text-soft: #6e7380;
+    --border: rgba(255,255,255,0.06);
+    --border-hover: rgba(255,255,255,0.12);
+    --red: #ef4444;
+    --success: #22c55e;
+    --shadow: 0 2px 8px rgba(0,0,0,0.4);
+    --shadow-lg: 0 12px 40px rgba(0,0,0,0.5);
+    --disabled: #2a2d35;
+    --disabled-border: #1e2028;
+    --muted: #2a2d35;
+    --placeholder: #3a3d46;
+    --gold: #c9a55c;
+    --grey: #6e7380;
+    --white: #edeef0;
+    --black: #0b0d11;
+    --radius-sm: 10px;
+    --radius-md: 14px;
+    --radius-lg: 20px;
   }
 
   * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
@@ -41,20 +50,24 @@
   body {
     background: var(--bg);
     color: var(--text);
-    font-family: 'Heebo', sans-serif;
+    font-family: 'Heebo', 'Inter', -apple-system, system-ui, sans-serif;
     font-size: 16px;
     min-height: 100vh;
+    min-height: 100dvh;
     overflow-x: hidden;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
   }
 
   /* SCREENS */
-  .screen { display: none; min-height: 100vh; flex-direction: column; animation: fadeIn 0.3s ease; }
+  .screen { display: none; min-height: 100vh; min-height: 100dvh; flex-direction: column; animation: fadeIn 0.25s ease-out; }
   .screen.active { display: flex; }
-  @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
 
   /* ─── SPLASH ─── */
   #screen-splash {
     background: var(--bg);
+    background-image: radial-gradient(ellipse at 50% 0%, rgba(201,165,92,0.06) 0%, transparent 60%);
     align-items: center;
     justify-content: center;
     position: relative;
@@ -62,16 +75,16 @@
   }
   .splash-bg {
     position: absolute; inset: 0;
-    background: radial-gradient(ellipse at 50% 35%, rgba(232,213,176,0.07) 0%, transparent 65%);
+    background: radial-gradient(ellipse at 50% 30%, rgba(201,165,92,0.04) 0%, transparent 70%);
   }
   .splash-lines { display: none; }
-  .splash-content { position: relative; text-align: center; z-index: 2; padding: 0 32px; }
+  .splash-content { position: relative; text-align: center; z-index: 2; padding: 0 32px; max-width: 420px; }
   .splash-pole { display: none; }
   .splash-gm {
     font-family: 'Bebas Neue', sans-serif;
-    font-size: clamp(100px, 26vw, 160px);
+    font-size: clamp(90px, 24vw, 140px);
     line-height: 0.9;
-    letter-spacing: 12px;
+    letter-spacing: 14px;
     color: var(--text);
   }
   .splash-sub {
@@ -88,87 +101,91 @@
     letter-spacing: 3px;
   }
   .splash-divider {
-    width: 40px; height: 1px;
-    background: var(--primary-dark);
-    margin: 24px auto;
-    opacity: 0.5;
+    width: 48px; height: 1px;
+    background: linear-gradient(90deg, transparent, var(--primary-dark), transparent);
+    margin: 28px auto;
   }
   .splash-btn {
     margin-top: 8px;
     background: var(--primary);
     color: var(--bg);
     border: none;
-    padding: 16px 48px;
+    padding: 16px 52px;
     font-family: 'Heebo', sans-serif;
-    font-size: 14px;
+    font-size: 15px;
     font-weight: 700;
-    letter-spacing: 3px;
+    letter-spacing: 2px;
     cursor: pointer;
-    border-radius: 50px;
-    transition: all 0.2s;
+    border-radius: 60px;
+    transition: transform 0.15s ease-out, box-shadow 0.15s ease-out;
     display: inline-block;
+    box-shadow: 0 4px 24px rgba(201,165,92,0.2);
   }
-  .splash-btn:active { transform: scale(0.97); opacity: 0.9; }
+  .splash-btn:hover { box-shadow: 0 6px 32px rgba(201,165,92,0.3); }
+  .splash-btn:active { transform: scale(0.97); }
 
   /* ─── TOP BAR ─── */
   .topbar {
-    padding: 18px 20px 14px;
+    padding: 16px 20px;
     display: flex;
     align-items: center;
     justify-content: space-between;
     border-bottom: 1px solid var(--border);
     position: sticky; top: 0;
-    background: rgba(24,24,24,0.95);
+    background: rgba(11,13,17,0.92);
     z-index: 100;
-    backdrop-filter: blur(12px);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
   }
   .topbar-logo {
     font-family: 'Bebas Neue', sans-serif;
-    font-size: 26px;
-    letter-spacing: 5px;
-    color: var(--text);
+    font-size: 24px;
+    letter-spacing: 6px;
+    color: var(--primary);
   }
   .topbar-back {
     background: none; border: none;
-    color: var(--text-soft); font-size: 18px;
-    cursor: pointer; padding: 4px 8px;
+    color: var(--text-soft); font-size: 16px;
+    cursor: pointer; padding: 6px 10px;
     display: flex; align-items: center; gap: 6px;
+    border-radius: var(--radius-sm);
+    transition: background 0.15s ease-out;
   }
+  .topbar-back:hover { background: rgba(255,255,255,0.04); }
   .topbar-back span { font-size: 13px; font-family: 'Heebo', sans-serif; color: var(--text-soft); }
 
   /* ─── HOME ─── */
   #screen-home { background: var(--bg); }
   .home-hero {
-    padding: 32px 24px 28px;
+    padding: 36px 24px 24px;
     position: relative;
   }
   .home-hero-tag {
-    font-size: 10px;
-    letter-spacing: 4px;
-    color: var(--primary-dark);
+    font-size: 11px;
+    letter-spacing: 3px;
+    color: var(--primary);
     text-transform: uppercase;
-    margin-bottom: 10px;
+    margin-bottom: 12px;
     font-weight: 600;
   }
   .home-hero h1 {
     font-family: 'Heebo', sans-serif;
-    font-size: clamp(32px, 8vw, 48px);
-    font-weight: 900;
-    line-height: 1.1;
-    letter-spacing: -0.5px;
+    font-size: clamp(30px, 7vw, 42px);
+    font-weight: 800;
+    line-height: 1.15;
+    letter-spacing: -0.3px;
     color: var(--text);
   }
   .home-hero h1 span { color: var(--primary); }
   .home-hero-bar {
-    width: 32px; height: 2px;
-    background: var(--primary-dark);
+    width: 36px; height: 2px;
+    background: linear-gradient(90deg, var(--primary), transparent);
     margin-top: 16px;
     border-radius: 2px;
-    opacity: 0.6;
   }
 
   .services-label {
-    padding: 4px 24px 12px;
+    padding: 4px 24px 14px;
     font-size: 10px;
     letter-spacing: 4px;
     color: var(--text-soft);
@@ -179,96 +196,99 @@
   .services-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 10px;
-    padding: 0 16px 24px;
+    gap: 12px;
+    padding: 0 18px 28px;
   }
 
   .service-card {
     background: var(--card);
     border: 1px solid var(--border);
-    padding: 20px 16px;
+    padding: 22px 18px;
     cursor: pointer;
     position: relative;
     overflow: hidden;
-    transition: all 0.2s;
-    border-radius: 16px;
+    transition: border-color 0.2s ease-out, background 0.2s ease-out, transform 0.12s ease-out;
+    border-radius: var(--radius-lg);
   }
+  .service-card:hover { border-color: var(--border-hover); background: var(--card2); }
   .service-card:active { transform: scale(0.97); }
   .service-card.selected {
     border-color: var(--primary);
-    background: rgba(232,213,176,0.06);
+    background: var(--primary-glow);
+    box-shadow: 0 0 0 1px var(--primary), 0 4px 20px rgba(201,165,92,0.1);
   }
   .service-icon {
     font-size: 13px;
     font-weight: 800;
     font-family: 'Heebo', sans-serif;
-    margin-bottom: 14px;
+    margin-bottom: 16px;
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    width: 36px; height: 36px;
-    border-radius: 10px;
-    background: rgba(232,213,176,0.1);
+    width: 40px; height: 40px;
+    border-radius: 12px;
+    background: var(--primary-glow);
     color: var(--primary);
     letter-spacing: 0;
   }
   .service-name {
     font-family: 'Heebo', sans-serif;
-    font-size: 16px;
+    font-size: 15px;
     font-weight: 700;
     letter-spacing: 0;
     color: var(--text);
-    line-height: 1.2;
+    line-height: 1.3;
   }
   .service-duration {
-    font-size: 11px;
+    font-size: 12px;
     color: var(--text-soft);
-    margin-top: 5px;
+    margin-top: 4px;
     letter-spacing: 0;
   }
   .service-price {
-    font-size: 22px;
+    font-size: 24px;
     font-weight: 800;
     color: var(--primary);
-    margin-top: 14px;
+    margin-top: 16px;
     font-family: 'Heebo', sans-serif;
   }
   .service-check {
     position: absolute;
-    top: 12px; left: 12px;
-    width: 20px; height: 20px;
+    top: 14px; left: 14px;
+    width: 22px; height: 22px;
     border-radius: 50%;
     background: var(--primary);
     display: none;
     align-items: center;
     justify-content: center;
-    font-size: 10px;
+    font-size: 11px;
     color: var(--bg);
   }
   .service-card.selected .service-check { display: flex; }
 
   .cta-btn {
-    margin: 0 16px 24px;
+    margin: 0 18px 24px;
     background: var(--primary);
     color: var(--bg);
     border: none;
-    padding: 17px;
-    width: calc(100% - 32px);
+    padding: 18px;
+    width: calc(100% - 36px);
     font-family: 'Heebo', sans-serif;
     font-size: 15px;
     font-weight: 700;
-    letter-spacing: 2px;
+    letter-spacing: 1px;
     cursor: pointer;
-    border-radius: 14px;
-    transition: all 0.2s;
-    opacity: 0.3;
+    border-radius: var(--radius-md);
+    transition: opacity 0.2s ease-out, transform 0.12s ease-out, box-shadow 0.2s ease-out;
+    opacity: 0.25;
     pointer-events: none;
   }
   .cta-btn.enabled {
     opacity: 1;
     pointer-events: all;
-    box-shadow: 0 4px 20px rgba(232,213,176,0.2);
+    box-shadow: 0 4px 24px rgba(201,165,92,0.2);
   }
+  .cta-btn.enabled:hover { box-shadow: 0 6px 32px rgba(201,165,92,0.3); }
   .cta-btn.enabled:active { transform: scale(0.98); }
 
   /* ─── DATE PICKER ─── */
@@ -276,24 +296,25 @@
   .section-title { padding: 28px 24px 20px; }
   .section-title h2 {
     font-family: 'Heebo', sans-serif;
-    font-size: 26px;
-    font-weight: 900;
+    font-size: 24px;
+    font-weight: 800;
     color: var(--text);
+    line-height: 1.2;
   }
-  .section-title p { font-size: 13px; color: var(--text-soft); margin-top: 4px; }
+  .section-title p { font-size: 13px; color: var(--text-soft); margin-top: 6px; }
 
   .calendar-wrap {
     padding: 20px;
     background: var(--card);
-    border-radius: 20px;
-    margin: 0 16px;
+    border-radius: var(--radius-lg);
+    margin: 0 18px;
     border: 1px solid var(--border);
   }
   .cal-header {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    margin-bottom: 20px;
+    margin-bottom: 18px;
   }
   .cal-month {
     font-family: 'Heebo', sans-serif;
@@ -302,33 +323,34 @@
     color: var(--text);
   }
   .cal-nav {
-    background: var(--card2);
+    background: var(--bg2);
     border: 1px solid var(--border);
     color: var(--text-soft);
-    width: 34px; height: 34px;
+    width: 36px; height: 36px;
     cursor: pointer;
     font-size: 16px;
     display: flex; align-items: center; justify-content: center;
-    border-radius: 10px;
-    transition: all 0.2s;
+    border-radius: var(--radius-sm);
+    transition: background 0.15s ease-out, color 0.15s ease-out;
   }
-  .cal-nav:active { background: rgba(232,213,176,0.1); }
+  .cal-nav:hover { background: var(--card2); color: var(--text); }
+  .cal-nav:active { background: var(--primary-glow); color: var(--primary); }
   .cal-days-header {
     display: grid;
     grid-template-columns: repeat(7, 1fr);
     text-align: center;
-    margin-bottom: 10px;
+    margin-bottom: 8px;
   }
   .cal-day-name {
     font-size: 11px;
     color: var(--text-soft);
-    padding: 4px 0;
+    padding: 6px 0;
     font-weight: 600;
   }
   .cal-grid {
     display: grid;
     grid-template-columns: repeat(7, 1fr);
-    gap: 3px;
+    gap: 2px;
   }
   .cal-cell {
     aspect-ratio: 1;
@@ -336,10 +358,10 @@
     align-items: center;
     justify-content: center;
     font-size: 14px;
-    font-weight: 600;
+    font-weight: 500;
     cursor: pointer;
-    border-radius: 10px;
-    transition: all 0.2s;
+    border-radius: var(--radius-sm);
+    transition: background 0.15s ease-out, color 0.15s ease-out;
     position: relative;
   }
   .cal-cell.empty { pointer-events: none; }
@@ -353,23 +375,27 @@
     color: var(--disabled);
   }
   .cal-cell.available { color: var(--text); }
-  .cal-cell.available:hover, .cal-cell.available:active {
-    background: rgba(232,213,176,0.1);
+  .cal-cell.available:hover {
+    background: rgba(201,165,92,0.08);
     color: var(--primary);
   }
-  .cal-cell.today { border: 1px solid rgba(232,213,176,0.3); color: var(--primary); }
+  .cal-cell.available:active {
+    background: rgba(201,165,92,0.15);
+  }
+  .cal-cell.today { border: 1px solid rgba(201,165,92,0.25); color: var(--primary); }
   .cal-cell.selected {
     background: var(--primary) !important;
     color: var(--bg) !important;
     font-weight: 700;
     border-radius: 50%;
+    box-shadow: 0 2px 12px rgba(201,165,92,0.3);
   }
 
   /* ─── TIME SLOTS ─── */
-  .time-section { padding: 24px 24px 12px; }
+  .time-section { padding: 28px 24px 12px; }
   .time-section h3 {
     font-family: 'Heebo', sans-serif;
-    font-size: 14px;
+    font-size: 13px;
     font-weight: 700;
     letter-spacing: 2px;
     color: var(--text-soft);
@@ -379,8 +405,8 @@
   .slots-grid {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    gap: 8px;
-    padding: 0 16px 24px;
+    gap: 10px;
+    padding: 0 18px 28px;
   }
   .slot-btn {
     background: var(--card);
@@ -391,38 +417,39 @@
     text-align: center;
     cursor: pointer;
     font-family: 'Heebo', sans-serif;
-    font-size: 15px;
     font-weight: 600;
-    border-radius: 12px;
-    transition: all 0.2s;
+    border-radius: var(--radius-md);
+    transition: border-color 0.15s ease-out, background 0.15s ease-out, transform 0.1s ease-out;
   }
+  .slot-btn:hover { border-color: var(--border-hover); background: var(--card2); }
   .slot-btn.taken {
     background: transparent;
     color: var(--disabled);
     border-color: var(--disabled-border);
     pointer-events: none;
     text-decoration: line-through;
+    opacity: 0.5;
   }
   .slot-btn.selected {
     background: var(--primary);
     border-color: var(--primary);
     color: var(--bg);
     font-weight: 700;
+    box-shadow: 0 2px 16px rgba(201,165,92,0.2);
   }
-  .slot-btn:not(.taken):active { transform: scale(0.95); }
+  .slot-btn:not(.taken):active { transform: scale(0.96); }
 
   /* ─── DETAILS FORM ─── */
   #screen-details { background: var(--bg); overflow-y: auto; }
-  .form-wrap { padding: 0 16px 32px; }
-  .form-group { margin-bottom: 18px; }
+  .form-wrap { padding: 0 18px 36px; }
+  .form-group { margin-bottom: 20px; }
   .form-label {
     display: block;
-    font-size: 10px;
-    letter-spacing: 3px;
+    font-size: 12px;
+    letter-spacing: 1px;
     color: var(--text-soft);
-    text-transform: uppercase;
     margin-bottom: 8px;
-    font-weight: 700;
+    font-weight: 600;
   }
   .form-input {
     width: 100%;
@@ -433,95 +460,98 @@
     font-family: 'Heebo', sans-serif;
     font-size: 16px;
     outline: none;
-    border-radius: 12px;
-    transition: border-color 0.2s;
+    border-radius: var(--radius-md);
+    transition: border-color 0.2s ease-out, box-shadow 0.2s ease-out;
   }
-  .form-input:focus { border-color: rgba(232,213,176,0.4); }
+  .form-input:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(201,165,92,0.1);
+  }
   .form-input::placeholder { color: var(--placeholder); }
 
   .booking-summary {
     background: var(--card);
     border: 1px solid var(--border);
-    padding: 20px;
-    margin-bottom: 20px;
-    border-radius: 16px;
+    padding: 22px;
+    margin-bottom: 24px;
+    border-radius: var(--radius-lg);
   }
   .booking-summary h3 {
-    font-size: 10px;
-    letter-spacing: 4px;
+    font-size: 11px;
+    letter-spacing: 3px;
     color: var(--text-soft);
     text-transform: uppercase;
-    margin-bottom: 14px;
+    margin-bottom: 16px;
     font-weight: 700;
   }
   .summary-row {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 8px 0;
+    padding: 10px 0;
     border-bottom: 1px solid var(--border);
     font-size: 14px;
   }
   .summary-row:last-child { border-bottom: none; }
   .summary-row span:first-child { color: var(--text-soft); }
   .summary-row span:last-child { font-weight: 600; color: var(--text); }
-  .summary-row.total span:last-child { color: var(--primary); font-size: 20px; font-weight: 800; }
+  .summary-row.total span:last-child { color: var(--primary); font-size: 22px; font-weight: 800; }
 
   /* ─── SUCCESS ─── */
   #screen-success {
     background: var(--bg);
+    background-image: radial-gradient(ellipse at 50% 20%, rgba(34,197,94,0.04) 0%, transparent 50%);
     align-items: center;
     justify-content: center;
     text-align: center;
     padding: 40px 24px;
   }
   .success-icon {
-    width: 72px; height: 72px;
+    width: 76px; height: 76px;
     border-radius: 50%;
-    background: rgba(76,175,125,0.1);
+    background: rgba(34,197,94,0.08);
     border: 2px solid var(--success);
     display: flex; align-items: center; justify-content: center;
-    font-size: 30px;
-    margin: 0 auto 20px;
-    animation: popIn 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+    font-size: 32px;
+    margin: 0 auto 24px;
   }
   @keyframes popIn { from { transform: scale(0); opacity: 0; } to { transform: scale(1); opacity: 1; } }
   @keyframes successPulse {
-    0% { box-shadow: 0 0 0 0 rgba(76,175,125,0.4); }
-    70% { box-shadow: 0 0 0 16px rgba(76,175,125,0); }
-    100% { box-shadow: 0 0 0 0 rgba(76,175,125,0); }
+    0% { box-shadow: 0 0 0 0 rgba(34,197,94,0.35); }
+    70% { box-shadow: 0 0 0 20px rgba(34,197,94,0); }
+    100% { box-shadow: 0 0 0 0 rgba(34,197,94,0); }
   }
   .success-icon {
-    animation: popIn 0.5s cubic-bezier(0.34, 1.56, 0.64, 1), successPulse 2s ease-out 0.5s;
+    animation: popIn 0.4s cubic-bezier(0.16, 1, 0.3, 1), successPulse 2s ease-out 0.4s;
   }
   .success-gm {
     font-family: 'Bebas Neue', sans-serif;
-    font-size: 52px;
-    letter-spacing: 6px;
-    color: var(--text);
+    font-size: 48px;
+    letter-spacing: 8px;
+    color: var(--primary);
   }
-  .success-title { font-size: 20px; font-weight: 800; margin-bottom: 6px; }
-  .success-sub { font-size: 14px; color: var(--text-soft); line-height: 1.6; margin-bottom: 28px; }
+  .success-title { font-size: 22px; font-weight: 800; margin-bottom: 8px; }
+  .success-sub { font-size: 14px; color: var(--text-soft); line-height: 1.7; margin-bottom: 32px; }
   .success-card {
     background: var(--card);
     border: 1px solid var(--border);
-    padding: 22px;
+    padding: 24px;
     width: 100%;
-    max-width: 320px;
-    margin: 0 auto 28px;
-    border-radius: 20px;
+    max-width: 340px;
+    margin: 0 auto 32px;
+    border-radius: var(--radius-lg);
     text-align: right;
   }
   .success-confirm-num {
-    font-size: 10px;
-    letter-spacing: 3px;
-    color: var(--primary-dark);
-    margin-bottom: 14px;
+    font-size: 11px;
+    letter-spacing: 2px;
+    color: var(--primary);
+    margin-bottom: 16px;
     font-weight: 700;
     text-transform: uppercase;
   }
-  .success-detail { font-size: 15px; font-weight: 600; margin-bottom: 6px; }
-  .success-detail small { font-weight: 300; color: var(--text-soft); display: block; font-size: 12px; }
+  .success-detail { font-size: 15px; font-weight: 600; margin-bottom: 8px; }
+  .success-detail small { font-weight: 400; color: var(--text-soft); display: block; font-size: 12px; }
 
   .new-booking-btn {
     background: transparent;
@@ -533,39 +563,40 @@
     font-weight: 600;
     cursor: pointer;
     letter-spacing: 1px;
-    border-radius: 50px;
-    transition: all 0.2s;
+    border-radius: 60px;
+    transition: background 0.15s ease-out, border-color 0.15s ease-out;
   }
+  .new-booking-btn:hover { border-color: var(--border-hover); background: rgba(255,255,255,0.03); }
   .new-booking-btn:active { background: rgba(255,255,255,0.05); }
 
   /* ─── PROGRESS BAR ─── */
-  .progress-bar { height: 3px; background: var(--border); position: relative; overflow: hidden; }
-  .progress-fill { height: 100%; background: var(--primary); transition: width 0.4s ease; border-radius: 0 2px 2px 0; }
+  .progress-bar { height: 2px; background: var(--border); position: relative; overflow: hidden; }
+  .progress-fill { height: 100%; background: linear-gradient(90deg, var(--primary-dark), var(--primary)); transition: width 0.4s cubic-bezier(0.16, 1, 0.3, 1); border-radius: 0 2px 2px 0; }
 
   /* ─── ORNAMENT ─── */
-  .ornament { text-align: center; padding: 12px 0 4px; color: rgba(232,213,176,0.2); font-size: 18px; letter-spacing: 6px; }
+  .ornament { text-align: center; padding: 16px 0 8px; color: rgba(201,165,92,0.15); font-size: 16px; letter-spacing: 8px; }
 
   /* Install banner */
   .install-banner {
-    background: rgba(232,213,176,0.05);
+    background: var(--primary-glow);
     border-bottom: 1px solid var(--border);
-    padding: 10px 16px;
+    padding: 12px 18px;
     display: flex;
     align-items: center;
     justify-content: space-between;
-    font-size: 12px;
+    font-size: 13px;
     color: var(--text-soft);
   }
   .install-banner button {
     background: var(--primary);
     color: var(--bg);
     border: none;
-    padding: 6px 14px;
-    font-size: 11px;
+    padding: 7px 16px;
+    font-size: 12px;
     font-weight: 700;
     cursor: pointer;
     letter-spacing: 1px;
-    border-radius: 6px;
+    border-radius: 8px;
   }
   .install-banner .close-x {
     background: none; border: none;
@@ -574,16 +605,16 @@
   }
 
   /* Scrollbar */
-  ::-webkit-scrollbar { width: 3px; }
-  ::-webkit-scrollbar-track { background: var(--bg); }
-  ::-webkit-scrollbar-thumb { background: rgba(232,213,176,0.15); border-radius: 2px; }
+  ::-webkit-scrollbar { width: 4px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: rgba(201,165,92,0.12); border-radius: 4px; }
 
   /* ─── SKELETON LOADING ─── */
   .skeleton {
     background: linear-gradient(90deg, var(--card) 25%, var(--card2) 50%, var(--card) 75%);
     background-size: 200% 100%;
-    animation: shimmer 1.5s infinite;
-    border-radius: 10px;
+    animation: shimmer 1.8s ease-in-out infinite;
+    border-radius: var(--radius-sm);
   }
   @keyframes shimmer {
     0% { background-position: 200% 0; }
@@ -591,7 +622,7 @@
   }
   .skeleton-slot {
     height: 48px;
-    border-radius: 12px;
+    border-radius: var(--radius-md);
   }
   .skeleton-text {
     height: 14px;
@@ -607,17 +638,22 @@
   .form-input:focus-visible {
     outline: none;
     border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(201,165,92,0.1);
+  }
+  button:focus-visible {
+    outline: 2px solid var(--primary);
+    outline-offset: 2px;
   }
 
   /* ─── CALENDAR FIX ─── */
   .cal-cell {
     aspect-ratio: 1;
-    max-width: 48px;
-    max-height: 48px;
+    max-width: 44px;
+    max-height: 44px;
     margin: 0 auto;
   }
   .cal-grid {
-    row-gap: 4px;
+    row-gap: 3px;
   }
 
   /* ─── REDUCED MOTION ─── */
@@ -626,6 +662,7 @@
       animation-duration: 0.01ms !important;
       animation-iteration-count: 1 !important;
       transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
     }
   }
 
@@ -633,75 +670,56 @@
   @media (max-width: 600px) {
     .services-grid {
       grid-template-columns: 1fr;
+      gap: 10px;
+      padding: 0 16px 24px;
     }
-    .home-hero h1 {
-      font-size: 28px;
+    .service-card {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 18px 16px;
     }
+    .service-icon { margin-bottom: 0; flex-shrink: 0; }
+    .service-price { margin-top: 0; margin-right: auto; font-size: 20px; }
+    .service-check { top: 50%; left: 14px; transform: translateY(-50%); }
+    .home-hero h1 { font-size: 26px; }
+    .home-hero { padding: 28px 18px 20px; }
     .slots-grid {
       grid-template-columns: repeat(2, 1fr);
+      padding: 0 16px 24px;
     }
-    .topbar {
-      padding: 14px 16px 10px;
-    }
-    .topbar-logo {
-      font-size: 22px;
-    }
-    .section-title h2 {
-      font-size: 22px;
-    }
-    .splash-btn {
-      padding: 14px 36px;
-      font-size: 13px;
-    }
-    .success-card {
-      max-width: 100%;
-    }
-    .booking-summary {
-      padding: 16px;
-    }
-    .form-wrap {
-      padding: 0 12px 24px;
-    }
-    .calendar-wrap {
-      margin: 0 8px;
-      padding: 14px;
-    }
-    .cal-cell {
-      font-size: 13px;
-      max-width: 40px;
-      max-height: 40px;
-    }
+    .topbar { padding: 14px 16px; }
+    .topbar-logo { font-size: 20px; }
+    .section-title { padding: 24px 18px 16px; }
+    .section-title h2 { font-size: 22px; }
+    .splash-btn { padding: 15px 40px; font-size: 14px; }
+    .splash-content { padding: 0 24px; }
+    .success-card { max-width: 100%; }
+    .booking-summary { padding: 18px; }
+    .form-wrap { padding: 0 16px 28px; }
+    .calendar-wrap { margin: 0 12px; padding: 16px; }
+    .cal-cell { font-size: 13px; max-width: 38px; max-height: 38px; }
+    .cta-btn { margin: 0 16px 20px; width: calc(100% - 32px); }
   }
 
   /* ─── RESPONSIVE: SMALL MOBILE ─── */
   @media (max-width: 380px) {
-    .services-grid {
-      gap: 8px;
-      padding: 0 10px 20px;
-    }
-    .service-card {
-      padding: 16px 12px;
-    }
-    .service-price {
-      font-size: 18px;
-    }
-    .slots-grid {
-      gap: 6px;
-    }
-    .slot-btn {
-      padding: 12px 6px;
-      font-size: 14px;
-    }
+    .services-grid { gap: 8px; padding: 0 12px 20px; }
+    .service-card { padding: 14px 12px; gap: 12px; }
+    .service-name { font-size: 14px; }
+    .service-price { font-size: 18px; }
+    .service-icon { width: 36px; height: 36px; }
+    .slots-grid { gap: 8px; }
+    .slot-btn { padding: 12px 6px; font-size: 14px; }
+    .home-hero h1 { font-size: 24px; }
+    .calendar-wrap { margin: 0 8px; padding: 12px; }
   }
 
   /* ─── RESPONSIVE: TABLET ─── */
   @media (min-width: 601px) and (max-width: 768px) {
-    .services-grid {
-      grid-template-columns: 1fr 1fr;
-    }
-    .home-hero h1 {
-      font-size: 36px;
-    }
+    .services-grid { grid-template-columns: 1fr 1fr; }
+    .home-hero h1 { font-size: 34px; }
+    .slots-grid { grid-template-columns: repeat(3, 1fr); }
   }
 
   /* ─── RESPONSIVE: DESKTOP CAP ─── */
@@ -709,10 +727,21 @@
     .screen {
       max-width: 480px;
       margin: 0 auto;
+      box-shadow: -1px 0 0 var(--border), 1px 0 0 var(--border);
     }
     #screen-admin {
       max-width: 960px;
+      box-shadow: none;
     }
+    body {
+      background: #06080b;
+    }
+  }
+
+  /* ─── SELECTION ─── */
+  ::selection {
+    background: rgba(201,165,92,0.25);
+    color: var(--text);
   }
 </style>
 <script>
@@ -722,8 +751,8 @@ const manifestData = {
   short_name: "GM",
   start_url: "/",
   display: "standalone",
-  background_color: "#181818",
-  theme_color: "#181818",
+  background_color: "#0b0d11",
+  theme_color: "#0b0d11",
   icons: [
     { src: "https://res.cloudinary.com/dyvx2rz4s/image/upload/q_auto/f_auto/v1776721264/%D7%9C%D7%95%D7%92%D7%95_%D7%92%D7%95%D7%9C%D7%9F_%D7%94%D7%A1%D7%A4%D7%A8_jhd89p.jpg", sizes: "192x192", type: "image/jpeg" },
     { src: "https://res.cloudinary.com/dyvx2rz4s/image/upload/q_auto/f_auto/v1776721264/%D7%9C%D7%95%D7%92%D7%95_%D7%92%D7%95%D7%9C%D7%9F_%D7%94%D7%A1%D7%A4%D7%A8_jhd89p.jpg", sizes: "512x512", type: "image/jpeg" }
@@ -753,38 +782,38 @@ document.head.appendChild(link);
   <div class="splash-bg"></div>
   <div class="splash-lines"></div>
   <div class="splash-content">
-    <div style="width:200px;height:200px;border-radius:50%;overflow:hidden;margin:0 auto 24px;border:2px solid rgba(232,213,176,0.4);background:white;box-shadow:0 4px 20px rgba(0,0,0,0.3)">
+    <div style="width:160px;height:160px;border-radius:50%;overflow:hidden;margin:0 auto 28px;border:2px solid rgba(201,165,92,0.3);background:var(--card);box-shadow:0 8px 40px rgba(0,0,0,0.4)">
       <img src="https://res.cloudinary.com/dyvx2rz4s/image/upload/q_auto/f_auto/v1776721264/%D7%9C%D7%95%D7%92%D7%95_%D7%92%D7%95%D7%9C%D7%9F_%D7%94%D7%A1%D7%A4%D7%A8_jhd89p.jpg" alt="לוגו GM Barbershop — מספרה של גולן מאיר" loading="lazy" style="width:100%;height:100%;object-fit:cover">
     </div>
     <div class="splash-tagline" style="font-size:22px;letter-spacing:4px">LOOK SHARP FEEL SHARP</div><div class="splash-divider"></div>
     <button class="splash-btn" onclick="goTo('home')">קבע תור עכשיו</button>
     <div style="margin-top:16px">
-      <button onclick="shareApp()" style="background:none;border:1px solid rgba(232,213,176,0.3);color:var(--primary-dark);padding:12px 32px;font-family:'Heebo',sans-serif;font-size:13px;font-weight:600;letter-spacing:2px;cursor:pointer;border-radius:50px;transition:all 0.2s">
+      <button onclick="shareApp()" style="background:none;border:1px solid rgba(201,165,92,0.2);color:var(--text-soft);padding:12px 32px;font-family:'Heebo',sans-serif;font-size:13px;font-weight:600;letter-spacing:1px;cursor:pointer;border-radius:60px;transition:all 0.15s">
         📲 שתף עם חבר
       </button>
     </div>
 
     <div style="margin-top:32px;display:flex;flex-direction:column;align-items:center;gap:12px">
-      <button onclick="showInstallModal()" style="background:transparent;border:1px solid rgba(232,213,176,0.25);color:rgba(232,213,176,0.7);padding:10px 24px;font-family:'Heebo',sans-serif;font-size:18px;cursor:pointer;border-radius:50px;letter-spacing:2px">
+      <button onclick="showInstallModal()" style="background:transparent;border:1px solid rgba(201,165,92,0.15);color:var(--text-soft);padding:10px 24px;font-family:'Heebo',sans-serif;font-size:14px;cursor:pointer;border-radius:60px;letter-spacing:1px;transition:all 0.15s">
         📲 הוסף למסך הבית
       </button>
-      <span id="adminToggle" onclick="toggleAdminLogin()" style="font-size:17px;color:#555;cursor:pointer;letter-spacing:3px;user-select:none;border:1px solid #333;padding:6px 16px;border-radius:2px">כניסת מנהל</span>
+      <span id="adminToggle" onclick="toggleAdminLogin()" style="font-size:12px;color:var(--text-soft);cursor:pointer;letter-spacing:1px;user-select:none;opacity:0.4;padding:6px 16px">כניסת מנהל</span>
     </div>
     <!-- Admin login — subtle, hidden by default -->
     <div id="adminLoginBox" style="display:none;margin-top:16px;animation:fadeIn 0.3s ease">
       <div style="position:relative;display:inline-block">
         <input id="adminPassInput" type="password" placeholder="סיסמה"
-          style="background:rgba(255,255,255,0.05);border:1px solid rgba(201,168,76,0.25);color:var(--white);padding:12px 40px 12px 18px;font-family:'Heebo',sans-serif;font-size:18px;outline:none;width:200px;text-align:center;border-radius:2px;letter-spacing:3px"
+          style="background:var(--card);border:1px solid var(--border);color:var(--text);padding:12px 40px 12px 18px;font-family:'Heebo',sans-serif;font-size:16px;outline:none;width:200px;text-align:center;border-radius:var(--radius-sm);letter-spacing:3px"
           onkeydown="if(event.key==='Enter') checkAdminPass()">
         <span onclick="togglePassView('adminPassInput','eyeAdmin')" id="eyeAdmin"
           style="position:absolute;left:10px;top:50%;transform:translateY(-50%);cursor:pointer;font-size:18px;user-select:none">👁️</span>
       </div>
       <br>
       <button onclick="checkAdminPass()"
-        style="margin-top:10px;background:transparent;border:1px solid rgba(201,168,76,0.3);color:rgba(201,168,76,0.7);padding:8px 24px;font-family:'Heebo',sans-serif;font-size:18px;cursor:pointer;letter-spacing:2px">
+        style="margin-top:10px;background:var(--primary-glow);border:1px solid rgba(201,165,92,0.2);color:var(--primary);padding:10px 28px;font-family:'Heebo',sans-serif;font-size:14px;font-weight:600;cursor:pointer;letter-spacing:1px;border-radius:var(--radius-sm)">
         כניסה
       </button>
-      <div id="adminErrMsg" style="font-size:17px;color:#e63946;margin-top:8px;min-height:16px"></div>
+      <div id="adminErrMsg" style="font-size:13px;color:var(--red);margin-top:8px;min-height:16px"></div>
     </div>
   </div>
 </div>
@@ -794,50 +823,50 @@ document.head.appendChild(link);
   <div class="topbar">
     <button class="topbar-back" onclick="goTo('splash')">← <span>יציאה</span></button>
     <div class="topbar-logo">GM</div>
-    <div style="font-size:18px;color:var(--gold);letter-spacing:2px;background:rgba(201,168,76,0.1);padding:4px 10px;border:1px solid rgba(201,168,76,0.2)">מנהל</div>
+    <div style="font-size:12px;color:var(--primary);letter-spacing:3px;background:var(--primary-glow);padding:6px 14px;border:1px solid rgba(201,165,92,0.2);border-radius:var(--radius-sm);font-weight:600;text-transform:uppercase">מנהל</div>
   </div>
 
   <!-- Admin tabs -->
-  <div style="display:flex;border-bottom:1px solid rgba(201,168,76,0.15);padding:0 20px;gap:4px;overflow-x:auto">
-    <button onclick="switchAdminTab('bookings')" id="tab-bookings" style="background:none;border:none;color:var(--gold);padding:14px 16px;font-family:'Heebo',sans-serif;font-size:17px;cursor:pointer;border-bottom:2px solid var(--gold);white-space:nowrap">📋 תורים</button>
-    <button onclick="switchAdminTab('services')" id="tab-services" style="background:none;border:none;color:var(--grey);padding:14px 16px;font-family:'Heebo',sans-serif;font-size:17px;cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap">✂️ שירותים</button>
-    <button onclick="switchAdminTab('hours')" id="tab-hours" style="background:none;border:none;color:var(--grey);padding:14px 16px;font-family:'Heebo',sans-serif;font-size:17px;cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap">🕐 תכנית עבודה</button>
-    <button onclick="switchAdminTab('blocked')" id="tab-blocked" style="background:none;border:none;color:var(--grey);padding:14px 16px;font-family:'Heebo',sans-serif;font-size:17px;cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap">🏖️ ימי חופש</button>
-    <button onclick="switchAdminTab('shortdays')" id="tab-shortdays" style="background:none;border:none;color:var(--grey);padding:14px 16px;font-family:'Heebo',sans-serif;font-size:17px;cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap">⏱️ ימים מקוצרים</button>
-    <button onclick="switchAdminTab('settings')" id="tab-settings" style="background:none;border:none;color:var(--text-soft);padding:14px 16px;font-family:'Heebo',sans-serif;font-size:17px;cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap">⚙️ הגדרות</button>
-    <button onclick="switchAdminTab('reports')" id="tab-reports" style="background:none;border:none;color:var(--text-soft);padding:14px 16px;font-family:'Heebo',sans-serif;font-size:17px;cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap">📊 דוחות</button>
-    <button onclick="switchAdminTab('images')" id="tab-images" style="background:none;border:none;color:var(--text-soft);padding:14px 16px;font-family:'Heebo',sans-serif;font-size:17px;cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap">🖼️ תמונות</button>
-    <button onclick="switchAdminTab('email')" id="tab-email" style="background:none;border:none;color:var(--text-soft);padding:14px 16px;font-family:'Heebo',sans-serif;font-size:17px;cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap">✉️ מייל</button>
+  <div style="display:flex;border-bottom:1px solid var(--border);padding:0 16px;gap:2px;overflow-x:auto;-webkit-overflow-scrolling:touch">
+    <button onclick="switchAdminTab('bookings')" id="tab-bookings" style="background:none;border:none;color:var(--primary);padding:12px 14px;font-family:'Heebo',sans-serif;font-size:13px;font-weight:600;cursor:pointer;border-bottom:2px solid var(--primary);white-space:nowrap">📋 תורים</button>
+    <button onclick="switchAdminTab('services')" id="tab-services" style="background:none;border:none;color:var(--text-soft);padding:12px 14px;font-family:'Heebo',sans-serif;font-size:13px;font-weight:600;cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap">✂️ שירותים</button>
+    <button onclick="switchAdminTab('hours')" id="tab-hours" style="background:none;border:none;color:var(--text-soft);padding:12px 14px;font-family:'Heebo',sans-serif;font-size:13px;font-weight:600;cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap">🕐 עבודה</button>
+    <button onclick="switchAdminTab('blocked')" id="tab-blocked" style="background:none;border:none;color:var(--text-soft);padding:12px 14px;font-family:'Heebo',sans-serif;font-size:13px;font-weight:600;cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap">🏖️ חופש</button>
+    <button onclick="switchAdminTab('shortdays')" id="tab-shortdays" style="background:none;border:none;color:var(--text-soft);padding:12px 14px;font-family:'Heebo',sans-serif;font-size:13px;font-weight:600;cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap">⏱️ מקוצרים</button>
+    <button onclick="switchAdminTab('settings')" id="tab-settings" style="background:none;border:none;color:var(--text-soft);padding:12px 14px;font-family:'Heebo',sans-serif;font-size:13px;font-weight:600;cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap">⚙️ הגדרות</button>
+    <button onclick="switchAdminTab('reports')" id="tab-reports" style="background:none;border:none;color:var(--text-soft);padding:12px 14px;font-family:'Heebo',sans-serif;font-size:13px;font-weight:600;cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap">📊 דוחות</button>
+    <button onclick="switchAdminTab('images')" id="tab-images" style="background:none;border:none;color:var(--text-soft);padding:12px 14px;font-family:'Heebo',sans-serif;font-size:13px;font-weight:600;cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap">🖼️ תמונות</button>
+    <button onclick="switchAdminTab('email')" id="tab-email" style="background:none;border:none;color:var(--text-soft);padding:12px 14px;font-family:'Heebo',sans-serif;font-size:13px;font-weight:600;cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap">✉️ מייל</button>
   </div>
 
   <!-- TAB: BOOKINGS -->
   <div id="admintab-bookings" style="flex:1;overflow-y:auto">
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;padding:16px 20px">
-      <div style="background:var(--card);border:1px solid rgba(201,168,76,0.15);padding:16px;clip-path:polygon(6px 0%,100% 0%,calc(100% - 6px) 100%,0% 100%)">
-        <div style="font-size:18px;color:var(--grey);letter-spacing:2px;margin-bottom:6px">תורים שנקבעו</div>
-        <div style="font-family:'Bebas Neue',sans-serif;font-size:36px;color:var(--gold)" id="adminTodayCount">0</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:16px 20px">
+      <div style="background:var(--card);border:1px solid var(--border);padding:16px;border-radius:var(--radius-md)">
+        <div style="font-size:12px;color:var(--text-soft);letter-spacing:2px;margin-bottom:6px;text-transform:uppercase">תורים שנקבעו</div>
+        <div style="font-family:'Bebas Neue',sans-serif;font-size:32px;color:var(--primary)" id="adminTodayCount">0</div>
       </div>
-      <div style="background:var(--card);border:1px solid rgba(201,168,76,0.15);padding:16px;clip-path:polygon(6px 0%,100% 0%,calc(100% - 6px) 100%,0% 100%)">
-        <div style="font-size:18px;color:var(--grey);letter-spacing:2px;margin-bottom:6px">כסף שנכנס</div>
-        <div style="font-family:'Bebas Neue',sans-serif;font-size:36px;color:var(--gold)" id="adminTodayRevenue">₪0</div>
+      <div style="background:var(--card);border:1px solid var(--border);padding:16px;border-radius:var(--radius-md)">
+        <div style="font-size:12px;color:var(--text-soft);letter-spacing:2px;margin-bottom:6px;text-transform:uppercase">כסף שנכנס</div>
+        <div style="font-family:'Bebas Neue',sans-serif;font-size:32px;color:var(--primary)" id="adminTodayRevenue">₪0</div>
       </div>
     </div>
     <div style="padding:0 20px 12px">
       <div style="display:flex;gap:8px;align-items:center">
-        <input type="date" id="adminDatePicker" aria-label="בחר תאריך לצפייה" style="flex:1;background:var(--card);border:1px solid rgba(201,168,76,0.25);color:var(--white);padding:12px 14px;font-family:'Heebo',sans-serif;font-size:18px;outline:none;clip-path:polygon(6px 0%,100% 0%,calc(100% - 6px) 100%,0% 100%);color-scheme:dark" onchange="filterAdminByDate()">
-        <button onclick="setAdminToday()" style="background:rgba(201,168,76,0.12);border:1px solid rgba(201,168,76,0.3);color:var(--gold);padding:12px 14px;font-family:'Heebo',sans-serif;font-size:18px;cursor:pointer;white-space:nowrap;clip-path:polygon(4px 0%,100% 0%,calc(100% - 4px) 100%,0% 100%)">היום</button>
-        <button onclick="setAdminTomorrow()" style="background:rgba(201,168,76,0.12);border:1px solid rgba(201,168,76,0.3);color:var(--gold);padding:12px 14px;font-family:'Heebo',sans-serif;font-size:18px;cursor:pointer;white-space:nowrap;clip-path:polygon(4px 0%,100% 0%,calc(100% - 4px) 100%,0% 100%)">מחר</button>
+        <input type="date" id="adminDatePicker" aria-label="בחר תאריך לצפייה" style="flex:1;background:var(--card);border:1px solid var(--border);color:var(--text);padding:12px 14px;font-family:'Heebo',sans-serif;font-size:15px;outline:none;border-radius:var(--radius-sm);color-scheme:dark" onchange="filterAdminByDate()">
+        <button onclick="setAdminToday()" style="background:var(--primary-glow);border:1px solid rgba(201,165,92,0.25);color:var(--primary);padding:12px 14px;font-family:'Heebo',sans-serif;font-size:14px;font-weight:600;cursor:pointer;white-space:nowrap;border-radius:var(--radius-sm)">היום</button>
+        <button onclick="setAdminTomorrow()" style="background:var(--primary-glow);border:1px solid rgba(201,165,92,0.25);color:var(--primary);padding:12px 14px;font-family:'Heebo',sans-serif;font-size:14px;font-weight:600;cursor:pointer;white-space:nowrap;border-radius:var(--radius-sm)">מחר</button>
       </div>
     </div>
     <div id="adminQuickList" style="padding:0 20px 12px;display:none">
-      <div style="background:var(--card);border:1px solid rgba(201,168,76,0.2);border-radius:12px;padding:14px 16px">
-        <div style="font-size:13px;letter-spacing:2px;color:var(--gold);font-weight:700;margin-bottom:10px">📋 לקוחות היום</div>
+      <div style="background:var(--card);border:1px solid var(--border);border-radius:var(--radius-md);padding:14px 16px">
+        <div style="font-size:12px;letter-spacing:2px;color:var(--primary);font-weight:700;margin-bottom:10px;text-transform:uppercase">📋 לקוחות היום</div>
         <div id="adminQuickListItems" style="display:flex;flex-direction:column;gap:6px"></div>
       </div>
     </div>
     <div style="padding:0 20px 4px;display:flex;justify-content:space-between">
-      <div style="font-size:18px;letter-spacing:3px;color:var(--grey);text-transform:uppercase">תורים</div>
-      <div style="font-size:17px;color:var(--gold)" id="adminDateLabel"></div>
+      <div style="font-size:12px;letter-spacing:3px;color:var(--text-soft);text-transform:uppercase;font-weight:600">תורים</div>
+      <div style="font-size:13px;color:var(--primary);font-weight:600" id="adminDateLabel"></div>
     </div>
     <div id="adminBookingsList" style="padding:0 20px 16px"></div>
     <div id="adminWaitlistSection" style="padding:0 20px 16px;display:none">
@@ -878,21 +907,21 @@ document.head.appendChild(link);
 
   <!-- TAB: SERVICES -->
   <div id="admintab-services" style="display:none;flex:1;overflow-y:auto;padding:16px 20px">
-    <div style="font-family:'Bebas Neue',sans-serif;font-size:28px;letter-spacing:2px;margin-bottom:4px">שירותים ומחירים</div>
-    <div style="font-size:18px;color:var(--grey);margin-bottom:20px">ערוך, הוסף או מחק שירותים</div>
+    <div style="font-family:'Bebas Neue',sans-serif;font-size:26px;letter-spacing:2px;margin-bottom:4px">שירותים ומחירים</div>
+    <div style="font-size:14px;color:var(--text-soft);margin-bottom:20px">ערוך, הוסף או מחק שירותים</div>
     <div id="servicesAdminList"></div>
-    <button onclick="addNewService()" style="width:100%;background:rgba(201,168,76,0.1);border:1px dashed rgba(201,168,76,0.4);color:var(--gold);padding:16px;font-family:'Heebo',sans-serif;font-size:18px;cursor:pointer;margin-top:8px">+ הוסף שירות חדש</button>
-    <button onclick="saveServicesManual()" id="saveServicesBtn" style="width:100%;background:rgba(201,168,76,0.85);border:none;color:#111;padding:16px;font-family:'Heebo',sans-serif;font-size:18px;font-weight:700;cursor:pointer;margin-top:10px;border-radius:8px;letter-spacing:1px">✓ שמור שינויים</button>
+    <button onclick="addNewService()" style="width:100%;background:var(--primary-glow);border:1px dashed rgba(201,165,92,0.3);color:var(--primary);padding:14px;font-family:'Heebo',sans-serif;font-size:15px;font-weight:600;cursor:pointer;margin-top:8px;border-radius:var(--radius-sm)">+ הוסף שירות חדש</button>
+    <button onclick="saveServicesManual()" id="saveServicesBtn" style="width:100%;background:var(--primary);border:none;color:var(--bg);padding:14px;font-family:'Heebo',sans-serif;font-size:15px;font-weight:700;cursor:pointer;margin-top:10px;border-radius:var(--radius-sm);letter-spacing:1px">✓ שמור שינויים</button>
     <div id="saveServicesMsg" style="text-align:center;color:#4caf50;font-size:15px;margin-top:8px;display:none">✓ השירותים נשמרו בהצלחה!</div>
   </div>
 
   <!-- TAB: HOURS -->
   <div id="admintab-hours" style="display:none;flex:1;overflow-y:auto;padding:16px 20px">
-    <div style="font-family:'Bebas Neue',sans-serif;font-size:28px;letter-spacing:2px;margin-bottom:4px">תכנית עבודה שבועית</div>
-    <div style="font-size:16px;color:var(--grey);margin-bottom:16px">הגדרות חוזרות כל שבוע אוטומטית</div>
+    <div style="font-family:'Bebas Neue',sans-serif;font-size:26px;letter-spacing:2px;margin-bottom:4px">תכנית עבודה שבועית</div>
+    <div style="font-size:14px;color:var(--text-soft);margin-bottom:16px">הגדרות חוזרות כל שבוע אוטומטית</div>
     <div id="hoursAdminList"></div>
-    <button onclick="saveWorkingHours()" style="width:100%;background:var(--gold);color:var(--black);border:none;padding:16px;font-family:'Heebo',sans-serif;font-size:17px;font-weight:700;cursor:pointer;margin-top:16px;clip-path:polygon(8px 0%,100% 0%,calc(100% - 8px) 100%,0% 100%)">שמור שעות עבודה ✓</button>
-    <div id="hoursSaveMsg" style="text-align:center;font-size:18px;color:#2ecc71;margin-top:8px;min-height:16px"></div>
+    <button onclick="saveWorkingHours()" style="width:100%;background:var(--primary);color:var(--bg);border:none;padding:14px;font-family:'Heebo',sans-serif;font-size:15px;font-weight:700;cursor:pointer;margin-top:16px;border-radius:var(--radius-sm)">שמור שעות עבודה ✓</button>
+    <div id="hoursSaveMsg" style="text-align:center;font-size:14px;color:var(--success);margin-top:8px;min-height:16px"></div>
 
     <!-- Home visits in hours tab -->
       </div>
@@ -900,52 +929,52 @@ document.head.appendChild(link);
   
   <!-- TAB: BLOCKED DAYS -->
   <div id="admintab-blocked" style="display:none;flex:1;overflow-y:auto;padding:16px 20px">
-    <div style="font-family:'Bebas Neue',sans-serif;font-size:28px;letter-spacing:2px;margin-bottom:4px">ימי חופש</div>
-    <div style="font-size:18px;color:var(--grey);margin-bottom:16px">חופשות, מחלה, ואירועים — ניתן להגדיר מראש לכל עתיד</div>
+    <div style="font-family:'Bebas Neue',sans-serif;font-size:26px;letter-spacing:2px;margin-bottom:4px">ימי חופש</div>
+    <div style="font-size:14px;color:var(--text-soft);margin-bottom:16px">חופשות, מחלה, ואירועים — ניתן להגדיר מראש לכל עתיד</div>
     <div id="blockedDaysList"></div>
-    <div style="background:var(--card);border:1px solid rgba(230,57,70,0.2);padding:16px;margin-top:8px;clip-path:polygon(6px 0%,100% 0%,calc(100% - 6px) 100%,0% 100%)">
-      <div style="font-size:17px;color:#e63946;letter-spacing:2px;margin-bottom:12px">הוסף יום חופש / תקופה</div>
-      <input type="date" id="blockDateFrom" aria-label="תאריך התחלה לחסימה" style="width:100%;background:#111;border:1px solid rgba(230,57,70,0.2);color:var(--white);padding:12px;font-family:'Heebo',sans-serif;font-size:18px;outline:none;margin-bottom:8px;color-scheme:dark">
-      <div style="font-size:17px;color:var(--grey);margin-bottom:6px">עד תאריך (אופציונלי — ליום אחד השאר ריק)</div>
-      <input type="date" id="blockDateTo" aria-label="תאריך סיום חסימה" style="width:100%;background:#111;border:1px solid rgba(230,57,70,0.2);color:var(--white);padding:12px;font-family:'Heebo',sans-serif;font-size:18px;outline:none;margin-bottom:10px;color-scheme:dark">
+    <div style="background:var(--card);border:1px solid rgba(239,68,68,0.15);padding:16px;margin-top:8px;border-radius:var(--radius-md)">
+      <div style="font-size:14px;color:var(--red);letter-spacing:2px;margin-bottom:12px;font-weight:700">הוסף יום חופש / תקופה</div>
+      <input type="date" id="blockDateFrom" aria-label="תאריך התחלה לחסימה" style="width:100%;background:var(--bg2);border:1px solid rgba(239,68,68,0.15);color:var(--text);padding:12px;font-family:'Heebo',sans-serif;font-size:15px;outline:none;margin-bottom:8px;color-scheme:dark;border-radius:var(--radius-sm)">
+      <div style="font-size:13px;color:var(--text-soft);margin-bottom:6px">עד תאריך (אופציונלי — ליום אחד השאר ריק)</div>
+      <input type="date" id="blockDateTo" aria-label="תאריך סיום חסימה" style="width:100%;background:var(--bg2);border:1px solid rgba(239,68,68,0.15);color:var(--text);padding:12px;font-family:'Heebo',sans-serif;font-size:15px;outline:none;margin-bottom:10px;color-scheme:dark;border-radius:var(--radius-sm)">
       <input type="text" id="blockReason" placeholder="סיבה (אופציונלי — חופשה, מחלה...)"
-        style="width:100%;background:#111;border:1px solid rgba(230,57,70,0.15);color:var(--white);padding:12px;font-family:'Heebo',sans-serif;font-size:17px;outline:none;margin-bottom:12px">
-      <button onclick="addBlockedDay()" style="width:100%;background:rgba(230,57,70,0.12);border:1px solid rgba(230,57,70,0.4);color:#e63946;padding:14px;font-family:'Heebo',sans-serif;font-size:18px;font-weight:700;cursor:pointer;clip-path:polygon(6px 0%,100% 0%,calc(100% - 6px) 100%,0% 100%)">הוסף יום חופש</button>
+        style="width:100%;background:var(--bg2);border:1px solid rgba(239,68,68,0.1);color:var(--text);padding:12px;font-family:'Heebo',sans-serif;font-size:14px;outline:none;margin-bottom:12px;border-radius:var(--radius-sm)">
+      <button onclick="addBlockedDay()" style="width:100%;background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.3);color:var(--red);padding:14px;font-family:'Heebo',sans-serif;font-size:15px;font-weight:700;cursor:pointer;border-radius:var(--radius-sm)">הוסף יום חופש</button>
     </div>
   </div>
 
   <!-- TAB: SHORT DAYS -->
   <div id="admintab-shortdays" style="display:none;flex:1;overflow-y:auto;padding:16px 20px">
-    <div style="font-family:'Bebas Neue',sans-serif;font-size:28px;letter-spacing:2px;margin-bottom:4px">ימים מקוצרים</div>
-    <div style="font-size:18px;color:var(--grey);margin-bottom:16px">הגדר ימים ספציפיים עם שעות עבודה שונות</div>
+    <div style="font-family:'Bebas Neue',sans-serif;font-size:26px;letter-spacing:2px;margin-bottom:4px">ימים מקוצרים</div>
+    <div style="font-size:14px;color:var(--text-soft);margin-bottom:16px">הגדר ימים ספציפיים עם שעות עבודה שונות</div>
     <div id="shortDaysList"></div>
-    <div style="background:var(--card);border:1px solid rgba(201,168,76,0.2);padding:16px;margin-top:8px;border-radius:12px">
-      <div style="font-size:17px;color:var(--primary);letter-spacing:2px;margin-bottom:12px;font-weight:700">הוסף יום מקוצר</div>
-      <div style="font-size:15px;color:var(--grey);margin-bottom:6px">תאריך</div>
-      <input type="date" id="shortDayDate" aria-label="תאריך יום מקוצר" style="width:100%;background:#111;border:1px solid rgba(201,168,76,0.2);color:var(--white);padding:12px;font-family:'Heebo',sans-serif;font-size:17px;outline:none;margin-bottom:12px;color-scheme:dark;border-radius:8px">
+    <div style="background:var(--card);border:1px solid var(--border);padding:16px;margin-top:8px;border-radius:var(--radius-md)">
+      <div style="font-size:14px;color:var(--primary);letter-spacing:2px;margin-bottom:12px;font-weight:700">הוסף יום מקוצר</div>
+      <div style="font-size:13px;color:var(--text-soft);margin-bottom:6px">תאריך</div>
+      <input type="date" id="shortDayDate" aria-label="תאריך יום מקוצר" style="width:100%;background:var(--bg2);border:1px solid var(--border);color:var(--text);padding:12px;font-family:'Heebo',sans-serif;font-size:15px;outline:none;margin-bottom:12px;color-scheme:dark;border-radius:var(--radius-sm)">
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px">
         <div>
-          <div style="font-size:15px;color:var(--grey);margin-bottom:6px">משעה</div>
-          <input type="time" id="shortDayFrom" aria-label="שעת התחלה" style="width:100%;background:#111;border:1px solid rgba(201,168,76,0.2);color:var(--white);padding:12px;font-family:'Heebo',sans-serif;font-size:17px;outline:none;border-radius:8px;color-scheme:dark">
+          <div style="font-size:13px;color:var(--text-soft);margin-bottom:6px">משעה</div>
+          <input type="time" id="shortDayFrom" aria-label="שעת התחלה" style="width:100%;background:var(--bg2);border:1px solid var(--border);color:var(--text);padding:12px;font-family:'Heebo',sans-serif;font-size:15px;outline:none;border-radius:var(--radius-sm);color-scheme:dark">
         </div>
         <div>
-          <div style="font-size:15px;color:var(--grey);margin-bottom:6px">עד שעה</div>
-          <input type="time" id="shortDayTo" aria-label="שעת סיום" style="width:100%;background:#111;border:1px solid rgba(201,168,76,0.2);color:var(--white);padding:12px;font-family:'Heebo',sans-serif;font-size:17px;outline:none;border-radius:8px;color-scheme:dark">
+          <div style="font-size:13px;color:var(--text-soft);margin-bottom:6px">עד שעה</div>
+          <input type="time" id="shortDayTo" aria-label="שעת סיום" style="width:100%;background:var(--bg2);border:1px solid var(--border);color:var(--text);padding:12px;font-family:'Heebo',sans-serif;font-size:15px;outline:none;border-radius:var(--radius-sm);color-scheme:dark">
         </div>
       </div>
-      <div style="font-size:15px;color:var(--grey);margin-bottom:8px">הפסקה (אופציונלי)</div>
+      <div style="font-size:13px;color:var(--text-soft);margin-bottom:8px">הפסקה (אופציונלי)</div>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px">
         <div>
-          <div style="font-size:13px;color:var(--grey);margin-bottom:4px">מ</div>
-          <input type="time" id="shortDayBreakFrom" aria-label="שעת התחלת הפסקה" style="width:100%;background:#111;border:1px solid rgba(201,168,76,0.1);color:var(--white);padding:10px;font-family:'Heebo',sans-serif;font-size:16px;outline:none;border-radius:8px;color-scheme:dark">
+          <div style="font-size:12px;color:var(--text-soft);margin-bottom:4px">מ</div>
+          <input type="time" id="shortDayBreakFrom" aria-label="שעת התחלת הפסקה" style="width:100%;background:var(--bg2);border:1px solid var(--border);color:var(--text);padding:10px;font-family:'Heebo',sans-serif;font-size:14px;outline:none;border-radius:var(--radius-sm);color-scheme:dark">
         </div>
         <div>
-          <div style="font-size:13px;color:var(--grey);margin-bottom:4px">עד</div>
-          <input type="time" id="shortDayBreakTo" aria-label="שעת סיום הפסקה" style="width:100%;background:#111;border:1px solid rgba(201,168,76,0.1);color:var(--white);padding:10px;font-family:'Heebo',sans-serif;font-size:16px;outline:none;border-radius:8px;color-scheme:dark">
+          <div style="font-size:12px;color:var(--text-soft);margin-bottom:4px">עד</div>
+          <input type="time" id="shortDayBreakTo" aria-label="שעת סיום הפסקה" style="width:100%;background:var(--bg2);border:1px solid var(--border);color:var(--text);padding:10px;font-family:'Heebo',sans-serif;font-size:14px;outline:none;border-radius:var(--radius-sm);color-scheme:dark">
         </div>
       </div>
-      <input type="text" id="shortDayNote" placeholder="הערה (אופציונלי — לדוגמה: לפני חג)" style="width:100%;background:#111;border:1px solid rgba(201,168,76,0.1);color:var(--white);padding:12px;font-family:'Heebo',sans-serif;font-size:16px;outline:none;margin-bottom:12px;border-radius:8px">
-      <button onclick="addShortDay()" style="width:100%;background:rgba(201,168,76,0.12);border:1px solid rgba(201,168,76,0.4);color:var(--primary);padding:14px;font-family:'Heebo',sans-serif;font-size:18px;font-weight:700;cursor:pointer;border-radius:8px">הוסף יום מקוצר</button>
+      <input type="text" id="shortDayNote" placeholder="הערה (אופציונלי — לדוגמה: לפני חג)" style="width:100%;background:var(--bg2);border:1px solid var(--border);color:var(--text);padding:12px;font-family:'Heebo',sans-serif;font-size:14px;outline:none;margin-bottom:12px;border-radius:var(--radius-sm)">
+      <button onclick="addShortDay()" style="width:100%;background:var(--primary-glow);border:1px solid rgba(201,165,92,0.3);color:var(--primary);padding:14px;font-family:'Heebo',sans-serif;font-size:15px;font-weight:700;cursor:pointer;border-radius:var(--radius-sm)">הוסף יום מקוצר</button>
     </div>
   </div>
 
@@ -1208,9 +1237,9 @@ document.head.appendChild(link);
 
   <!-- TAB: SETTINGS -->
   <div id="admintab-settings" style="display:none;flex:1;overflow-y:auto;padding:16px 20px">
-    <div style="font-family:'Bebas Neue',sans-serif;font-size:28px;letter-spacing:2px;margin-bottom:20px">הגדרות</div>
-    <div style="background:var(--card);border:1px solid rgba(201,168,76,0.1);padding:20px;clip-path:polygon(8px 0%,100% 0%,calc(100% - 8px) 100%,0% 100%)">
-      <div style="font-size:17px;letter-spacing:3px;color:var(--gold);margin-bottom:14px">שינוי סיסמה</div>
+    <div style="font-family:'Bebas Neue',sans-serif;font-size:26px;letter-spacing:2px;margin-bottom:20px">הגדרות</div>
+    <div style="background:var(--card);border:1px solid var(--border);padding:20px;border-radius:var(--radius-md)">
+      <div style="font-size:14px;letter-spacing:3px;color:var(--primary);margin-bottom:14px;font-weight:700">שינוי סיסמה</div>
       <div style="position:relative;margin-bottom:10px">
         <input id="newPass1" type="password" placeholder="סיסמה חדשה" class="form-input" style="padding-left:40px">
         <span onclick="togglePassView('newPass1','eye1')" id="eye1" style="position:absolute;left:12px;top:50%;transform:translateY(-50%);cursor:pointer;font-size:18px;user-select:none">👁️</span>
@@ -1219,7 +1248,7 @@ document.head.appendChild(link);
         <input id="newPass2" type="password" placeholder="אימות סיסמה" class="form-input" style="padding-left:40px">
         <span onclick="togglePassView('newPass2','eye2')" id="eye2" style="position:absolute;left:12px;top:50%;transform:translateY(-50%);cursor:pointer;font-size:18px;user-select:none">👁️</span>
       </div>
-      <button onclick="changeAdminPass()" style="background:transparent;border:1px solid rgba(201,168,76,0.3);color:var(--gold);padding:12px 24px;font-family:'Heebo',sans-serif;font-size:17px;cursor:pointer;letter-spacing:2px;width:100%">עדכן סיסמה</button>
+      <button onclick="changeAdminPass()" style="background:var(--primary-glow);border:1px solid rgba(201,165,92,0.25);color:var(--primary);padding:12px 24px;font-family:'Heebo',sans-serif;font-size:15px;font-weight:600;cursor:pointer;letter-spacing:1px;width:100%;border-radius:var(--radius-sm)">עדכן סיסמה</button>
       <div id="passChangeMsg" style="font-size:18px;margin-top:8px;min-height:16px;text-align:center"></div>
     </div>
   </div>
@@ -1230,7 +1259,7 @@ document.head.appendChild(link);
   <div class="topbar">
     <button class="topbar-back" onclick="goTo('splash')">← <span>ראשי</span></button>
     <div class="topbar-logo">GM</div>
-    <div style="font-size:17px;color:var(--grey);letter-spacing:2px">המספרה</div>
+    <div style="font-size:12px;color:var(--text-soft);letter-spacing:3px;font-weight:500">המספרה</div>
   </div>
   <div class="progress-bar"><div class="progress-fill" style="width:33%"></div></div>
 
@@ -1245,7 +1274,7 @@ document.head.appendChild(link);
 
   <div class="ornament">✦ ✦ ✦</div>
   <button class="cta-btn" id="nextBtn" onclick="goTo('date')">בחר תאריך ושעה ←</button>
-  <button onclick="goTo('mybookings')" style="margin:0 20px 32px;background:transparent;border:1px solid rgba(201,168,76,0.2);color:var(--grey);padding:12px;font-family:'Heebo',sans-serif;font-size:17px;cursor:pointer;width:calc(100% - 40px)">📋 התורים שלי</button>
+  <button onclick="goTo('mybookings')" style="margin:0 18px 32px;background:transparent;border:1px solid var(--border);color:var(--text-soft);padding:14px;font-family:'Heebo',sans-serif;font-size:14px;cursor:pointer;width:calc(100% - 36px);border-radius:var(--radius-md);transition:all 0.15s">📋 התורים שלי</button>
 </div>
 
 <!-- ═══════════════ DATE ═══════════════ -->
@@ -1257,13 +1286,13 @@ document.head.appendChild(link);
   <div class="progress-bar"><div class="progress-fill" style="width:66%"></div></div>
 
   <div class="section-title">
-    <div style="font-size:17px;letter-spacing:4px;color:var(--gold);margin-bottom:6px">✦ שלב 2 מתוך 3</div>
+    <div style="font-size:11px;letter-spacing:3px;color:var(--primary);margin-bottom:8px;font-weight:600;text-transform:uppercase">✦ שלב 2 מתוך 3</div>
     <h2>בחר תאריך<br>ושעה</h2>
   </div>
 
   <!-- Next available slot button -->
   <div id="nextSlotBanner" style="margin:0 20px 16px;display:none">
-    <button onclick="findNextSlotForService()" style="width:100%;background:rgba(201,168,76,0.1);border:1.5px solid var(--primary);color:var(--primary);padding:14px;font-family:'Heebo',sans-serif;font-size:16px;font-weight:700;cursor:pointer;border-radius:12px">
+    <button onclick="findNextSlotForService()" style="width:100%;background:var(--primary-glow);border:1px solid var(--primary);color:var(--primary);padding:14px;font-family:'Heebo',sans-serif;font-size:15px;font-weight:700;cursor:pointer;border-radius:var(--radius-md);transition:all 0.15s">
       ⚡ לחץ לתור הפנוי הקרוב
     </button>
   </div>
@@ -1280,8 +1309,8 @@ document.head.appendChild(link);
       <div class="cal-day-name">ג׳</div>
       <div class="cal-day-name">ד׳</div>
       <div class="cal-day-name">ה׳</div>
-      <div class="cal-day-name" style="color:#e63946">ו׳</div>
-      <div class="cal-day-name" style="color:#555">שב׳</div>
+      <div class="cal-day-name" style="color:var(--red)">ו׳</div>
+      <div class="cal-day-name" style="color:var(--muted)">שב׳</div>
     </div>
     <div class="cal-grid" id="calGrid"></div>
   </div>
@@ -1303,7 +1332,7 @@ document.head.appendChild(link);
   <div class="progress-bar"><div class="progress-fill" style="width:90%"></div></div>
 
   <div class="section-title">
-    <div style="font-size:17px;letter-spacing:4px;color:var(--gold);margin-bottom:6px">✦ שלב 3 מתוך 3</div>
+    <div style="font-size:11px;letter-spacing:3px;color:var(--primary);margin-bottom:8px;font-weight:600;text-transform:uppercase">✦ שלב 3 מתוך 3</div>
     <h2>פרטים<br>אישיים</h2>
   </div>
 
@@ -1350,7 +1379,7 @@ document.head.appendChild(link);
       <div style="font-size:15px;font-weight:700;margin-bottom:10px">הסרה מרשימת התפוצה</div>
       <input type="email" id="inp-unsub-email" placeholder="הכנס את המייל שלך" dir="ltr"
         style="width:100%;background:var(--card2);border:1px solid var(--border);color:var(--text);padding:12px;font-family:'Heebo',sans-serif;font-size:15px;outline:none;border-radius:10px;margin-bottom:10px">
-      <button type="button" onclick="submitUnsubscribe()" style="width:100%;background:#e63946;border:none;color:white;padding:12px;font-family:'Heebo',sans-serif;font-size:15px;font-weight:700;cursor:pointer;border-radius:10px">
+      <button type="button" onclick="submitUnsubscribe()" style="width:100%;background:var(--red);border:none;color:white;padding:12px;font-family:'Heebo',sans-serif;font-size:14px;font-weight:700;cursor:pointer;border-radius:var(--radius-sm)">
         הסר מרשימת התפוצה
       </button>
       <div id="unsubMsg" style="text-align:center;font-size:13px;margin-top:8px;min-height:16px"></div>
@@ -1377,13 +1406,13 @@ document.head.appendChild(link);
     <div class="topbar-logo">GM</div>
   </div>
   <div style="padding:20px">
-    <div style="font-family:'Bebas Neue',sans-serif;font-size:28px;letter-spacing:2px;margin-bottom:4px">התורים שלי</div>
-    <div style="font-size:15px;color:var(--grey);margin-bottom:16px">הזן מספר טלפון כדי למצוא את התורים שלך</div>
-    <div style="display:flex;gap:8px;margin-bottom:20px">
+    <div style="font-family:'Heebo',sans-serif;font-size:24px;font-weight:800;margin-bottom:6px">התורים שלי</div>
+    <div style="font-size:14px;color:var(--text-soft);margin-bottom:20px">הזן מספר טלפון כדי למצוא את התורים שלך</div>
+    <div style="display:flex;gap:10px;margin-bottom:24px">
       <input type="tel" id="mybookings-phone" placeholder="050-0000000" autocomplete="tel" dir="ltr"
-        style="flex:1;padding:12px 14px;border-radius:10px;border:1px solid var(--border);background:var(--card);color:var(--text);font-family:'Heebo',sans-serif;font-size:16px"
+        style="flex:1;padding:14px 16px;border-radius:var(--radius-md);border:1px solid var(--border);background:var(--card);color:var(--text);font-family:'Heebo',sans-serif;font-size:16px;outline:none;transition:border-color 0.2s"
         aria-label="מספר טלפון לחיפוש תורים">
-      <button onclick="lookupMyBookings()" style="padding:12px 20px;border-radius:10px;border:none;background:var(--primary);color:var(--bg);font-family:'Heebo',sans-serif;font-size:15px;font-weight:700;cursor:pointer;white-space:nowrap">🔍 חפש</button>
+      <button onclick="lookupMyBookings()" style="padding:14px 22px;border-radius:var(--radius-md);border:none;background:var(--primary);color:var(--bg);font-family:'Heebo',sans-serif;font-size:14px;font-weight:700;cursor:pointer;white-space:nowrap;box-shadow:0 2px 12px rgba(201,165,92,0.2)">🔍 חפש</button>
     </div>
     <div id="myBookingsList"></div>
   </div>
@@ -1404,25 +1433,25 @@ document.head.appendChild(link);
     <div class="success-detail" id="suc-service"></div>
     <div class="success-detail" id="suc-datetime"></div>
     <div class="success-detail" id="suc-name"></div>
-    <div style="margin-top:16px;padding-top:12px;border-top:1px solid rgba(255,255,255,0.06);">
-      <div style="font-size:17px;color:var(--grey);letter-spacing:2px;margin-bottom:4px">לתשלום במקום</div>
-      <div style="font-size:28px;font-family:'Bebas Neue',sans-serif;color:var(--gold);letter-spacing:2px" id="suc-price"></div>
+    <div style="margin-top:16px;padding-top:14px;border-top:1px solid var(--border);">
+      <div style="font-size:12px;color:var(--text-soft);letter-spacing:1px;margin-bottom:4px">לתשלום במקום</div>
+      <div style="font-size:28px;font-family:'Bebas Neue',sans-serif;color:var(--primary);letter-spacing:2px" id="suc-price"></div>
     </div>
   </div>
-  <button onclick="addToCalendar()" style="margin-bottom:12px;background:rgba(201,168,76,0.1);border:1px solid rgba(201,168,76,0.4);color:var(--gold);padding:16px 40px;font-family:'Heebo',sans-serif;font-size:17px;font-weight:600;cursor:pointer;letter-spacing:1px;clip-path:polygon(8px 0%,100% 0%,calc(100% - 8px) 100%,0% 100%);width:100%;max-width:280px;transition:all 0.2s">
+  <button onclick="addToCalendar()" style="margin-bottom:12px;background:var(--primary-glow);border:1px solid rgba(201,165,92,0.3);color:var(--primary);padding:15px 40px;font-family:'Heebo',sans-serif;font-size:15px;font-weight:600;cursor:pointer;letter-spacing:1px;border-radius:var(--radius-md);width:100%;max-width:300px;transition:all 0.15s">
     📅 הוסף ליומן הטלפון
   </button>
-  <div style="font-size:17px;color:#444;margin-bottom:16px;letter-spacing:1px">⏰ תזכורת שעה לפני התור ביומן</div>
-  <button onclick="goTo('mybookings')" style="margin-bottom:12px;background:rgba(201,168,76,0.08);border:1px solid rgba(201,168,76,0.2);color:var(--grey);padding:14px 40px;font-family:'Heebo',sans-serif;font-size:18px;cursor:pointer;width:100%;max-width:280px">📋 התורים שלי</button>
+  <div style="font-size:12px;color:var(--text-soft);margin-bottom:20px;letter-spacing:0.5px">⏰ תזכורת שעה לפני התור ביומן</div>
+  <button onclick="goTo('mybookings')" style="margin-bottom:12px;background:transparent;border:1px solid var(--border);color:var(--text-soft);padding:14px 40px;font-family:'Heebo',sans-serif;font-size:14px;cursor:pointer;width:100%;max-width:300px;border-radius:var(--radius-md);transition:all 0.15s">📋 התורים שלי</button>
   <button class="new-booking-btn" onclick="newBooking()" style="margin-bottom:32px">הזמנה חדשה +</button>
 </div>
 
 <!-- INSTALL MODAL -->
-<div id="installModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.8);z-index:9999;align-items:flex-end;justify-content:center">
-  <div style="background:var(--card);border-radius:24px 24px 0 0;padding:28px 24px 40px;width:100%;max-width:500px;animation:slideUp 0.3s ease">
+<div id="installModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.7);backdrop-filter:blur(8px);z-index:9999;align-items:flex-end;justify-content:center">
+  <div style="background:var(--card);border:1px solid var(--border);border-radius:24px 24px 0 0;padding:28px 24px 40px;width:100%;max-width:500px;animation:slideUp 0.25s ease-out">
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px">
       <div style="font-size:18px;font-weight:900;color:var(--text)">הוסף למסך הבית</div>
-      <button onclick="hideInstallModal()" style="background:var(--bg);border:none;color:var(--text-soft);width:32px;height:32px;border-radius:50%;cursor:pointer;font-size:18px">✕</button>
+      <button onclick="hideInstallModal()" style="background:var(--bg2);border:1px solid var(--border);color:var(--text-soft);width:32px;height:32px;border-radius:50%;cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center">✕</button>
     </div>
 
     <!-- Android instructions -->
@@ -1430,7 +1459,7 @@ document.head.appendChild(link);
       <div style="font-size:17px;color:var(--text-soft);margin-bottom:20px;line-height:1.6">
         התקן את האפליקציה על הטלפון שלך לגישה מהירה ונוחה
       </div>
-      <button id="installPwaBtn" onclick="triggerInstall()" style="width:100%;background:var(--primary);color:var(--bg);border:none;padding:16px;font-family:'Heebo',sans-serif;font-size:17px;font-weight:700;cursor:pointer;border-radius:14px;margin-bottom:12px">
+      <button id="installPwaBtn" onclick="triggerInstall()" style="width:100%;background:var(--primary);color:var(--bg);border:none;padding:16px;font-family:'Heebo',sans-serif;font-size:15px;font-weight:700;cursor:pointer;border-radius:var(--radius-md);margin-bottom:12px;box-shadow:0 4px 20px rgba(201,165,92,0.2)">
         📲 התקן עכשיו
       </button>
     </div>
@@ -2230,36 +2259,36 @@ function renderAdminServices() {
   const services = getServices();
   const list = document.getElementById('servicesAdminList');
   list.innerHTML = services.map((s, i) => `
-    <div style="background:var(--card);border:1px solid rgba(201,168,76,0.15);padding:16px;margin-bottom:10px;clip-path:polygon(6px 0%,100% 0%,calc(100% - 6px) 100%,0% 100%)">
+    <div style="background:var(--card);border:1px solid var(--border);padding:16px;margin-bottom:10px;border-radius:var(--radius-md)">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
         <div style="font-size:24px">${s.icon}</div>
-        <button onclick="deleteService(${i})" style="background:rgba(230,57,70,0.1);border:1px solid rgba(230,57,70,0.3);color:#e63946;padding:6px 12px;font-size:17px;cursor:pointer;font-family:'Heebo',sans-serif">הסר</button>
+        <button onclick="deleteService(${i})" style="background:rgba(239,68,68,0.08);border:1px solid rgba(239,68,68,0.2);color:var(--red);padding:6px 12px;font-size:13px;cursor:pointer;font-family:'Heebo',sans-serif;border-radius:var(--radius-sm)">הסר</button>
       </div>
       <input value="${s.name}" onchange="updateService(${i},'name',this.value)"
-        style="width:100%;background:#111;border:1px solid rgba(201,168,76,0.2);color:var(--white);padding:10px;font-family:'Heebo',sans-serif;font-size:18px;outline:none;margin-bottom:8px">
+        style="width:100%;background:var(--bg2);border:1px solid var(--border);color:var(--text);padding:10px;font-family:'Heebo',sans-serif;font-size:15px;outline:none;margin-bottom:8px;border-radius:var(--radius-sm)">
       <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:8px">
         <div>
-          <div style="font-size:18px;color:var(--grey);margin-bottom:4px">מחיר ₪</div>
+          <div style="font-size:12px;color:var(--text-soft);margin-bottom:4px">מחיר ₪</div>
           <input type="number" value="${s.price}" onchange="updateService(${i},'price',+this.value)"
-            style="width:100%;background:#111;border:1px solid rgba(201,168,76,0.2);color:var(--gold);padding:10px;font-family:'Heebo',sans-serif;font-size:17px;font-weight:700;outline:none">
+            style="width:100%;background:var(--bg2);border:1px solid var(--border);color:var(--primary);padding:10px;font-family:'Heebo',sans-serif;font-size:15px;font-weight:700;outline:none;border-radius:var(--radius-sm)">
         </div>
         <div>
-          <div style="font-size:18px;color:var(--grey);margin-bottom:4px">משך (דק׳)</div>
+          <div style="font-size:12px;color:var(--text-soft);margin-bottom:4px">משך (דק׳)</div>
           <input type="number" value="${s.duration}" onchange="updateService(${i},'duration',+this.value)"
-            style="width:100%;background:#111;border:1px solid rgba(201,168,76,0.2);color:var(--white);padding:10px;font-family:'Heebo',sans-serif;font-size:17px;outline:none">
+            style="width:100%;background:var(--bg2);border:1px solid var(--border);color:var(--text);padding:10px;font-family:'Heebo',sans-serif;font-size:15px;outline:none;border-radius:var(--radius-sm)">
         </div>
         <div>
-          <div style="font-size:18px;color:var(--grey);margin-bottom:4px">אייקון</div>
+          <div style="font-size:12px;color:var(--text-soft);margin-bottom:4px">אייקון</div>
           <input value="${s.icon}" onchange="updateService(${i},'icon',this.value)"
-            style="width:100%;background:#111;border:1px solid rgba(201,168,76,0.2);color:var(--white);padding:10px;font-family:'Heebo',sans-serif;font-size:17px;outline:none;text-align:center">
+            style="width:100%;background:var(--bg2);border:1px solid var(--border);color:var(--text);padding:10px;font-family:'Heebo',sans-serif;font-size:15px;outline:none;text-align:center;border-radius:var(--radius-sm)">
         </div>
       </div>
       <div>
-        <div style="font-size:18px;color:var(--grey);margin-bottom:6px">מיקום שירות</div>
+        <div style="font-size:12px;color:var(--text-soft);margin-bottom:6px">מיקום שירות</div>
         <div style="display:flex;gap:6px">
-          <button onclick="updateService(${i},'location','shop')" style="flex:1;padding:8px 4px;font-size:17px;cursor:pointer;font-family:'Heebo',sans-serif;border:1px solid ${(s.location||'shop')==='shop'?'var(--gold)':'rgba(201,168,76,0.2)'};background:${(s.location||'shop')==='shop'?'rgba(201,168,76,0.15)':'#111'};color:${(s.location||'shop')==='shop'?'var(--gold)':'var(--grey)'}">🏪 מספרה</button>
-          <button onclick="updateService(${i},'location','both')" style="flex:1;padding:8px 4px;font-size:17px;cursor:pointer;font-family:'Heebo',sans-serif;border:1px solid ${s.location==='both'?'#7ec8ff':'rgba(100,180,255,0.2)'};background:${s.location==='both'?'rgba(100,180,255,0.1)':'#111'};color:${s.location==='both'?'#7ec8ff':'var(--grey)'}">🏠 עד בית הלקוח</button>
-          
+          <button onclick="updateService(${i},'location','shop')" style="flex:1;padding:8px 4px;font-size:14px;cursor:pointer;font-family:'Heebo',sans-serif;border-radius:var(--radius-sm);border:1px solid ${(s.location||'shop')==='shop'?'rgba(201,165,92,0.3)':'var(--border)'};background:${(s.location||'shop')==='shop'?'var(--primary-glow)':'var(--bg2)'};color:${(s.location||'shop')==='shop'?'var(--primary)':'var(--text-soft)'}">🏪 מספרה</button>
+          <button onclick="updateService(${i},'location','both')" style="flex:1;padding:8px 4px;font-size:14px;cursor:pointer;font-family:'Heebo',sans-serif;border-radius:var(--radius-sm);border:1px solid ${s.location==='both'?'rgba(100,180,255,0.3)':'var(--border)'};background:${s.location==='both'?'rgba(100,180,255,0.08)':'var(--bg2)'};color:${s.location==='both'?'#7ec8ff':'var(--text-soft)'}">🏠 עד בית הלקוח</button>
+
         </div>
       </div>
     </div>
@@ -2280,7 +2309,7 @@ function saveServicesManual() {
   const msg = document.getElementById('saveServicesMsg');
   const btn = document.getElementById('saveServicesBtn');
   if (msg) { msg.style.display = 'block'; setTimeout(() => msg.style.display = 'none', 3000); }
-  if (btn) { btn.textContent = '✓ נשמר!'; btn.style.background = '#4caf50'; setTimeout(() => { btn.textContent = '✓ שמור שינויים'; btn.style.background = 'rgba(201,168,76,0.85)'; }, 2000); }
+  if (btn) { btn.textContent = '✓ נשמר!'; btn.style.background = 'var(--success)'; setTimeout(() => { btn.textContent = '✓ שמור שינויים'; btn.style.background = 'var(--primary)'; }, 2000); }
 }
 
 function deleteService(i) {
@@ -2305,83 +2334,83 @@ function renderAdminHours() {
   list.innerHTML = hours.map((h, i) => {
     const isOpen = h.open;
     return `
-    <div style="background:var(--card);border:1px solid ${isOpen ? 'rgba(201,168,76,0.3)' : 'rgba(255,255,255,0.05)'};border-radius:14px;margin-bottom:14px;overflow:hidden">
+    <div style="background:var(--card);border:1px solid ${isOpen ? 'var(--border-hover)' : 'var(--border)'};border-radius:var(--radius-md);margin-bottom:12px;overflow:hidden">
 
       <!-- Day header -->
-      <div style="display:flex;align-items:center;justify-content:space-between;padding:16px 18px;background:${isOpen ? 'rgba(201,168,76,0.08)' : 'transparent'}">
-        <div style="display:flex;align-items:center;gap:14px">
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:14px 16px;background:${isOpen ? 'var(--primary-glow)' : 'transparent'}">
+        <div style="display:flex;align-items:center;gap:12px">
           <input type="checkbox" id="day-${i}" ${isOpen ? 'checked' : ''} onchange="toggleDay(${i},this.checked)"
-            style="width:20px;height:20px;accent-color:var(--gold);cursor:pointer">
-          <div style="font-size:20px;font-weight:800;color:${isOpen ? 'var(--text)' : 'var(--grey)'}">${h.name}</div>
+            style="width:18px;height:18px;accent-color:var(--primary);cursor:pointer">
+          <div style="font-size:16px;font-weight:700;color:${isOpen ? 'var(--text)' : 'var(--text-soft)'}">${h.name}</div>
         </div>
-        <div style="font-size:16px;color:${isOpen ? 'var(--gold)' : 'var(--grey)'}">
+        <div style="font-size:13px;color:${isOpen ? 'var(--primary)' : 'var(--text-soft)'};font-weight:600">
           ${isOpen ? (h.from || '') + ' - ' + (h.to || '') : 'סגור'}
         </div>
       </div>
 
       ${isOpen ? `
-      <div style="padding:16px 18px;border-top:1px solid rgba(255,255,255,0.06);display:flex;flex-direction:column;gap:16px">
+      <div style="padding:14px 16px;border-top:1px solid var(--border);display:flex;flex-direction:column;gap:14px">
 
         <!-- SHOP HOURS -->
         <div>
-          <div style="font-size:15px;font-weight:700;color:var(--gold);letter-spacing:1px;margin-bottom:10px">🏪 מספרה</div>
+          <div style="font-size:13px;font-weight:700;color:var(--primary);letter-spacing:1px;margin-bottom:8px">🏪 מספרה</div>
           <div style="display:flex;align-items:center;gap:10px">
             <div style="flex:1">
-              <div style="font-size:13px;color:var(--grey);margin-bottom:4px">משעה</div>
+              <div style="font-size:12px;color:var(--text-soft);margin-bottom:4px">משעה</div>
               <input type="time" value="${h.from || '09:00'}" onchange="updateHourValidated(${i},'from',this.value,this)"
-                style="width:100%;background:#111;border:1px solid rgba(201,168,76,0.25);color:var(--white);padding:10px;font-family:'Heebo',sans-serif;font-size:18px;outline:none;border-radius:8px;color-scheme:dark;text-align:center">
+                style="width:100%;background:var(--bg2);border:1px solid var(--border);color:var(--text);padding:10px;font-family:'Heebo',sans-serif;font-size:15px;outline:none;border-radius:var(--radius-sm);color-scheme:dark;text-align:center">
             </div>
-            <div style="color:var(--grey);font-size:18px;padding-top:18px">—</div>
+            <div style="color:var(--text-soft);font-size:16px;padding-top:18px">—</div>
             <div style="flex:1">
-              <div style="font-size:13px;color:var(--grey);margin-bottom:4px">עד שעה</div>
+              <div style="font-size:12px;color:var(--text-soft);margin-bottom:4px">עד שעה</div>
               <input type="time" value="${h.to || '18:00'}" onchange="updateHourValidated(${i},'to',this.value,this)"
-                style="width:100%;background:#111;border:1px solid rgba(201,168,76,0.25);color:var(--white);padding:10px;font-family:'Heebo',sans-serif;font-size:18px;outline:none;border-radius:8px;color-scheme:dark;text-align:center">
+                style="width:100%;background:var(--bg2);border:1px solid var(--border);color:var(--text);padding:10px;font-family:'Heebo',sans-serif;font-size:15px;outline:none;border-radius:var(--radius-sm);color-scheme:dark;text-align:center">
             </div>
           </div>
-          <div id="err-shop-${i}" style="color:#e63946;font-size:13px;margin-top:6px;min-height:16px"></div>
+          <div id="err-shop-${i}" style="color:var(--red);font-size:12px;margin-top:6px;min-height:16px"></div>
         </div>
 
         <!-- HOME VISITS -->
         <div>
-          <div style="font-size:15px;font-weight:700;color:#7ec8ff;letter-spacing:1px;margin-bottom:10px">🏠 מבית לבית</div>
+          <div style="font-size:13px;font-weight:700;color:#7ec8ff;letter-spacing:1px;margin-bottom:8px">🏠 מבית לבית</div>
           <div style="display:flex;align-items:center;gap:10px">
             <div style="flex:1">
-              <div style="font-size:13px;color:var(--grey);margin-bottom:4px">משעה</div>
+              <div style="font-size:12px;color:var(--text-soft);margin-bottom:4px">משעה</div>
               <input type="time" value="${h.homeFrom || ''}" onchange="updateHourValidated(${i},'homeFrom',this.value,this)"
-                style="width:100%;background:#111;border:1px solid rgba(100,180,255,0.25);color:#7ec8ff;padding:10px;font-family:'Heebo',sans-serif;font-size:18px;outline:none;border-radius:8px;color-scheme:dark;text-align:center">
+                style="width:100%;background:var(--bg2);border:1px solid rgba(100,180,255,0.2);color:#7ec8ff;padding:10px;font-family:'Heebo',sans-serif;font-size:15px;outline:none;border-radius:var(--radius-sm);color-scheme:dark;text-align:center">
             </div>
-            <div style="color:var(--grey);font-size:18px;padding-top:18px">—</div>
+            <div style="color:var(--text-soft);font-size:16px;padding-top:18px">—</div>
             <div style="flex:1">
-              <div style="font-size:13px;color:var(--grey);margin-bottom:4px">עד שעה</div>
+              <div style="font-size:12px;color:var(--text-soft);margin-bottom:4px">עד שעה</div>
               <input type="time" value="${h.homeTo || ''}" onchange="updateHourValidated(${i},'homeTo',this.value,this)"
-                style="width:100%;background:#111;border:1px solid rgba(100,180,255,0.25);color:#7ec8ff;padding:10px;font-family:'Heebo',sans-serif;font-size:18px;outline:none;border-radius:8px;color-scheme:dark;text-align:center">
+                style="width:100%;background:var(--bg2);border:1px solid rgba(100,180,255,0.2);color:#7ec8ff;padding:10px;font-family:'Heebo',sans-serif;font-size:15px;outline:none;border-radius:var(--radius-sm);color-scheme:dark;text-align:center">
             </div>
           </div>
-          <div id="err-home-${i}" style="color:#e63946;font-size:13px;margin-top:6px;min-height:16px"></div>
+          <div id="err-home-${i}" style="color:var(--red);font-size:12px;margin-top:6px;min-height:16px"></div>
         </div>
 
         <!-- BREAKS -->
         <div>
-          <div style="font-size:15px;font-weight:700;color:orange;letter-spacing:1px;margin-bottom:10px">☕ הפסקות</div>
+          <div style="font-size:13px;font-weight:700;color:orange;letter-spacing:1px;margin-bottom:8px">☕ הפסקות</div>
           ${(h.breaks||[]).map((br, bi) => `
-          <div style="background:rgba(255,165,0,0.05);border:1px solid rgba(255,165,0,0.15);border-radius:10px;padding:10px 12px;margin-bottom:8px">
+          <div style="background:rgba(255,165,0,0.04);border:1px solid rgba(255,165,0,0.12);border-radius:var(--radius-sm);padding:10px 12px;margin-bottom:8px">
             <div style="display:flex;align-items:center;gap:10px">
               <div style="flex:1">
-                <div style="font-size:13px;color:var(--grey);margin-bottom:4px">משעה</div>
+                <div style="font-size:12px;color:var(--text-soft);margin-bottom:4px">משעה</div>
                 <input type="time" value="${br.from}" onchange="updateBreakValidated(${i},${bi},'from',this.value,this)"
-                  style="width:100%;background:#111;border:1px solid rgba(255,165,0,0.2);color:orange;padding:10px;font-family:'Heebo',sans-serif;font-size:18px;outline:none;border-radius:8px;color-scheme:dark;text-align:center">
+                  style="width:100%;background:var(--bg2);border:1px solid rgba(255,165,0,0.15);color:orange;padding:10px;font-family:'Heebo',sans-serif;font-size:15px;outline:none;border-radius:var(--radius-sm);color-scheme:dark;text-align:center">
               </div>
-              <div style="color:var(--grey);font-size:18px;padding-top:18px">—</div>
+              <div style="color:var(--text-soft);font-size:16px;padding-top:18px">—</div>
               <div style="flex:1">
-                <div style="font-size:13px;color:var(--grey);margin-bottom:4px">עד שעה</div>
+                <div style="font-size:12px;color:var(--text-soft);margin-bottom:4px">עד שעה</div>
                 <input type="time" value="${br.to}" onchange="updateBreakValidated(${i},${bi},'to',this.value,this)"
-                  style="width:100%;background:#111;border:1px solid rgba(255,165,0,0.2);color:orange;padding:10px;font-family:'Heebo',sans-serif;font-size:18px;outline:none;border-radius:8px;color-scheme:dark;text-align:center">
+                  style="width:100%;background:var(--bg2);border:1px solid rgba(255,165,0,0.15);color:orange;padding:10px;font-family:'Heebo',sans-serif;font-size:15px;outline:none;border-radius:var(--radius-sm);color-scheme:dark;text-align:center">
               </div>
-              <button onclick="removeBreak(${i},${bi})" style="background:none;border:none;color:#e63946;cursor:pointer;font-size:22px;padding:0 4px;margin-top:18px">✕</button>
+              <button onclick="removeBreak(${i},${bi})" style="background:none;border:none;color:var(--red);cursor:pointer;font-size:20px;padding:0 4px;margin-top:18px">✕</button>
             </div>
-            <div id="err-break-${i}-${bi}" style="color:#e63946;font-size:13px;margin-top:4px;min-height:16px"></div>
+            <div id="err-break-${i}-${bi}" style="color:var(--red);font-size:12px;margin-top:4px;min-height:16px"></div>
           </div>`).join('')}
-          <button onclick="addBreak(${i})" style="width:100%;background:none;border:1px dashed rgba(255,165,0,0.3);color:orange;padding:10px;border-radius:8px;font-family:'Heebo',sans-serif;font-size:15px;cursor:pointer">
+          <button onclick="addBreak(${i})" style="width:100%;background:none;border:1px dashed rgba(255,165,0,0.25);color:orange;padding:10px;border-radius:var(--radius-sm);font-family:'Heebo',sans-serif;font-size:14px;cursor:pointer">
             + הוסף הפסקה
           </button>
         </div>
@@ -2536,12 +2565,12 @@ function renderBlockedDays() {
       rangeLabel += ` עד ${dt.getDate()} ב${HEBREW_MONTHS[dt.getMonth()]}`;
     }
     return `
-    <div style="background:rgba(230,57,70,0.06);border:1px solid rgba(230,57,70,0.2);padding:14px 16px;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center;clip-path:polygon(6px 0%,100% 0%,calc(100% - 6px) 100%,0% 100%)">
+    <div style="background:rgba(239,68,68,0.05);border:1px solid rgba(239,68,68,0.15);padding:14px 16px;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center;border-radius:var(--radius-sm)">
       <div>
-        <div style="font-weight:700;font-size:18px;color:#e63946">🏖️ ${rangeLabel}</div>
-        ${b.reason ? `<div style="font-size:18px;color:var(--grey);margin-top:3px">${b.reason}</div>` : ''}
+        <div style="font-weight:700;font-size:15px;color:var(--red)">🏖️ ${rangeLabel}</div>
+        ${b.reason ? `<div style="font-size:13px;color:var(--text-soft);margin-top:3px">${b.reason}</div>` : ''}
       </div>
-      <button onclick="deleteBlockedDay(${blocked.indexOf(b)})" style="background:rgba(230,57,70,0.1);border:1px solid rgba(230,57,70,0.3);color:#e63946;padding:6px 12px;font-size:17px;cursor:pointer;font-family:'Heebo',sans-serif">הסר</button>
+      <button onclick="deleteBlockedDay(${blocked.indexOf(b)})" style="background:rgba(239,68,68,0.08);border:1px solid rgba(239,68,68,0.2);color:var(--red);padding:6px 12px;font-size:13px;cursor:pointer;font-family:'Heebo',sans-serif;border-radius:var(--radius-sm)">הסר</button>
     </div>`;
   }).join('');
 }
@@ -2575,7 +2604,7 @@ function renderShortDays() {
     .sort((a,b) => a.date.localeCompare(b.date));
 
   if (future.length === 0) {
-    list.innerHTML = '<div style="text-align:center;padding:24px;color:var(--grey);font-size:17px">אין ימים מקוצרים מוגדרים</div>';
+    list.innerHTML = '<div style="text-align:center;padding:24px;color:var(--text-soft);font-size:14px">אין ימים מקוצרים מוגדרים</div>';
     return;
   }
 
@@ -2584,14 +2613,14 @@ function renderShortDays() {
     const d = parseDateLocal(s.date);
     const label = 'יום ' + dayNames[d.getDay()] + ', ' + d.getDate() + ' ב' + HEBREW_MONTHS[d.getMonth()];
     const breakLabel = s.breakFrom && s.breakTo ? ' | הפסקה: ' + s.breakFrom + '-' + s.breakTo : '';
-    const noteHtml = s.note ? '<div style="font-size:14px;color:var(--grey);margin-top:2px">' + s.note + '</div>' : '';
-    return '<div style="background:rgba(201,168,76,0.06);border:1px solid rgba(201,168,76,0.2);padding:14px 16px;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center;border-radius:10px">' +
+    const noteHtml = s.note ? '<div style="font-size:13px;color:var(--text-soft);margin-top:2px">' + s.note + '</div>' : '';
+    return '<div style="background:var(--primary-glow);border:1px solid rgba(201,165,92,0.15);padding:14px 16px;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center;border-radius:var(--radius-sm)">' +
       '<div>' +
-        '<div style="font-weight:700;font-size:17px;color:var(--primary)">⏱️ ' + label + '</div>' +
-        '<div style="font-size:15px;color:var(--grey);margin-top:3px">' + s.from + ' - ' + s.to + breakLabel + '</div>' +
+        '<div style="font-weight:700;font-size:14px;color:var(--primary)">⏱️ ' + label + '</div>' +
+        '<div style="font-size:13px;color:var(--text-soft);margin-top:3px">' + s.from + ' - ' + s.to + breakLabel + '</div>' +
         noteHtml +
       '</div>' +
-      '<button onclick="deleteShortDay(\'' + s.date + '\')" style="background:rgba(230,57,70,0.1);border:1px solid rgba(230,57,70,0.3);color:#e63946;padding:6px 12px;font-size:15px;cursor:pointer;font-family:\'Heebo\',sans-serif;border-radius:6px">הסר</button>' +
+      '<button onclick="deleteShortDay(\'' + s.date + '\')" style="background:rgba(239,68,68,0.08);border:1px solid rgba(239,68,68,0.2);color:var(--red);padding:6px 12px;font-size:13px;cursor:pointer;font-family:\'Heebo\',sans-serif;border-radius:var(--radius-sm)">הסר</button>' +
     '</div>';
   }).join('');
 }
@@ -2650,7 +2679,7 @@ function renderAdminHomeVisits() {
   const future = visits.filter(v => v.date >= today).sort((a,b) => a.date.localeCompare(b.date));
 
   if (future.length === 0) {
-    list.innerHTML = '<div style="text-align:center;padding:24px;color:var(--grey);font-size:17px">אין תאריכי הגעה לבית מוגדרים</div>';
+    list.innerHTML = '<div style="text-align:center;padding:24px;color:var(--text-soft);font-size:14px">אין תאריכי הגעה לבית מוגדרים</div>';
     return;
   }
 
@@ -2658,12 +2687,12 @@ function renderAdminHomeVisits() {
     const d = parseDateLocal(v.date);
     const dayNames = ['ראשון','שני','שלישי','רביעי','חמישי','שישי','שבת'];
     return `
-    <div style="background:rgba(100,180,255,0.06);border:1px solid rgba(100,180,255,0.2);padding:14px 16px;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center;clip-path:polygon(6px 0%,100% 0%,calc(100% - 6px) 100%,0% 100%)">
+    <div style="background:rgba(100,180,255,0.05);border:1px solid rgba(100,180,255,0.15);padding:14px 16px;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center;border-radius:var(--radius-sm)">
       <div>
-        <div style="font-weight:700;font-size:18px;color:#7ec8ff">🏠 יום ${dayNames[d.getDay()]}, ${d.getDate()} ב${HEBREW_MONTHS[d.getMonth()]}</div>
-        <div style="font-size:18px;color:var(--grey);margin-top:3px">${v.from} — ${v.to}</div>
+        <div style="font-weight:700;font-size:14px;color:#7ec8ff">🏠 יום ${dayNames[d.getDay()]}, ${d.getDate()} ב${HEBREW_MONTHS[d.getMonth()]}</div>
+        <div style="font-size:13px;color:var(--text-soft);margin-top:3px">${v.from} — ${v.to}</div>
       </div>
-      <button onclick="deleteHomeVisit(${visits.indexOf(v)})" style="background:rgba(230,57,70,0.1);border:1px solid rgba(230,57,70,0.3);color:#e63946;padding:6px 12px;font-size:17px;cursor:pointer;font-family:'Heebo',sans-serif">הסר</button>
+      <button onclick="deleteHomeVisit(${visits.indexOf(v)})" style="background:rgba(239,68,68,0.08);border:1px solid rgba(239,68,68,0.2);color:var(--red);padding:6px 12px;font-size:13px;cursor:pointer;font-family:'Heebo',sans-serif;border-radius:var(--radius-sm)">הסר</button>
     </div>`;
   }).join('');
 }
@@ -2796,7 +2825,7 @@ async function filterAdminByDate() {
   document.getElementById('adminDateLabel').textContent = label;
 
   const list = document.getElementById('adminBookingsList');
-  list.innerHTML = `<div style="text-align:center;padding:32px;color:var(--grey);font-size:18px">⏳ טוען תורים...</div>`;
+  list.innerHTML = `<div style="text-align:center;padding:32px;color:var(--text-soft);font-size:14px">⏳ טוען תורים...</div>`;
 
   // Try to load from Google Sheets first
   let bookings = [];
@@ -2831,7 +2860,7 @@ async function filterAdminByDate() {
   const quickListItems = document.getElementById('adminQuickListItems');
   if (bookings.length === 0) {
     if (quickListWrap) quickListWrap.style.display = 'none';
-    list.innerHTML = `<div style="text-align:center;padding:32px;color:var(--grey);font-size:18px">אין תורים ביום זה</div>`;
+    list.innerHTML = `<div style="text-align:center;padding:32px;color:var(--text-soft);font-size:14px">אין תורים ביום זה</div>`;
     return;
   }
   if (quickListWrap && quickListItems) {
@@ -2891,7 +2920,7 @@ async function filterAdminByDate() {
               ${isDone ? '✓ שולם' : '✗ לא שולם'}
             </button>
             <button onclick="adminCancelBooking('${b.confirmNum||b.ConfirmNum||''}','${b.date||dateStr}','${b.time||b.Time||''}','${b.phone||b.clientPhone||b.ClientPhone||''}','${b.name||b.clientName||b.ClientName||''}')"
-              style="padding:10px 14px;border-radius:10px;border:1px solid rgba(230,57,70,0.4);background:transparent;color:#e63946;font-family:'Heebo',sans-serif;font-size:14px;font-weight:700;cursor:pointer;margin-top:6px;width:100%">
+              style="padding:10px 14px;border-radius:var(--radius-sm);border:1px solid rgba(239,68,68,0.25);background:rgba(239,68,68,0.06);color:var(--red);font-family:'Heebo',sans-serif;font-size:13px;font-weight:700;cursor:pointer;margin-top:6px;width:100%">
               🚫 בטל תור
             </button>
           </div>
@@ -2977,18 +3006,18 @@ async function renderMyBookings(phoneOverride) {
     const isPast = b.date < today;
     const isCancelled = b.cancelled;
     return `
-    <div style="background:var(--card);border:1px solid ${isCancelled ? 'rgba(230,57,70,0.2)' : isPast ? 'rgba(201,168,76,0.08)' : 'rgba(201,168,76,0.25)'};padding:16px;margin-bottom:10px;border-radius:12px;opacity:${isCancelled || isPast ? '0.6' : '1'}">
+    <div style="background:var(--card);border:1px solid ${isCancelled ? 'rgba(239,68,68,0.15)' : isPast ? 'var(--border)' : 'var(--border-hover)'};padding:16px;margin-bottom:10px;border-radius:var(--radius-md);opacity:${isCancelled || isPast ? '0.6' : '1'}">
       <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px">
         <div>
-          <div style="font-weight:700;font-size:17px;color:${isCancelled ? '#e63946' : isPast ? 'var(--grey)' : 'var(--white)'}">${b.service}</div>
-          <div style="font-size:15px;color:var(--grey);margin-top:2px">${b.dateLabel} · ${b.time}</div>
-          <div style="font-size:14px;color:#444;margin-top:2px">#${b.confirmNum} ${isCancelled ? '· ❌ בוטל' : isPast ? '· ✓ הושלם' : '· ⏳ קרוב'}</div>
+          <div style="font-weight:700;font-size:15px;color:${isCancelled ? 'var(--red)' : isPast ? 'var(--text-soft)' : 'var(--text)'}">${b.service}</div>
+          <div style="font-size:13px;color:var(--text-soft);margin-top:2px">${b.dateLabel} · ${b.time}</div>
+          <div style="font-size:12px;color:var(--muted);margin-top:2px">#${b.confirmNum} ${isCancelled ? '· ❌ בוטל' : isPast ? '· ✓ הושלם' : '· ⏳ קרוב'}</div>
         </div>
         <div style="text-align:left">
-          <div style="font-family:'Bebas Neue',sans-serif;font-size:20px;color:var(--gold)">₪${b.price}</div>
+          <div style="font-family:'Bebas Neue',sans-serif;font-size:20px;color:var(--primary)">₪${b.price}</div>
           ${!isPast && !isCancelled ? `
           <button onclick="cancelMyBooking('${b.confirmNum}', '${b.date}', '${b.time}')"
-            style="margin-top:8px;background:rgba(230,57,70,0.1);border:1px solid rgba(230,57,70,0.4);color:#e63946;padding:6px 12px;font-family:'Heebo',sans-serif;font-size:13px;cursor:pointer;border-radius:8px;white-space:nowrap">
+            style="margin-top:8px;background:rgba(239,68,68,0.08);border:1px solid rgba(239,68,68,0.25);color:var(--red);padding:6px 12px;font-family:'Heebo',sans-serif;font-size:13px;cursor:pointer;border-radius:var(--radius-sm);white-space:nowrap">
             ❌ בטל תור
           </button>` : ''}
         </div>
@@ -3047,7 +3076,7 @@ function showFullDayModal(dateStr) {
         <div style="font-size:15px;color:var(--text-soft);margin-top:6px">${dateLabel}</div>
       </div>
       <div style="background:rgba(230,57,70,0.08);border:1px solid rgba(230,57,70,0.2);border-radius:12px;padding:16px;margin-bottom:20px;text-align:center">
-        <div style="font-size:15px;color:#e63946;font-weight:600">היום מלא — לא נשארו תורים</div>
+        <div style="font-size:14px;color:var(--red);font-weight:600">היום מלא — לא נשארו תורים</div>
         <div style="font-size:13px;color:var(--text-soft);margin-top:4px">הצטרף לרשימת ההמתנה ונעדכן אותך אם יתפנה תור</div>
       </div>
       <button onclick="showWaitlistForm('${dateStr}', '${dateLabel}')"
@@ -3954,7 +3983,7 @@ function showFullDayModal(dateStr) {
         <div style="font-size:15px;color:var(--text-soft);margin-top:6px">${dateLabel}</div>
       </div>
       <div style="background:rgba(230,57,70,0.08);border:1px solid rgba(230,57,70,0.2);border-radius:12px;padding:16px;margin-bottom:20px;text-align:center">
-        <div style="font-size:15px;color:#e63946;font-weight:600">היום מלא — לא נשארו תורים</div>
+        <div style="font-size:14px;color:var(--red);font-weight:600">היום מלא — לא נשארו תורים</div>
         <div style="font-size:13px;color:var(--text-soft);margin-top:4px">הצטרף לרשימת ההמתנה ונעדכן אותך אם יתפנה תור</div>
       </div>
       <button onclick="showWaitlistForm('${dateStr}', '${dateLabel}')"
@@ -4892,7 +4921,7 @@ function handleDeepLink() {
     if (slotTaken) {
       // Show on splash screen
       const msg = document.createElement('div');
-      msg.style.cssText = 'position:fixed;bottom:120px;left:50%;transform:translateX(-50%);background:#e63946;color:white;padding:12px 24px;border-radius:50px;font-family:Heebo,sans-serif;font-size:15px;font-weight:700;z-index:9999;white-space:nowrap';
+      msg.style.cssText = 'position:fixed;bottom:120px;left:50%;transform:translateX(-50%);background:var(--red);color:white;padding:12px 24px;border-radius:50px;font-family:Heebo,sans-serif;font-size:14px;font-weight:700;z-index:9999;white-space:nowrap;box-shadow:0 4px 20px rgba(0,0,0,0.3)';
       msg.textContent = 'מצטערים, התור כבר נתפס';
       document.body.appendChild(msg);
       setTimeout(() => msg.remove(), 4000);
