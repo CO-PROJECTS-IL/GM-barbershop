@@ -783,10 +783,13 @@
 </style>
 <script>
 // Dynamic manifest
+const basePath = location.pathname.replace(/\/[^/]*$/, '/');
 const manifestData = {
   name: "GM המספרה",
   short_name: "GM",
-  start_url: "/",
+  start_url: basePath,
+  scope: basePath,
+  id: basePath,
   display: "standalone",
   background_color: "#0b0d11",
   theme_color: "#0b0d11",
@@ -801,6 +804,14 @@ const link = document.createElement('link');
 link.rel = 'manifest';
 link.href = manifestURL;
 document.head.appendChild(link);
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.getRegistrations().then(regs => {
+    regs.forEach(r => {
+      if (!r.active || !r.active.scriptURL.includes('gm-sw.js')) r.unregister();
+    });
+  });
+  navigator.serviceWorker.register(basePath + 'gm-sw.js').catch(() => {});
+}
 </script>
 </head>
 <body>
@@ -3804,8 +3815,10 @@ function showInstallModal() {
   document.getElementById('androidInstructions').style.display = isIOS ? 'none' : 'block';
   // If no deferred prompt on Android - show message
   if (!isIOS && !deferredPrompt) {
-    document.getElementById('installPwaBtn').textContent = '✅ האפליקציה כבר מותקנת או השתמש ב-Chrome';
-    document.getElementById('installPwaBtn').style.opacity = '0.6';
+    const btn = document.getElementById('installPwaBtn');
+    btn.textContent = '📲 לחץ על ⋮ בתפריט הדפדפן → "הוסף למסך הבית"';
+    btn.style.fontSize = '13px';
+    btn.onclick = null;
   }
 }
 
