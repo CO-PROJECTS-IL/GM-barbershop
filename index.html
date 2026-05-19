@@ -2948,9 +2948,13 @@ async function filterAdminByDate() {
     const sorted = [...bookings].sort((a,b) => (a.time||'').localeCompare(b.time||''));
     quickListItems.innerHTML = sorted.map(b => {
       const isDone = isAppointmentDone(b.date || dateStr, b.time || b.Time || '');
-      return `<div style="display:flex;justify-content:space-between;align-items:center;padding:6px 0;${isDone ? 'opacity:0.5;text-decoration:line-through' : ''}">
+      const waPhone = (b.phone||'').replace(/\D/g,'').replace(/^0/,'972');
+      return `<div style="display:flex;justify-content:space-between;align-items:center;padding:6px 0;gap:8px;${isDone ? 'opacity:0.5;text-decoration:line-through' : ''}">
         <span style="font-size:15px;font-weight:600;color:var(--text)">${b.name}</span>
-        <span style="font-size:15px;font-weight:700;color:var(--primary)">${b.time}</span>
+        <div style="display:flex;align-items:center;gap:8px">
+          <a href="https://wa.me/${waPhone}" target="_blank" rel="noopener" style="color:var(--whatsapp);font-size:18px;text-decoration:none;line-height:1" aria-label="שלח הודעת וואטסאפ ל${b.name}">💬</a>
+          <span style="font-size:15px;font-weight:700;color:var(--primary)">${b.time}</span>
+        </div>
       </div>`;
     }).join('');
     quickListWrap.style.display = 'block';
@@ -3000,6 +3004,10 @@ async function filterAdminByDate() {
               style="padding:10px 18px;border-radius:10px;border:none;background:${isDone ? 'var(--status-paid)' : 'var(--status-unpaid)'};color:var(--white);font-family:'Heebo',sans-serif;font-size:15px;font-weight:700;cursor:pointer;min-width:90px">
               ${isDone ? '✓ שולם' : '✗ לא שולם'}
             </button>
+            <a href="https://wa.me/${(b.phone||'').replace(/\D/g,'').replace(/^0/,'972')}" target="_blank" rel="noopener"
+              style="display:block;text-align:center;padding:10px 14px;border-radius:var(--radius-sm);border:1px solid var(--whatsapp);background:rgba(37,211,102,0.08);color:var(--whatsapp);font-family:'Heebo',sans-serif;font-size:13px;font-weight:700;text-decoration:none;margin-top:6px;width:100%;box-sizing:border-box">
+              💬 וואטסאפ
+            </a>
             <button onclick="adminCancelBooking('${b.confirmNum||b.ConfirmNum||''}','${b.date||dateStr}','${b.time||b.Time||''}','${b.phone||b.clientPhone||b.ClientPhone||''}','${b.name||b.clientName||b.ClientName||''}')"
               style="padding:10px 14px;border-radius:var(--radius-sm);border:1px solid var(--red-border);background:var(--red-glow);color:var(--red);font-family:'Heebo',sans-serif;font-size:13px;font-weight:700;cursor:pointer;margin-top:6px;width:100%">
               🚫 בטל תור
