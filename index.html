@@ -30,6 +30,12 @@
     --border-hover: rgba(255,255,255,0.12);
     --red: #ef4444;
     --success: #22c55e;
+    --info: #7ec8ff;
+    --info-glow: rgba(100,180,255,0.1);
+    --whatsapp: #25d366;
+    --status-paid: #2e7d4f;
+    --status-unpaid: #c0392b;
+    --break-color: orange;
     --shadow: 0 2px 8px rgba(0,0,0,0.4);
     --shadow-lg: 0 12px 40px rgba(0,0,0,0.5);
     --disabled: #2a2d35;
@@ -46,6 +52,7 @@
   }
 
   * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  .sr-only { position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0; }
 
   body {
     background: var(--bg);
@@ -522,7 +529,7 @@
     100% { box-shadow: 0 0 0 0 rgba(34,197,94,0); }
   }
   .success-icon {
-    animation: popIn 0.4s cubic-bezier(0.16, 1, 0.3, 1), successPulse 2s ease-out 0.4s;
+    animation: popIn 0.4s cubic-bezier(0.22, 1, 0.36, 1), successPulse 2s ease-out 0.4s;
   }
   .success-gm {
     font-family: 'Bebas Neue', sans-serif;
@@ -571,7 +578,7 @@
 
   /* ─── PROGRESS BAR ─── */
   .progress-bar { height: 2px; background: var(--border); position: relative; overflow: hidden; }
-  .progress-fill { height: 100%; background: linear-gradient(90deg, var(--primary-dark), var(--primary)); transition: width 0.4s cubic-bezier(0.16, 1, 0.3, 1); border-radius: 0 2px 2px 0; }
+  .progress-fill { height: 100%; background: linear-gradient(90deg, var(--primary-dark), var(--primary)); transition: width 0.4s cubic-bezier(0.22, 1, 0.36, 1); border-radius: 0 2px 2px 0; }
 
   /* ─── ORNAMENT ─── */
   .ornament { text-align: center; padding: 16px 0 8px; color: rgba(201,165,92,0.15); font-size: 16px; letter-spacing: 8px; }
@@ -734,7 +741,7 @@
       box-shadow: none;
     }
     body {
-      background: #06080b;
+      background: var(--black);
     }
   }
 
@@ -778,7 +785,7 @@ document.head.appendChild(link);
 </div>
 
 <!-- ═══════════════ SPLASH ═══════════════ -->
-<div class="screen active" id="screen-splash" role="main" aria-label="מסך פתיחה">
+<main class="screen active" id="screen-splash" aria-label="מסך פתיחה">
   <div class="splash-bg"></div>
   <div class="splash-lines"></div>
   <div class="splash-content">
@@ -788,13 +795,13 @@ document.head.appendChild(link);
     <div class="splash-tagline" style="font-size:22px;letter-spacing:4px">LOOK SHARP FEEL SHARP</div><div class="splash-divider"></div>
     <button class="splash-btn" onclick="goTo('home')">קבע תור עכשיו</button>
     <div style="margin-top:16px">
-      <button onclick="shareApp()" style="background:none;border:1px solid rgba(201,165,92,0.2);color:var(--text-soft);padding:12px 32px;font-family:'Heebo',sans-serif;font-size:13px;font-weight:600;letter-spacing:1px;cursor:pointer;border-radius:60px;transition:all 0.15s">
+      <button onclick="shareApp()" style="background:none;border:1px solid rgba(201,165,92,0.2);color:var(--text-soft);padding:14px 32px;font-family:'Heebo',sans-serif;font-size:13px;font-weight:600;letter-spacing:1px;cursor:pointer;border-radius:60px;transition:all 0.15s;min-height:44px">
         📲 שתף עם חבר
       </button>
     </div>
 
     <div style="margin-top:32px;display:flex;flex-direction:column;align-items:center;gap:12px">
-      <button onclick="showInstallModal()" style="background:transparent;border:1px solid rgba(201,165,92,0.15);color:var(--text-soft);padding:10px 24px;font-family:'Heebo',sans-serif;font-size:14px;cursor:pointer;border-radius:60px;letter-spacing:1px;transition:all 0.15s">
+      <button onclick="showInstallModal()" style="background:transparent;border:1px solid rgba(201,165,92,0.15);color:var(--text-soft);padding:14px 24px;font-family:'Heebo',sans-serif;font-size:14px;cursor:pointer;border-radius:60px;letter-spacing:1px;transition:all 0.15s;min-height:44px">
         📲 הוסף למסך הבית
       </button>
       <span id="adminToggle" onclick="toggleAdminLogin()" style="font-size:12px;color:var(--text-soft);cursor:pointer;letter-spacing:1px;user-select:none;opacity:0.4;padding:6px 16px">כניסת מנהל</span>
@@ -802,6 +809,7 @@ document.head.appendChild(link);
     <!-- Admin login — subtle, hidden by default -->
     <div id="adminLoginBox" style="display:none;margin-top:16px;animation:fadeIn 0.3s ease">
       <div style="position:relative;display:inline-block">
+        <label for="adminPassInput" class="sr-only">סיסמת מנהל</label>
         <input id="adminPassInput" type="password" placeholder="סיסמה"
           style="background:var(--card);border:1px solid var(--border);color:var(--text);padding:12px 40px 12px 18px;font-family:'Heebo',sans-serif;font-size:16px;outline:none;width:200px;text-align:center;border-radius:var(--radius-sm);letter-spacing:3px"
           onkeydown="if(event.key==='Enter') checkAdminPass()">
@@ -816,18 +824,18 @@ document.head.appendChild(link);
       <div id="adminErrMsg" style="font-size:13px;color:var(--red);margin-top:8px;min-height:16px"></div>
     </div>
   </div>
-</div>
+</main>
 
 <!-- ═══════════════ ADMIN PANEL ═══════════════ -->
-<div class="screen" id="screen-admin" role="main" aria-label="פאנל ניהול">
-  <div class="topbar">
+<main class="screen" id="screen-admin" aria-label="פאנל ניהול">
+  <header class="topbar">
     <button class="topbar-back" onclick="goTo('splash')">← <span>יציאה</span></button>
     <div class="topbar-logo">GM</div>
     <div style="font-size:12px;color:var(--primary);letter-spacing:3px;background:var(--primary-glow);padding:6px 14px;border:1px solid rgba(201,165,92,0.2);border-radius:var(--radius-sm);font-weight:600;text-transform:uppercase">מנהל</div>
-  </div>
+  </header>
 
   <!-- Admin tabs -->
-  <div style="display:flex;border-bottom:1px solid var(--border);padding:0 16px;gap:2px;overflow-x:auto;-webkit-overflow-scrolling:touch">
+  <nav aria-label="טאבים ניהול" style="display:flex;border-bottom:1px solid var(--border);padding:0 16px;gap:2px;overflow-x:auto;-webkit-overflow-scrolling:touch">
     <button onclick="switchAdminTab('bookings')" id="tab-bookings" style="background:none;border:none;color:var(--primary);padding:12px 14px;font-family:'Heebo',sans-serif;font-size:13px;font-weight:600;cursor:pointer;border-bottom:2px solid var(--primary);white-space:nowrap">📋 תורים</button>
     <button onclick="switchAdminTab('services')" id="tab-services" style="background:none;border:none;color:var(--text-soft);padding:12px 14px;font-family:'Heebo',sans-serif;font-size:13px;font-weight:600;cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap">✂️ שירותים</button>
     <button onclick="switchAdminTab('hours')" id="tab-hours" style="background:none;border:none;color:var(--text-soft);padding:12px 14px;font-family:'Heebo',sans-serif;font-size:13px;font-weight:600;cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap">🕐 עבודה</button>
@@ -837,7 +845,7 @@ document.head.appendChild(link);
     <button onclick="switchAdminTab('reports')" id="tab-reports" style="background:none;border:none;color:var(--text-soft);padding:12px 14px;font-family:'Heebo',sans-serif;font-size:13px;font-weight:600;cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap">📊 דוחות</button>
     <button onclick="switchAdminTab('images')" id="tab-images" style="background:none;border:none;color:var(--text-soft);padding:12px 14px;font-family:'Heebo',sans-serif;font-size:13px;font-weight:600;cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap">🖼️ תמונות</button>
     <button onclick="switchAdminTab('email')" id="tab-email" style="background:none;border:none;color:var(--text-soft);padding:12px 14px;font-family:'Heebo',sans-serif;font-size:13px;font-weight:600;cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap">✉️ מייל</button>
-  </div>
+  </nav>
 
   <!-- TAB: BOOKINGS -->
   <div id="admintab-bookings" style="flex:1;overflow-y:auto">
@@ -853,6 +861,7 @@ document.head.appendChild(link);
     </div>
     <div style="padding:0 20px 12px">
       <div style="display:flex;gap:8px;align-items:center">
+        <label for="adminDatePicker" class="sr-only">בחר תאריך לצפייה</label>
         <input type="date" id="adminDatePicker" aria-label="בחר תאריך לצפייה" style="flex:1;background:var(--card);border:1px solid var(--border);color:var(--text);padding:12px 14px;font-family:'Heebo',sans-serif;font-size:15px;outline:none;border-radius:var(--radius-sm);color-scheme:dark" onchange="filterAdminByDate()">
         <button onclick="setAdminToday()" style="background:var(--primary-glow);border:1px solid rgba(201,165,92,0.25);color:var(--primary);padding:12px 14px;font-family:'Heebo',sans-serif;font-size:14px;font-weight:600;cursor:pointer;white-space:nowrap;border-radius:var(--radius-sm)">היום</button>
         <button onclick="setAdminTomorrow()" style="background:var(--primary-glow);border:1px solid rgba(201,165,92,0.25);color:var(--primary);padding:12px 14px;font-family:'Heebo',sans-serif;font-size:14px;font-weight:600;cursor:pointer;white-space:nowrap;border-radius:var(--radius-sm)">מחר</button>
@@ -870,12 +879,12 @@ document.head.appendChild(link);
     </div>
     <div id="adminBookingsList" style="padding:0 20px 16px"></div>
     <div id="adminWaitlistSection" style="padding:0 20px 16px;display:none">
-      <div style="font-size:13px;letter-spacing:2px;color:#7ec8ff;font-weight:700;margin-bottom:10px;padding-top:8px;border-top:1px solid rgba(100,180,255,0.15)">📋 רשימת המתנה</div>
+      <div style="font-size:13px;letter-spacing:2px;color:var(--info);font-weight:700;margin-bottom:10px;padding-top:8px;border-top:1px solid var(--info-glow)">📋 רשימת המתנה</div>
       <div id="adminWaitlistList"></div>
     </div>
 
     <div style="padding:0 20px 24px">
-      <button onclick="showAdminWaitlist()" style="background:rgba(100,180,255,0.1);border:1px solid rgba(100,180,255,0.3);color:#7ec8ff;padding:10px 16px;font-family:'Heebo',sans-serif;font-size:14px;font-weight:700;cursor:pointer;border-radius:10px;margin-left:8px">
+      <button onclick="showAdminWaitlist()" style="background:var(--info-glow);border:1px solid rgba(100,180,255,0.3);color:var(--info);padding:10px 16px;font-family:'Heebo',sans-serif;font-size:14px;font-weight:700;cursor:pointer;border-radius:10px;margin-left:8px">
         📋 רשימת המתנה
       </button>
       <button onclick="showDailySummary()" style="width:100%;background:var(--card);border:1px solid var(--border);color:var(--text);padding:14px;font-family:'Heebo',sans-serif;font-size:18px;font-weight:600;cursor:pointer;border-radius:12px;margin-bottom:10px">
@@ -934,9 +943,11 @@ document.head.appendChild(link);
     <div id="blockedDaysList"></div>
     <div style="background:var(--card);border:1px solid rgba(239,68,68,0.15);padding:16px;margin-top:8px;border-radius:var(--radius-md)">
       <div style="font-size:14px;color:var(--red);letter-spacing:2px;margin-bottom:12px;font-weight:700">הוסף יום חופש / תקופה</div>
+      <label for="blockDateFrom" style="font-size:13px;color:var(--text-soft);margin-bottom:6px;display:block">מתאריך</label>
       <input type="date" id="blockDateFrom" aria-label="תאריך התחלה לחסימה" style="width:100%;background:var(--bg2);border:1px solid rgba(239,68,68,0.15);color:var(--text);padding:12px;font-family:'Heebo',sans-serif;font-size:15px;outline:none;margin-bottom:8px;color-scheme:dark;border-radius:var(--radius-sm)">
-      <div style="font-size:13px;color:var(--text-soft);margin-bottom:6px">עד תאריך (אופציונלי — ליום אחד השאר ריק)</div>
+      <label for="blockDateTo" style="font-size:13px;color:var(--text-soft);margin-bottom:6px;display:block">עד תאריך (אופציונלי — ליום אחד השאר ריק)</label>
       <input type="date" id="blockDateTo" aria-label="תאריך סיום חסימה" style="width:100%;background:var(--bg2);border:1px solid rgba(239,68,68,0.15);color:var(--text);padding:12px;font-family:'Heebo',sans-serif;font-size:15px;outline:none;margin-bottom:10px;color-scheme:dark;border-radius:var(--radius-sm)">
+      <label for="blockReason" style="font-size:13px;color:var(--text-soft);margin-bottom:6px;display:block">סיבה</label>
       <input type="text" id="blockReason" placeholder="סיבה (אופציונלי — חופשה, מחלה...)"
         style="width:100%;background:var(--bg2);border:1px solid rgba(239,68,68,0.1);color:var(--text);padding:12px;font-family:'Heebo',sans-serif;font-size:14px;outline:none;margin-bottom:12px;border-radius:var(--radius-sm)">
       <button onclick="addBlockedDay()" style="width:100%;background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.3);color:var(--red);padding:14px;font-family:'Heebo',sans-serif;font-size:15px;font-weight:700;cursor:pointer;border-radius:var(--radius-sm)">הוסף יום חופש</button>
@@ -950,26 +961,26 @@ document.head.appendChild(link);
     <div id="shortDaysList"></div>
     <div style="background:var(--card);border:1px solid var(--border);padding:16px;margin-top:8px;border-radius:var(--radius-md)">
       <div style="font-size:14px;color:var(--primary);letter-spacing:2px;margin-bottom:12px;font-weight:700">הוסף יום מקוצר</div>
-      <div style="font-size:13px;color:var(--text-soft);margin-bottom:6px">תאריך</div>
+      <label for="shortDayDate" style="font-size:13px;color:var(--text-soft);margin-bottom:6px;display:block">תאריך</label>
       <input type="date" id="shortDayDate" aria-label="תאריך יום מקוצר" style="width:100%;background:var(--bg2);border:1px solid var(--border);color:var(--text);padding:12px;font-family:'Heebo',sans-serif;font-size:15px;outline:none;margin-bottom:12px;color-scheme:dark;border-radius:var(--radius-sm)">
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px">
         <div>
-          <div style="font-size:13px;color:var(--text-soft);margin-bottom:6px">משעה</div>
+          <label for="shortDayFrom" style="font-size:13px;color:var(--text-soft);margin-bottom:6px;display:block">משעה</label>
           <input type="time" id="shortDayFrom" aria-label="שעת התחלה" style="width:100%;background:var(--bg2);border:1px solid var(--border);color:var(--text);padding:12px;font-family:'Heebo',sans-serif;font-size:15px;outline:none;border-radius:var(--radius-sm);color-scheme:dark">
         </div>
         <div>
-          <div style="font-size:13px;color:var(--text-soft);margin-bottom:6px">עד שעה</div>
+          <label for="shortDayTo" style="font-size:13px;color:var(--text-soft);margin-bottom:6px;display:block">עד שעה</label>
           <input type="time" id="shortDayTo" aria-label="שעת סיום" style="width:100%;background:var(--bg2);border:1px solid var(--border);color:var(--text);padding:12px;font-family:'Heebo',sans-serif;font-size:15px;outline:none;border-radius:var(--radius-sm);color-scheme:dark">
         </div>
       </div>
       <div style="font-size:13px;color:var(--text-soft);margin-bottom:8px">הפסקה (אופציונלי)</div>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px">
         <div>
-          <div style="font-size:12px;color:var(--text-soft);margin-bottom:4px">מ</div>
+          <label for="shortDayBreakFrom" style="font-size:12px;color:var(--text-soft);margin-bottom:4px;display:block">מ</label>
           <input type="time" id="shortDayBreakFrom" aria-label="שעת התחלת הפסקה" style="width:100%;background:var(--bg2);border:1px solid var(--border);color:var(--text);padding:10px;font-family:'Heebo',sans-serif;font-size:14px;outline:none;border-radius:var(--radius-sm);color-scheme:dark">
         </div>
         <div>
-          <div style="font-size:12px;color:var(--text-soft);margin-bottom:4px">עד</div>
+          <label for="shortDayBreakTo" style="font-size:12px;color:var(--text-soft);margin-bottom:4px;display:block">עד</label>
           <input type="time" id="shortDayBreakTo" aria-label="שעת סיום הפסקה" style="width:100%;background:var(--bg2);border:1px solid var(--border);color:var(--text);padding:10px;font-family:'Heebo',sans-serif;font-size:14px;outline:none;border-radius:var(--radius-sm);color-scheme:dark">
         </div>
       </div>
@@ -1241,10 +1252,12 @@ document.head.appendChild(link);
     <div style="background:var(--card);border:1px solid var(--border);padding:20px;border-radius:var(--radius-md)">
       <div style="font-size:14px;letter-spacing:3px;color:var(--primary);margin-bottom:14px;font-weight:700">שינוי סיסמה</div>
       <div style="position:relative;margin-bottom:10px">
+        <label for="newPass1" class="sr-only">סיסמה חדשה</label>
         <input id="newPass1" type="password" placeholder="סיסמה חדשה" class="form-input" style="padding-left:40px">
         <span onclick="togglePassView('newPass1','eye1')" id="eye1" style="position:absolute;left:12px;top:50%;transform:translateY(-50%);cursor:pointer;font-size:18px;user-select:none">👁️</span>
       </div>
       <div style="position:relative;margin-bottom:14px">
+        <label for="newPass2" class="sr-only">אימות סיסמה</label>
         <input id="newPass2" type="password" placeholder="אימות סיסמה" class="form-input" style="padding-left:40px">
         <span onclick="togglePassView('newPass2','eye2')" id="eye2" style="position:absolute;left:12px;top:50%;transform:translateY(-50%);cursor:pointer;font-size:18px;user-select:none">👁️</span>
       </div>
@@ -1252,15 +1265,15 @@ document.head.appendChild(link);
       <div id="passChangeMsg" style="font-size:18px;margin-top:8px;min-height:16px;text-align:center"></div>
     </div>
   </div>
-</div>
+</main>
 
 <!-- ═══════════════ HOME ═══════════════ -->
-<div class="screen" id="screen-home" role="main" aria-label="בחירת שירות">
-  <div class="topbar">
+<main class="screen" id="screen-home" aria-label="בחירת שירות">
+  <header class="topbar">
     <button class="topbar-back" onclick="goTo('splash')">← <span>ראשי</span></button>
     <div class="topbar-logo">GM</div>
     <div style="font-size:12px;color:var(--text-soft);letter-spacing:3px;font-weight:500">המספרה</div>
-  </div>
+  </header>
   <div class="progress-bar"><div class="progress-fill" style="width:33%"></div></div>
 
   <div class="home-hero">
@@ -1275,14 +1288,14 @@ document.head.appendChild(link);
   <div class="ornament">✦ ✦ ✦</div>
   <button class="cta-btn" id="nextBtn" onclick="goTo('date')">בחר תאריך ושעה ←</button>
   <button onclick="goTo('mybookings')" style="margin:0 18px 32px;background:transparent;border:1px solid var(--border);color:var(--text-soft);padding:14px;font-family:'Heebo',sans-serif;font-size:14px;cursor:pointer;width:calc(100% - 36px);border-radius:var(--radius-md);transition:all 0.15s">📋 התורים שלי</button>
-</div>
+</main>
 
 <!-- ═══════════════ DATE ═══════════════ -->
-<div class="screen" id="screen-date" role="main" aria-label="בחירת תאריך ושעה">
-  <div class="topbar">
+<main class="screen" id="screen-date" aria-label="בחירת תאריך ושעה">
+  <header class="topbar">
     <button class="topbar-back" onclick="goTo('home')">← <span>חזור</span></button>
     <div class="topbar-logo">GM</div>
-  </div>
+  </header>
   <div class="progress-bar"><div class="progress-fill" style="width:66%"></div></div>
 
   <div class="section-title">
@@ -1321,14 +1334,14 @@ document.head.appendChild(link);
   <div class="slots-grid" id="slotsGrid"></div>
 
   <button class="cta-btn" id="nextBtn2" onclick="goTo('details')">המשך לפרטים ←</button>
-</div>
+</main>
 
 <!-- ═══════════════ DETAILS ═══════════════ -->
-<div class="screen" id="screen-details" role="main" aria-label="פרטים אישיים">
-  <div class="topbar">
+<main class="screen" id="screen-details" aria-label="פרטים אישיים">
+  <header class="topbar">
     <button class="topbar-back" onclick="goTo('date')">← <span>חזור</span></button>
     <div class="topbar-logo">GM</div>
-  </div>
+  </header>
   <div class="progress-bar"><div class="progress-fill" style="width:90%"></div></div>
 
   <div class="section-title">
@@ -1397,18 +1410,19 @@ document.head.appendChild(link);
     <button type="submit" class="cta-btn enabled">אשר הזמנה ✓</button>
     </form>
   </div>
-</div>
+</main>
 
 <!-- ═══════════════ MY BOOKINGS ═══════════════ -->
-<div class="screen" id="screen-mybookings" role="main" aria-label="התורים שלי">
-  <div class="topbar">
+<main class="screen" id="screen-mybookings" aria-label="התורים שלי">
+  <header class="topbar">
     <button class="topbar-back" onclick="goTo('home')">← <span>חזור</span></button>
     <div class="topbar-logo">GM</div>
-  </div>
+  </header>
   <div style="padding:20px">
     <div style="font-family:'Heebo',sans-serif;font-size:24px;font-weight:800;margin-bottom:6px">התורים שלי</div>
     <div style="font-size:14px;color:var(--text-soft);margin-bottom:20px">הזן מספר טלפון כדי למצוא את התורים שלך</div>
     <div style="display:flex;gap:10px;margin-bottom:24px">
+      <label for="mybookings-phone" class="sr-only">מספר טלפון לחיפוש תורים</label>
       <input type="tel" id="mybookings-phone" placeholder="050-0000000" autocomplete="tel" dir="ltr"
         style="flex:1;padding:14px 16px;border-radius:var(--radius-md);border:1px solid var(--border);background:var(--card);color:var(--text);font-family:'Heebo',sans-serif;font-size:16px;outline:none;transition:border-color 0.2s"
         aria-label="מספר טלפון לחיפוש תורים">
@@ -1416,14 +1430,14 @@ document.head.appendChild(link);
     </div>
     <div id="myBookingsList"></div>
   </div>
-</div>
+</main>
 
 <!-- ═══════════════ SUCCESS ═══════════════ -->
-<div class="screen" id="screen-success" role="main" aria-label="אישור הזמנה">
-  <div class="topbar">
+<main class="screen" id="screen-success" aria-label="אישור הזמנה">
+  <header class="topbar">
     <button class="topbar-back" onclick="newBooking()">← <span>הזמנה חדשה</span></button>
     <div class="topbar-logo">GM</div>
-  </div>
+  </header>
   <div class="success-icon">✓</div>
   <div class="success-gm">GM</div>
   <div class="success-title">ההזמנה אושרה! 🎉</div>
@@ -1444,7 +1458,7 @@ document.head.appendChild(link);
   <div style="font-size:12px;color:var(--text-soft);margin-bottom:20px;letter-spacing:0.5px">⏰ תזכורת שעה לפני התור ביומן</div>
   <button onclick="goTo('mybookings')" style="margin-bottom:12px;background:transparent;border:1px solid var(--border);color:var(--text-soft);padding:14px 40px;font-family:'Heebo',sans-serif;font-size:14px;cursor:pointer;width:100%;max-width:300px;border-radius:var(--radius-md);transition:all 0.15s">📋 התורים שלי</button>
   <button class="new-booking-btn" onclick="newBooking()" style="margin-bottom:32px">הזמנה חדשה +</button>
-</div>
+</main>
 
 <!-- INSTALL MODAL -->
 <div id="installModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.7);backdrop-filter:blur(8px);z-index:9999;align-items:flex-end;justify-content:center">
@@ -1653,9 +1667,9 @@ function renderServicesGrid(filterHome=false) {
         onclick="selectHomeVisitService(this)">
         <div class="service-check">✓</div>
         <span class="service-icon">🏠</span>
-        <div class="service-name" style="color:#7ec8ff">עד בית הלקוח</div>
+        <div class="service-name" style="color:var(--info)">עד בית הלקוח</div>
         <div class="service-duration">⏱ הגעה אליך</div>
-        <div class="service-price" style="color:#7ec8ff">₪${services.find(s=>s.location==='both')?.price || services[0]?.price || 60}+</div>
+        <div class="service-price" style="color:var(--info)">₪${services.find(s=>s.location==='both')?.price || services[0]?.price || 60}+</div>
       </div>
     `;
   }
@@ -1664,7 +1678,7 @@ function renderServicesGrid(filterHome=false) {
   // Show note if home visit filtered
   if (filterHome) {
     const note = document.createElement('div');
-    note.style.cssText = 'grid-column:1/-1;font-size:17px;color:#7ec8ff;text-align:center;padding:8px 0;letter-spacing:1px';
+    note.style.cssText = 'grid-column:1/-1;font-size:17px;color:var(--info);text-align:center;padding:8px 0;letter-spacing:1px';
     note.textContent = '🏠 שירותים זמינים בהגעה עד בית הלקוח';
     grid.prepend(note);
   }
@@ -1988,7 +2002,7 @@ function renderSlots(dateStr) {
   if (hasHome && hasShop && !state.isHomeVisit) {
     const legend = document.createElement('div');
     legend.style.cssText = 'display:flex;gap:16px;padding:0 0 12px;font-size:17px;color:var(--text-soft)';
-    legend.innerHTML = '<span>🏪 מספרה</span><span style="color:#7ec8ff">🏠 עד בית הלקוח</span>';
+    legend.innerHTML = '<span>🏪 מספרה</span><span style="color:var(--info)">🏠 עד בית הלקוח</span>';
     grid.appendChild(legend);
   }
 
@@ -2009,7 +2023,7 @@ function renderSlots(dateStr) {
     btn.dataset.slotType = slot.type;
     if (isHome) {
       btn.style.borderColor = 'rgba(100,180,255,0.3)';
-      btn.style.color = '#7ec8ff';
+      btn.style.color = 'var(--info)';
     }
     btn.onclick = () => {
       document.querySelectorAll('.slot-btn').forEach(b => b.classList.remove('selected'));
@@ -2264,30 +2278,29 @@ function renderAdminServices() {
         <div style="font-size:24px">${s.icon}</div>
         <button onclick="deleteService(${i})" style="background:rgba(239,68,68,0.08);border:1px solid rgba(239,68,68,0.2);color:var(--red);padding:6px 12px;font-size:13px;cursor:pointer;font-family:'Heebo',sans-serif;border-radius:var(--radius-sm)">הסר</button>
       </div>
+      <label style="font-size:12px;color:var(--text-soft);margin-bottom:4px;display:block">שם שירות
       <input value="${s.name}" onchange="updateService(${i},'name',this.value)"
         style="width:100%;background:var(--bg2);border:1px solid var(--border);color:var(--text);padding:10px;font-family:'Heebo',sans-serif;font-size:15px;outline:none;margin-bottom:8px;border-radius:var(--radius-sm)">
+      </label>
       <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:8px">
-        <div>
-          <div style="font-size:12px;color:var(--text-soft);margin-bottom:4px">מחיר ₪</div>
+        <label style="font-size:12px;color:var(--text-soft);margin-bottom:4px;display:block">מחיר ₪
           <input type="number" value="${s.price}" onchange="updateService(${i},'price',+this.value)"
             style="width:100%;background:var(--bg2);border:1px solid var(--border);color:var(--primary);padding:10px;font-family:'Heebo',sans-serif;font-size:15px;font-weight:700;outline:none;border-radius:var(--radius-sm)">
-        </div>
-        <div>
-          <div style="font-size:12px;color:var(--text-soft);margin-bottom:4px">משך (דק׳)</div>
+        </label>
+        <label style="font-size:12px;color:var(--text-soft);margin-bottom:4px;display:block">משך (דק׳)
           <input type="number" value="${s.duration}" onchange="updateService(${i},'duration',+this.value)"
             style="width:100%;background:var(--bg2);border:1px solid var(--border);color:var(--text);padding:10px;font-family:'Heebo',sans-serif;font-size:15px;outline:none;border-radius:var(--radius-sm)">
-        </div>
-        <div>
-          <div style="font-size:12px;color:var(--text-soft);margin-bottom:4px">אייקון</div>
+        </label>
+        <label style="font-size:12px;color:var(--text-soft);margin-bottom:4px;display:block">אייקון
           <input value="${s.icon}" onchange="updateService(${i},'icon',this.value)"
             style="width:100%;background:var(--bg2);border:1px solid var(--border);color:var(--text);padding:10px;font-family:'Heebo',sans-serif;font-size:15px;outline:none;text-align:center;border-radius:var(--radius-sm)">
-        </div>
+        </label>
       </div>
       <div>
         <div style="font-size:12px;color:var(--text-soft);margin-bottom:6px">מיקום שירות</div>
         <div style="display:flex;gap:6px">
           <button onclick="updateService(${i},'location','shop')" style="flex:1;padding:8px 4px;font-size:14px;cursor:pointer;font-family:'Heebo',sans-serif;border-radius:var(--radius-sm);border:1px solid ${(s.location||'shop')==='shop'?'rgba(201,165,92,0.3)':'var(--border)'};background:${(s.location||'shop')==='shop'?'var(--primary-glow)':'var(--bg2)'};color:${(s.location||'shop')==='shop'?'var(--primary)':'var(--text-soft)'}">🏪 מספרה</button>
-          <button onclick="updateService(${i},'location','both')" style="flex:1;padding:8px 4px;font-size:14px;cursor:pointer;font-family:'Heebo',sans-serif;border-radius:var(--radius-sm);border:1px solid ${s.location==='both'?'rgba(100,180,255,0.3)':'var(--border)'};background:${s.location==='both'?'rgba(100,180,255,0.08)':'var(--bg2)'};color:${s.location==='both'?'#7ec8ff':'var(--text-soft)'}">🏠 עד בית הלקוח</button>
+          <button onclick="updateService(${i},'location','both')" style="flex:1;padding:8px 4px;font-size:14px;cursor:pointer;font-family:'Heebo',sans-serif;border-radius:var(--radius-sm);border:1px solid ${s.location==='both'?'rgba(100,180,255,0.3)':'var(--border)'};background:${s.location==='both'?'rgba(100,180,255,0.08)':'var(--bg2)'};color:${s.location==='both'?'var(--info)':'var(--text-soft)'}">🏠 עד בית הלקוח</button>
 
         </div>
       </div>
@@ -2341,7 +2354,7 @@ function renderAdminHours() {
         <div style="display:flex;align-items:center;gap:12px">
           <input type="checkbox" id="day-${i}" ${isOpen ? 'checked' : ''} onchange="toggleDay(${i},this.checked)"
             style="width:18px;height:18px;accent-color:var(--primary);cursor:pointer">
-          <div style="font-size:16px;font-weight:700;color:${isOpen ? 'var(--text)' : 'var(--text-soft)'}">${h.name}</div>
+          <label for="day-${i}" style="font-size:16px;font-weight:700;color:${isOpen ? 'var(--text)' : 'var(--text-soft)'};cursor:pointer">${h.name}</label>
         </div>
         <div style="font-size:13px;color:${isOpen ? 'var(--primary)' : 'var(--text-soft)'};font-weight:600">
           ${isOpen ? (h.from || '') + ' - ' + (h.to || '') : 'סגור'}
@@ -2356,15 +2369,17 @@ function renderAdminHours() {
           <div style="font-size:13px;font-weight:700;color:var(--primary);letter-spacing:1px;margin-bottom:8px">🏪 מספרה</div>
           <div style="display:flex;align-items:center;gap:10px">
             <div style="flex:1">
-              <div style="font-size:12px;color:var(--text-soft);margin-bottom:4px">משעה</div>
+              <label style="font-size:12px;color:var(--text-soft);margin-bottom:4px;display:block">משעה
               <input type="time" value="${h.from || '09:00'}" onchange="updateHourValidated(${i},'from',this.value,this)"
                 style="width:100%;background:var(--bg2);border:1px solid var(--border);color:var(--text);padding:10px;font-family:'Heebo',sans-serif;font-size:15px;outline:none;border-radius:var(--radius-sm);color-scheme:dark;text-align:center">
+              </label>
             </div>
             <div style="color:var(--text-soft);font-size:16px;padding-top:18px">—</div>
             <div style="flex:1">
-              <div style="font-size:12px;color:var(--text-soft);margin-bottom:4px">עד שעה</div>
+              <label style="font-size:12px;color:var(--text-soft);margin-bottom:4px;display:block">עד שעה
               <input type="time" value="${h.to || '18:00'}" onchange="updateHourValidated(${i},'to',this.value,this)"
                 style="width:100%;background:var(--bg2);border:1px solid var(--border);color:var(--text);padding:10px;font-family:'Heebo',sans-serif;font-size:15px;outline:none;border-radius:var(--radius-sm);color-scheme:dark;text-align:center">
+              </label>
             </div>
           </div>
           <div id="err-shop-${i}" style="color:var(--red);font-size:12px;margin-top:6px;min-height:16px"></div>
@@ -2372,18 +2387,20 @@ function renderAdminHours() {
 
         <!-- HOME VISITS -->
         <div>
-          <div style="font-size:13px;font-weight:700;color:#7ec8ff;letter-spacing:1px;margin-bottom:8px">🏠 מבית לבית</div>
+          <div style="font-size:13px;font-weight:700;color:var(--info);letter-spacing:1px;margin-bottom:8px">🏠 מבית לבית</div>
           <div style="display:flex;align-items:center;gap:10px">
             <div style="flex:1">
-              <div style="font-size:12px;color:var(--text-soft);margin-bottom:4px">משעה</div>
+              <label style="font-size:12px;color:var(--text-soft);margin-bottom:4px;display:block">משעה
               <input type="time" value="${h.homeFrom || ''}" onchange="updateHourValidated(${i},'homeFrom',this.value,this)"
-                style="width:100%;background:var(--bg2);border:1px solid rgba(100,180,255,0.2);color:#7ec8ff;padding:10px;font-family:'Heebo',sans-serif;font-size:15px;outline:none;border-radius:var(--radius-sm);color-scheme:dark;text-align:center">
+                style="width:100%;background:var(--bg2);border:1px solid rgba(100,180,255,0.2);color:var(--info);padding:10px;font-family:'Heebo',sans-serif;font-size:15px;outline:none;border-radius:var(--radius-sm);color-scheme:dark;text-align:center">
+              </label>
             </div>
             <div style="color:var(--text-soft);font-size:16px;padding-top:18px">—</div>
             <div style="flex:1">
-              <div style="font-size:12px;color:var(--text-soft);margin-bottom:4px">עד שעה</div>
+              <label style="font-size:12px;color:var(--text-soft);margin-bottom:4px;display:block">עד שעה
               <input type="time" value="${h.homeTo || ''}" onchange="updateHourValidated(${i},'homeTo',this.value,this)"
-                style="width:100%;background:var(--bg2);border:1px solid rgba(100,180,255,0.2);color:#7ec8ff;padding:10px;font-family:'Heebo',sans-serif;font-size:15px;outline:none;border-radius:var(--radius-sm);color-scheme:dark;text-align:center">
+                style="width:100%;background:var(--bg2);border:1px solid rgba(100,180,255,0.2);color:var(--info);padding:10px;font-family:'Heebo',sans-serif;font-size:15px;outline:none;border-radius:var(--radius-sm);color-scheme:dark;text-align:center">
+              </label>
             </div>
           </div>
           <div id="err-home-${i}" style="color:var(--red);font-size:12px;margin-top:6px;min-height:16px"></div>
@@ -2391,26 +2408,28 @@ function renderAdminHours() {
 
         <!-- BREAKS -->
         <div>
-          <div style="font-size:13px;font-weight:700;color:orange;letter-spacing:1px;margin-bottom:8px">☕ הפסקות</div>
+          <div style="font-size:13px;font-weight:700;color:var(--break-color);letter-spacing:1px;margin-bottom:8px">☕ הפסקות</div>
           ${(h.breaks||[]).map((br, bi) => `
           <div style="background:rgba(255,165,0,0.04);border:1px solid rgba(255,165,0,0.12);border-radius:var(--radius-sm);padding:10px 12px;margin-bottom:8px">
             <div style="display:flex;align-items:center;gap:10px">
               <div style="flex:1">
-                <div style="font-size:12px;color:var(--text-soft);margin-bottom:4px">משעה</div>
+                <label style="font-size:12px;color:var(--text-soft);margin-bottom:4px;display:block">משעה
                 <input type="time" value="${br.from}" onchange="updateBreakValidated(${i},${bi},'from',this.value,this)"
-                  style="width:100%;background:var(--bg2);border:1px solid rgba(255,165,0,0.15);color:orange;padding:10px;font-family:'Heebo',sans-serif;font-size:15px;outline:none;border-radius:var(--radius-sm);color-scheme:dark;text-align:center">
+                  style="width:100%;background:var(--bg2);border:1px solid rgba(255,165,0,0.15);color:var(--break-color);padding:10px;font-family:'Heebo',sans-serif;font-size:15px;outline:none;border-radius:var(--radius-sm);color-scheme:dark;text-align:center">
+                </label>
               </div>
               <div style="color:var(--text-soft);font-size:16px;padding-top:18px">—</div>
               <div style="flex:1">
-                <div style="font-size:12px;color:var(--text-soft);margin-bottom:4px">עד שעה</div>
+                <label style="font-size:12px;color:var(--text-soft);margin-bottom:4px;display:block">עד שעה
                 <input type="time" value="${br.to}" onchange="updateBreakValidated(${i},${bi},'to',this.value,this)"
-                  style="width:100%;background:var(--bg2);border:1px solid rgba(255,165,0,0.15);color:orange;padding:10px;font-family:'Heebo',sans-serif;font-size:15px;outline:none;border-radius:var(--radius-sm);color-scheme:dark;text-align:center">
+                  style="width:100%;background:var(--bg2);border:1px solid rgba(255,165,0,0.15);color:var(--break-color);padding:10px;font-family:'Heebo',sans-serif;font-size:15px;outline:none;border-radius:var(--radius-sm);color-scheme:dark;text-align:center">
+                </label>
               </div>
               <button onclick="removeBreak(${i},${bi})" style="background:none;border:none;color:var(--red);cursor:pointer;font-size:20px;padding:0 4px;margin-top:18px">✕</button>
             </div>
             <div id="err-break-${i}-${bi}" style="color:var(--red);font-size:12px;margin-top:4px;min-height:16px"></div>
           </div>`).join('')}
-          <button onclick="addBreak(${i})" style="width:100%;background:none;border:1px dashed rgba(255,165,0,0.25);color:orange;padding:10px;border-radius:var(--radius-sm);font-family:'Heebo',sans-serif;font-size:14px;cursor:pointer">
+          <button onclick="addBreak(${i})" style="width:100%;background:none;border:1px dashed rgba(255,165,0,0.25);color:var(--break-color);padding:10px;border-radius:var(--radius-sm);font-family:'Heebo',sans-serif;font-size:14px;cursor:pointer">
             + הוסף הפסקה
           </button>
         </div>
@@ -2689,7 +2708,7 @@ function renderAdminHomeVisits() {
     return `
     <div style="background:rgba(100,180,255,0.05);border:1px solid rgba(100,180,255,0.15);padding:14px 16px;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center;border-radius:var(--radius-sm)">
       <div>
-        <div style="font-weight:700;font-size:14px;color:#7ec8ff">🏠 יום ${dayNames[d.getDay()]}, ${d.getDate()} ב${HEBREW_MONTHS[d.getMonth()]}</div>
+        <div style="font-weight:700;font-size:14px;color:var(--info)">🏠 יום ${dayNames[d.getDay()]}, ${d.getDate()} ב${HEBREW_MONTHS[d.getMonth()]}</div>
         <div style="font-size:13px;color:var(--text-soft);margin-top:3px">${v.from} — ${v.to}</div>
       </div>
       <button onclick="deleteHomeVisit(${visits.indexOf(v)})" style="background:rgba(239,68,68,0.08);border:1px solid rgba(239,68,68,0.2);color:var(--red);padding:6px 12px;font-size:13px;cursor:pointer;font-family:'Heebo',sans-serif;border-radius:var(--radius-sm)">הסר</button>
@@ -2909,14 +2928,14 @@ async function filterAdminByDate() {
                 <span style="font-size:13px;color:var(--text-soft);min-width:44px">טלפון:</span>
                 <span style="font-size:15px">${b.phone}</span>
               </div>
-              ${b.homeVisit === 'כן' ? '<div style="font-size:14px;color:#7ec8ff;margin-top:2px">🏠 הגעה לבית</div>' : ''}
+              ${b.homeVisit === 'כן' ? '<div style="font-size:14px;color:var(--info);margin-top:2px">🏠 הגעה לבית</div>' : ''}
               ${b.notes ? `<div style="font-size:14px;color:var(--text-soft);margin-top:2px">💬 ${b.notes}</div>` : ''}
             </div>
           </div>
           <div style="display:flex;flex-direction:column;align-items:flex-end;gap:8px;min-width:100px">
             <div style="font-size:22px;font-weight:900;color:var(--primary)">₪${b.price||''}</div>
             <button onclick="toggleAppointmentDone('${b.date||dateStr}','${b.time||b.Time||''}',${b.price||0},this)"
-              style="padding:10px 18px;border-radius:10px;border:none;background:${isDone ? '#2e7d4f' : '#c0392b'};color:white;font-family:'Heebo',sans-serif;font-size:15px;font-weight:700;cursor:pointer;min-width:90px">
+              style="padding:10px 18px;border-radius:10px;border:none;background:${isDone ? 'var(--status-paid)' : 'var(--status-unpaid)'};color:white;font-family:'Heebo',sans-serif;font-size:15px;font-weight:700;cursor:pointer;min-width:90px">
               ${isDone ? '✓ שולם' : '✗ לא שולם'}
             </button>
             <button onclick="adminCancelBooking('${b.confirmNum||b.ConfirmNum||''}','${b.date||dateStr}','${b.time||b.Time||''}','${b.phone||b.clientPhone||b.ClientPhone||''}','${b.name||b.clientName||b.ClientName||''}')"
@@ -3415,7 +3434,7 @@ function showChart(period) {
     statsEl.innerHTML = [
       { label: 'סה"כ הכנסות', value: '₪' + totalRevenue, color: 'var(--primary)' },
       { label: 'סה"כ תורים', value: totalBookings, color: 'var(--text)' },
-      { label: 'ממוצע יומי', value: '₪' + avgRevenue, color: '#7ec8ff' }
+      { label: 'ממוצע יומי', value: '₪' + avgRevenue, color: 'var(--info)' }
     ].map(s => `
       <div style="background:var(--bg);border-radius:10px;padding:12px;text-align:center">
         <div style="font-size:20px;font-weight:900;color:${s.color}">${s.value}</div>
@@ -4322,7 +4341,7 @@ function showChart(period) {
     statsEl.innerHTML = [
       { label: 'סה"כ הכנסות', value: '₪' + totalRevenue, color: 'var(--primary)' },
       { label: 'סה"כ תורים', value: totalBookings, color: 'var(--text)' },
-      { label: 'ממוצע יומי', value: '₪' + avgRevenue, color: '#7ec8ff' }
+      { label: 'ממוצע יומי', value: '₪' + avgRevenue, color: 'var(--info)' }
     ].map(s => `
       <div style="background:var(--bg);border-radius:10px;padding:12px;text-align:center">
         <div style="font-size:20px;font-weight:900;color:${s.color}">${s.value}</div>
@@ -4648,7 +4667,7 @@ function toggleAppointmentDone(date, time, price, btn) {
     delete done[date][time];
     btn.textContent = '✗ לא שולם';
     btn.style.border = 'none';
-    btn.style.background = '#c0392b';
+    btn.style.background = 'var(--status-unpaid)';
     btn.style.color = 'white';
     const card = btn.closest('div[id^="booking-"]');
     if (card) {
@@ -4663,7 +4682,7 @@ function toggleAppointmentDone(date, time, price, btn) {
     done[date][time] = { price: price, markedAt: new Date().toISOString() };
     btn.textContent = '✓ שולם';
     btn.style.border = 'none';
-    btn.style.background = '#2e7d4f';
+    btn.style.background = 'var(--status-paid)';
     btn.style.color = 'white';
     const card = btn.closest('div[id^="booking-"]');
     if (card) {
@@ -5040,11 +5059,11 @@ function renderAdminWaitlistInline(dateStr) {
       <div style="font-size:13px;color:var(--primary);margin-bottom:10px">✂️ ${w.serviceName || ''}</div>
       <div style="display:flex;gap:8px">
         <button onclick="sendWhatsAppToWaitlist('${w.phone}','${w.name}','${dateStr}',getFirstAvailableTime('${dateStr}',${w.serviceDuration||30}))"
-          style="flex:1;background:rgba(37,211,102,0.1);border:1px solid rgba(37,211,102,0.4);color:#25d366;padding:9px 4px;font-family:'Heebo',sans-serif;font-size:13px;font-weight:700;cursor:pointer;border-radius:10px">
+          style="flex:1;background:rgba(37,211,102,0.1);border:1px solid rgba(37,211,102,0.4);color:var(--whatsapp);padding:9px 4px;font-family:'Heebo',sans-serif;font-size:13px;font-weight:700;cursor:pointer;border-radius:10px">
           📱 שלח הודעה
         </button>
         <button onclick="callCustomer('${w.phone}')"
-          style="flex:1;background:rgba(100,180,255,0.1);border:1px solid rgba(100,180,255,0.3);color:#7ec8ff;padding:9px 4px;font-family:'Heebo',sans-serif;font-size:13px;font-weight:700;cursor:pointer;border-radius:10px">
+          style="flex:1;background:rgba(100,180,255,0.1);border:1px solid rgba(100,180,255,0.3);color:var(--info);padding:9px 4px;font-family:'Heebo',sans-serif;font-size:13px;font-weight:700;cursor:pointer;border-radius:10px">
           📞 חייג
         </button>
       </div>
@@ -5070,11 +5089,11 @@ function showAdminWaitlist() {
         <div style="font-size:14px;color:var(--primary);margin-bottom:10px">✂️ ${w.serviceName || ''} ${w.serviceDuration ? '(' + w.serviceDuration + ' דק׳)' : ''}</div>
         <div style="display:flex;gap:8px">
           <button onclick="sendWhatsAppToWaitlist('${w.phone}','${w.name}','${dateStr}',getFirstAvailableTime('${dateStr}',${w.serviceDuration||30}))"
-            style="flex:1;background:rgba(37,211,102,0.1);border:1px solid rgba(37,211,102,0.4);color:#25d366;padding:10px 6px;font-family:'Heebo',sans-serif;font-size:13px;font-weight:700;cursor:pointer;border-radius:10px">
+            style="flex:1;background:rgba(37,211,102,0.1);border:1px solid rgba(37,211,102,0.4);color:var(--whatsapp);padding:10px 6px;font-family:'Heebo',sans-serif;font-size:13px;font-weight:700;cursor:pointer;border-radius:10px">
             📱 שלח הודעה ללקוח
           </button>
           <button onclick="callCustomer('${w.phone}')"
-            style="flex:1;background:rgba(100,180,255,0.1);border:1px solid rgba(100,180,255,0.3);color:#7ec8ff;padding:10px 6px;font-family:'Heebo',sans-serif;font-size:13px;font-weight:700;cursor:pointer;border-radius:10px">
+            style="flex:1;background:rgba(100,180,255,0.1);border:1px solid rgba(100,180,255,0.3);color:var(--info);padding:10px 6px;font-family:'Heebo',sans-serif;font-size:13px;font-weight:700;cursor:pointer;border-radius:10px">
             📞 חייג ללקוח
           </button>
         </div>
