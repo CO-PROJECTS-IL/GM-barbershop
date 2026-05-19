@@ -4739,6 +4739,25 @@ function triggerInstall() {
       document.getElementById('installBanner').style.display = 'none';
       deferredPrompt = null;
     });
+  } else {
+    const btn = document.getElementById('installPwaBtn');
+    btn.textContent = '⏳ מכין התקנה...';
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.getRegistrations().then(regs => {
+        regs.forEach(r => r.unregister());
+        return navigator.serviceWorker.register(location.pathname.replace(/\/[^/]*$/, '/') + 'gm-sw.js');
+      }).then(() => {
+        setTimeout(() => {
+          if (deferredPrompt) {
+            deferredPrompt.prompt();
+            deferredPrompt.userChoice.then(() => { deferredPrompt = null; });
+          } else {
+            btn.textContent = '📲 התקן עכשיו';
+            alert('לחץ על תפריט הדפדפן (⋮) ובחר "הוסף למסך הבית"');
+          }
+        }, 1500);
+      });
+    }
   }
 }
 
