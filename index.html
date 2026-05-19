@@ -24,6 +24,9 @@
     --primary: #c9a55c;
     --primary-dark: #a8883f;
     --primary-glow: rgba(201,165,92,0.15);
+    --primary-border: rgba(201,165,92,0.25);
+    --primary-border-soft: rgba(201,165,92,0.2);
+    --primary-shadow: rgba(201,165,92,0.2);
     --text: #edeef0;
     --text-soft: #6e7380;
     --border: rgba(255,255,255,0.06);
@@ -36,6 +39,9 @@
     --status-paid: #2e7d4f;
     --status-unpaid: #c0392b;
     --break-color: orange;
+    --red-glow: rgba(239,68,68,0.08);
+    --red-border: rgba(239,68,68,0.2);
+    --red-border-soft: rgba(239,68,68,0.15);
     --error-border: #e63946;
     --success-msg: #4caf50;
     --tab-active-bg: #e8d5b0;
@@ -130,9 +136,9 @@
     border-radius: 60px;
     transition: transform 0.15s ease-out, box-shadow 0.15s ease-out;
     display: inline-block;
-    box-shadow: 0 4px 24px rgba(201,165,92,0.2);
+    box-shadow: 0 4px 24px var(--primary-border-soft);
   }
-  .splash-btn:hover { box-shadow: 0 6px 32px rgba(201,165,92,0.3); }
+  .splash-btn:hover { box-shadow: 0 6px 32px var(--primary-border); }
   .splash-btn:active { transform: scale(0.97); }
 
   /* ─── TOP BAR ─── */
@@ -297,9 +303,9 @@
   .cta-btn.enabled {
     opacity: 1;
     pointer-events: all;
-    box-shadow: 0 4px 24px rgba(201,165,92,0.2);
+    box-shadow: 0 4px 24px var(--primary-border-soft);
   }
-  .cta-btn.enabled:hover { box-shadow: 0 6px 32px rgba(201,165,92,0.3); }
+  .cta-btn.enabled:hover { box-shadow: 0 6px 32px var(--primary-border); }
   .cta-btn.enabled:active { transform: scale(0.98); }
 
   /* ─── DATE PICKER ─── */
@@ -391,15 +397,15 @@
     color: var(--primary);
   }
   .cal-cell.available:active {
-    background: rgba(201,165,92,0.15);
+    background: var(--primary-glow);
   }
-  .cal-cell.today { border: 1px solid rgba(201,165,92,0.25); color: var(--primary); }
+  .cal-cell.today { border: 1px solid var(--primary-border); color: var(--primary); }
   .cal-cell.selected {
     background: var(--primary) !important;
     color: var(--bg) !important;
     font-weight: 700;
     border-radius: 50%;
-    box-shadow: 0 2px 12px rgba(201,165,92,0.3);
+    box-shadow: 0 2px 12px var(--primary-border);
   }
 
   /* ─── TIME SLOTS ─── */
@@ -446,7 +452,7 @@
     border-color: var(--primary);
     color: var(--bg);
     font-weight: 700;
-    box-shadow: 0 2px 16px rgba(201,165,92,0.2);
+    box-shadow: 0 2px 16px var(--primary-border-soft);
   }
   .slot-btn:not(.taken):active { transform: scale(0.96); }
 
@@ -535,6 +541,21 @@
   .success-icon {
     animation: popIn 0.4s cubic-bezier(0.22, 1, 0.36, 1), successPulse 2s ease-out 0.4s;
   }
+  .confetti-container {
+    position: fixed; inset: 0; pointer-events: none; z-index: 9998; overflow: hidden;
+  }
+  .confetti-piece {
+    position: absolute; width: 8px; height: 8px; top: -10px;
+    animation: confettiFall 2.5s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+    opacity: 0;
+  }
+  @keyframes confettiFall {
+    0% { transform: translateY(0) rotate(0deg); opacity: 1; }
+    100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .confetti-piece { animation: none; display: none; }
+  }
   .success-gm {
     font-family: 'Bebas Neue', sans-serif;
     font-size: 48px;
@@ -585,7 +606,7 @@
   .progress-fill { height: 100%; background: linear-gradient(90deg, var(--primary-dark), var(--primary)); transition: width 0.4s cubic-bezier(0.22, 1, 0.36, 1); border-radius: 0 2px 2px 0; }
 
   /* ─── ORNAMENT ─── */
-  .ornament { text-align: center; padding: 16px 0 8px; color: rgba(201,165,92,0.15); font-size: 16px; letter-spacing: 8px; }
+  .ornament { text-align: center; padding: 16px 0 8px; color: var(--primary-glow); font-size: 16px; letter-spacing: 8px; }
 
   /* Install banner */
   .install-banner {
@@ -634,6 +655,11 @@
   .skeleton-slot {
     height: 48px;
     border-radius: var(--radius-md);
+  }
+  .skeleton-card {
+    height: 80px;
+    border-radius: var(--radius-md);
+    margin-bottom: 10px;
   }
   .skeleton-text {
     height: 14px;
@@ -751,7 +777,7 @@
 
   /* ─── SELECTION ─── */
   ::selection {
-    background: rgba(201,165,92,0.25);
+    background: var(--primary-border);
     color: var(--text);
   }
 </style>
@@ -793,19 +819,19 @@ document.head.appendChild(link);
   <div class="splash-bg"></div>
   <div class="splash-lines"></div>
   <div class="splash-content">
-    <div style="width:160px;height:160px;border-radius:50%;overflow:hidden;margin:0 auto 28px;border:2px solid rgba(201,165,92,0.3);background:var(--card);box-shadow:0 8px 40px rgba(0,0,0,0.4)">
+    <div style="width:160px;height:160px;border-radius:50%;overflow:hidden;margin:0 auto 28px;border:2px solid var(--primary-border);background:var(--card);box-shadow:0 8px 40px rgba(0,0,0,0.4)">
       <img src="https://res.cloudinary.com/dyvx2rz4s/image/upload/q_auto/f_auto/v1776721264/%D7%9C%D7%95%D7%92%D7%95_%D7%92%D7%95%D7%9C%D7%9F_%D7%94%D7%A1%D7%A4%D7%A8_jhd89p.jpg" alt="לוגו GM Barbershop — מספרה של גולן מאיר" loading="lazy" style="width:100%;height:100%;object-fit:cover">
     </div>
     <div class="splash-tagline" style="font-size:22px;letter-spacing:4px">LOOK SHARP FEEL SHARP</div><div class="splash-divider"></div>
     <button class="splash-btn" onclick="goTo('home')">קבע תור עכשיו</button>
     <div style="margin-top:16px">
-      <button onclick="shareApp()" style="background:none;border:1px solid rgba(201,165,92,0.2);color:var(--text-soft);padding:14px 32px;font-family:'Heebo',sans-serif;font-size:13px;font-weight:600;letter-spacing:1px;cursor:pointer;border-radius:60px;transition:all 0.15s;min-height:44px">
+      <button onclick="shareApp()" style="background:none;border:1px solid var(--primary-border-soft);color:var(--text-soft);padding:14px 32px;font-family:'Heebo',sans-serif;font-size:13px;font-weight:600;letter-spacing:1px;cursor:pointer;border-radius:60px;transition:all 0.15s;min-height:44px">
         📲 שתף עם חבר
       </button>
     </div>
 
     <div style="margin-top:32px;display:flex;flex-direction:column;align-items:center;gap:12px">
-      <button onclick="showInstallModal()" style="background:transparent;border:1px solid rgba(201,165,92,0.15);color:var(--text-soft);padding:14px 24px;font-family:'Heebo',sans-serif;font-size:14px;cursor:pointer;border-radius:60px;letter-spacing:1px;transition:all 0.15s;min-height:44px">
+      <button onclick="showInstallModal()" style="background:transparent;border:1px solid var(--primary-glow);color:var(--text-soft);padding:14px 24px;font-family:'Heebo',sans-serif;font-size:14px;cursor:pointer;border-radius:60px;letter-spacing:1px;transition:all 0.15s;min-height:44px">
         📲 הוסף למסך הבית
       </button>
       <span id="adminToggle" onclick="toggleAdminLogin()" style="font-size:12px;color:var(--text-soft);cursor:pointer;letter-spacing:1px;user-select:none;opacity:0.4;padding:6px 16px">כניסת מנהל</span>
@@ -822,7 +848,7 @@ document.head.appendChild(link);
       </div>
       <br>
       <button onclick="checkAdminPass()"
-        style="margin-top:10px;background:var(--primary-glow);border:1px solid rgba(201,165,92,0.2);color:var(--primary);padding:10px 28px;font-family:'Heebo',sans-serif;font-size:14px;font-weight:600;cursor:pointer;letter-spacing:1px;border-radius:var(--radius-sm)">
+        style="margin-top:10px;background:var(--primary-glow);border:1px solid var(--primary-border-soft);color:var(--primary);padding:10px 28px;font-family:'Heebo',sans-serif;font-size:14px;font-weight:600;cursor:pointer;letter-spacing:1px;border-radius:var(--radius-sm)">
         כניסה
       </button>
       <div id="adminErrMsg" style="font-size:13px;color:var(--red);margin-top:8px;min-height:16px"></div>
@@ -835,7 +861,7 @@ document.head.appendChild(link);
   <header class="topbar">
     <button class="topbar-back" onclick="goTo('splash')">← <span>יציאה</span></button>
     <div class="topbar-logo">GM</div>
-    <div style="font-size:12px;color:var(--primary);letter-spacing:3px;background:var(--primary-glow);padding:6px 14px;border:1px solid rgba(201,165,92,0.2);border-radius:var(--radius-sm);font-weight:600;text-transform:uppercase">מנהל</div>
+    <div style="font-size:12px;color:var(--primary);letter-spacing:3px;background:var(--primary-glow);padding:6px 14px;border:1px solid var(--primary-border-soft);border-radius:var(--radius-sm);font-weight:600;text-transform:uppercase">מנהל</div>
   </header>
 
   <!-- Admin tabs -->
@@ -867,8 +893,8 @@ document.head.appendChild(link);
       <div style="display:flex;gap:8px;align-items:center">
         <label for="adminDatePicker" class="sr-only">בחר תאריך לצפייה</label>
         <input type="date" id="adminDatePicker" aria-label="בחר תאריך לצפייה" style="flex:1;background:var(--card);border:1px solid var(--border);color:var(--text);padding:12px 14px;font-family:'Heebo',sans-serif;font-size:15px;outline:none;border-radius:var(--radius-sm);color-scheme:dark" onchange="filterAdminByDate()">
-        <button onclick="setAdminToday()" style="background:var(--primary-glow);border:1px solid rgba(201,165,92,0.25);color:var(--primary);padding:12px 14px;font-family:'Heebo',sans-serif;font-size:14px;font-weight:600;cursor:pointer;white-space:nowrap;border-radius:var(--radius-sm)">היום</button>
-        <button onclick="setAdminTomorrow()" style="background:var(--primary-glow);border:1px solid rgba(201,165,92,0.25);color:var(--primary);padding:12px 14px;font-family:'Heebo',sans-serif;font-size:14px;font-weight:600;cursor:pointer;white-space:nowrap;border-radius:var(--radius-sm)">מחר</button>
+        <button onclick="setAdminToday()" style="background:var(--primary-glow);border:1px solid var(--primary-border);color:var(--primary);padding:12px 14px;font-family:'Heebo',sans-serif;font-size:14px;font-weight:600;cursor:pointer;white-space:nowrap;border-radius:var(--radius-sm)">היום</button>
+        <button onclick="setAdminTomorrow()" style="background:var(--primary-glow);border:1px solid var(--primary-border);color:var(--primary);padding:12px 14px;font-family:'Heebo',sans-serif;font-size:14px;font-weight:600;cursor:pointer;white-space:nowrap;border-radius:var(--radius-sm)">מחר</button>
       </div>
     </div>
     <div id="adminQuickList" style="padding:0 20px 12px;display:none">
@@ -923,7 +949,7 @@ document.head.appendChild(link);
     <div style="font-family:'Bebas Neue',sans-serif;font-size:26px;letter-spacing:2px;margin-bottom:4px">שירותים ומחירים</div>
     <div style="font-size:14px;color:var(--text-soft);margin-bottom:20px">ערוך, הוסף או מחק שירותים</div>
     <div id="servicesAdminList"></div>
-    <button onclick="addNewService()" style="width:100%;background:var(--primary-glow);border:1px dashed rgba(201,165,92,0.3);color:var(--primary);padding:14px;font-family:'Heebo',sans-serif;font-size:15px;font-weight:600;cursor:pointer;margin-top:8px;border-radius:var(--radius-sm)">+ הוסף שירות חדש</button>
+    <button onclick="addNewService()" style="width:100%;background:var(--primary-glow);border:1px dashed var(--primary-border);color:var(--primary);padding:14px;font-family:'Heebo',sans-serif;font-size:15px;font-weight:600;cursor:pointer;margin-top:8px;border-radius:var(--radius-sm)">+ הוסף שירות חדש</button>
     <button onclick="saveServicesManual()" id="saveServicesBtn" style="width:100%;background:var(--primary);border:none;color:var(--bg);padding:14px;font-family:'Heebo',sans-serif;font-size:15px;font-weight:700;cursor:pointer;margin-top:10px;border-radius:var(--radius-sm);letter-spacing:1px">✓ שמור שינויים</button>
     <div id="saveServicesMsg" style="text-align:center;color:var(--success-msg);font-size:15px;margin-top:8px;display:none">✓ השירותים נשמרו בהצלחה!</div>
   </div>
@@ -945,16 +971,16 @@ document.head.appendChild(link);
     <div style="font-family:'Bebas Neue',sans-serif;font-size:26px;letter-spacing:2px;margin-bottom:4px">ימי חופש</div>
     <div style="font-size:14px;color:var(--text-soft);margin-bottom:16px">חופשות, מחלה, ואירועים — ניתן להגדיר מראש לכל עתיד</div>
     <div id="blockedDaysList"></div>
-    <form onsubmit="addBlockedDay(); return false;" style="background:var(--card);border:1px solid rgba(239,68,68,0.15);padding:16px;margin-top:8px;border-radius:var(--radius-md)">
+    <form onsubmit="addBlockedDay(); return false;" style="background:var(--card);border:1px solid var(--red-border-soft);padding:16px;margin-top:8px;border-radius:var(--radius-md)">
       <div style="font-size:14px;color:var(--red);letter-spacing:2px;margin-bottom:12px;font-weight:700">הוסף יום חופש / תקופה</div>
       <label for="blockDateFrom" style="font-size:13px;color:var(--text-soft);margin-bottom:6px;display:block">מתאריך</label>
-      <input type="date" id="blockDateFrom" aria-label="תאריך התחלה לחסימה" style="width:100%;background:var(--bg2);border:1px solid rgba(239,68,68,0.15);color:var(--text);padding:12px;font-family:'Heebo',sans-serif;font-size:15px;outline:none;margin-bottom:8px;color-scheme:dark;border-radius:var(--radius-sm)">
+      <input type="date" id="blockDateFrom" aria-label="תאריך התחלה לחסימה" style="width:100%;background:var(--bg2);border:1px solid var(--red-border-soft);color:var(--text);padding:12px;font-family:'Heebo',sans-serif;font-size:15px;outline:none;margin-bottom:8px;color-scheme:dark;border-radius:var(--radius-sm)">
       <label for="blockDateTo" style="font-size:13px;color:var(--text-soft);margin-bottom:6px;display:block">עד תאריך (אופציונלי — ליום אחד השאר ריק)</label>
-      <input type="date" id="blockDateTo" aria-label="תאריך סיום חסימה" style="width:100%;background:var(--bg2);border:1px solid rgba(239,68,68,0.15);color:var(--text);padding:12px;font-family:'Heebo',sans-serif;font-size:15px;outline:none;margin-bottom:10px;color-scheme:dark;border-radius:var(--radius-sm)">
+      <input type="date" id="blockDateTo" aria-label="תאריך סיום חסימה" style="width:100%;background:var(--bg2);border:1px solid var(--red-border-soft);color:var(--text);padding:12px;font-family:'Heebo',sans-serif;font-size:15px;outline:none;margin-bottom:10px;color-scheme:dark;border-radius:var(--radius-sm)">
       <label for="blockReason" style="font-size:13px;color:var(--text-soft);margin-bottom:6px;display:block">סיבה</label>
       <input type="text" id="blockReason" placeholder="סיבה (אופציונלי — חופשה, מחלה...)"
-        style="width:100%;background:var(--bg2);border:1px solid rgba(239,68,68,0.1);color:var(--text);padding:12px;font-family:'Heebo',sans-serif;font-size:14px;outline:none;margin-bottom:12px;border-radius:var(--radius-sm)">
-      <button type="submit" style="width:100%;background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.3);color:var(--red);padding:14px;font-family:'Heebo',sans-serif;font-size:15px;font-weight:700;cursor:pointer;border-radius:var(--radius-sm)">הוסף יום חופש</button>
+        style="width:100%;background:var(--bg2);border:1px solid var(--red-glow);color:var(--text);padding:12px;font-family:'Heebo',sans-serif;font-size:14px;outline:none;margin-bottom:12px;border-radius:var(--radius-sm)">
+      <button type="submit" style="width:100%;background:var(--red-glow);border:1px solid var(--red-border);color:var(--red);padding:14px;font-family:'Heebo',sans-serif;font-size:15px;font-weight:700;cursor:pointer;border-radius:var(--radius-sm)">הוסף יום חופש</button>
     </form>
   </div>
 
@@ -989,7 +1015,7 @@ document.head.appendChild(link);
         </div>
       </div>
       <input type="text" id="shortDayNote" placeholder="הערה (אופציונלי — לדוגמה: לפני חג)" style="width:100%;background:var(--bg2);border:1px solid var(--border);color:var(--text);padding:12px;font-family:'Heebo',sans-serif;font-size:14px;outline:none;margin-bottom:12px;border-radius:var(--radius-sm)">
-      <button type="submit" style="width:100%;background:var(--primary-glow);border:1px solid rgba(201,165,92,0.3);color:var(--primary);padding:14px;font-family:'Heebo',sans-serif;font-size:15px;font-weight:700;cursor:pointer;border-radius:var(--radius-sm)">הוסף יום מקוצר</button>
+      <button type="submit" style="width:100%;background:var(--primary-glow);border:1px solid var(--primary-border);color:var(--primary);padding:14px;font-family:'Heebo',sans-serif;font-size:15px;font-weight:700;cursor:pointer;border-radius:var(--radius-sm)">הוסף יום מקוצר</button>
     </form>
   </div>
 
@@ -1003,8 +1029,8 @@ document.head.appendChild(link);
       <div style="font-size:17px;letter-spacing:3px;color:var(--text-soft);margin-bottom:14px;font-weight:700;text-transform:uppercase">בחר תאריך</div>
       <input type="date" id="reportSendDate" style="width:100%;background:var(--card2);border:1px solid var(--border);color:var(--text);padding:12px;font-family:'Heebo',sans-serif;font-size:18px;outline:none;border-radius:10px;margin-bottom:12px;direction:ltr">
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
-        <button onclick="sendWorkPlanForDate()" style="background:rgba(232,213,176,0.1);border:1px solid var(--primary);color:var(--primary);padding:13px 8px;font-family:'Heebo',sans-serif;font-size:17px;font-weight:700;cursor:pointer;border-radius:12px">📋 שלח תכנית עבודה</button>
-        <button onclick="sendSummaryForDate()" style="background:rgba(232,213,176,0.1);border:1px solid var(--primary);color:var(--primary);padding:13px 8px;font-family:'Heebo',sans-serif;font-size:17px;font-weight:700;cursor:pointer;border-radius:12px">📊 שלח סיכום יומי</button>
+        <button onclick="sendWorkPlanForDate()" style="background:var(--primary-glow);border:1px solid var(--primary);color:var(--primary);padding:13px 8px;font-family:'Heebo',sans-serif;font-size:17px;font-weight:700;cursor:pointer;border-radius:12px">📋 שלח תכנית עבודה</button>
+        <button onclick="sendSummaryForDate()" style="background:var(--primary-glow);border:1px solid var(--primary);color:var(--primary);padding:13px 8px;font-family:'Heebo',sans-serif;font-size:17px;font-weight:700;cursor:pointer;border-radius:12px">📊 שלח סיכום יומי</button>
       </div>
     </div>
 
@@ -1015,7 +1041,7 @@ document.head.appendChild(link);
       <!-- Report type selection -->
       <div style="font-size:18px;color:var(--text-soft);margin-bottom:10px;font-weight:600">בחר סוג דוח</div>
       <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:16px">
-        <button id="rtype-daily" onclick="selectReportType('daily')" style="padding:11px 6px;border-radius:10px;border:1.5px solid var(--primary);background:rgba(232,213,176,0.1);color:var(--primary);font-family:'Heebo',sans-serif;font-size:18px;font-weight:700;cursor:pointer">📅 יומי</button>
+        <button id="rtype-daily" onclick="selectReportType('daily')" style="padding:11px 6px;border-radius:10px;border:1.5px solid var(--primary);background:var(--primary-glow);color:var(--primary);font-family:'Heebo',sans-serif;font-size:18px;font-weight:700;cursor:pointer">📅 יומי</button>
         <button id="rtype-range" onclick="selectReportType('range')" style="padding:11px 6px;border-radius:10px;border:1.5px solid var(--border);background:transparent;color:var(--text-soft);font-family:'Heebo',sans-serif;font-size:18px;font-weight:700;cursor:pointer">📆 טווח תאריכים</button>
         <button id="rtype-monthly" onclick="selectReportType('monthly')" style="padding:11px 6px;border-radius:10px;border:1.5px solid var(--border);background:transparent;color:var(--text-soft);font-family:'Heebo',sans-serif;font-size:18px;font-weight:700;cursor:pointer">🗓️ חודשי</button>
       </div>
@@ -1074,14 +1100,14 @@ document.head.appendChild(link);
     <div style="background:var(--card);border:1px solid var(--border);padding:20px;border-radius:16px;margin-bottom:14px">
       <div style="font-size:17px;letter-spacing:3px;color:var(--text-soft);margin-bottom:14px;font-weight:700;text-transform:uppercase">מאגר לקוחות</div>
       <div style="font-size:18px;color:var(--text-soft);margin-bottom:12px">רשימת לקוחות ייחודיים ללא כפילויות</div>
-      <button onclick="downloadCustomers()" style="width:100%;background:rgba(232,213,176,0.1);border:1px solid var(--primary);color:var(--primary);padding:14px;font-family:'Heebo',sans-serif;font-size:18px;font-weight:700;cursor:pointer;border-radius:12px">👥 הורד מאגר לקוחות (Excel)</button>
+      <button onclick="downloadCustomers()" style="width:100%;background:var(--primary-glow);border:1px solid var(--primary);color:var(--primary);padding:14px;font-family:'Heebo',sans-serif;font-size:18px;font-weight:700;cursor:pointer;border-radius:12px">👥 הורד מאגר לקוחות (Excel)</button>
     </div>
 
     <!-- Statistics Charts -->
     <div style="background:var(--card);border:1px solid var(--border);padding:20px;border-radius:16px;margin-bottom:14px">
       <div style="font-size:15px;font-weight:700;color:var(--text);margin-bottom:16px">📈 סטטיסטיקות הכנסות</div>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px">
-        <button id="chartBtn-week" onclick="showChart('week')" style="padding:10px;border-radius:10px;border:1.5px solid var(--primary);background:rgba(232,213,176,0.1);color:var(--primary);font-family:'Heebo',sans-serif;font-size:13px;font-weight:700;cursor:pointer">שבוע אחרון</button>
+        <button id="chartBtn-week" onclick="showChart('week')" style="padding:10px;border-radius:10px;border:1.5px solid var(--primary);background:var(--primary-glow);color:var(--primary);font-family:'Heebo',sans-serif;font-size:13px;font-weight:700;cursor:pointer">שבוע אחרון</button>
         <button id="chartBtn-month" onclick="showChart('month')" style="padding:10px;border-radius:10px;border:1.5px solid var(--border);background:transparent;color:var(--text-soft);font-family:'Heebo',sans-serif;font-size:13px;font-weight:700;cursor:pointer">חודש אחרון</button>
       </div>
       <canvas id="revenueChart" height="200" style="width:100%"></canvas>
@@ -1188,7 +1214,7 @@ document.head.appendChild(link);
       </div>
       <div style="font-size:17px;color:var(--text-soft);margin-bottom:8px;font-weight:600">תכנית של</div>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
-        <button id="dayModeToday" onclick="setDayMode('today')" style="padding:12px;border-radius:10px;border:1.5px solid var(--primary);background:rgba(232,213,176,0.1);color:var(--primary);font-family:'Heebo',sans-serif;font-size:17px;font-weight:700;cursor:pointer">📅 היום</button>
+        <button id="dayModeToday" onclick="setDayMode('today')" style="padding:12px;border-radius:10px;border:1.5px solid var(--primary);background:var(--primary-glow);color:var(--primary);font-family:'Heebo',sans-serif;font-size:17px;font-weight:700;cursor:pointer">📅 היום</button>
         <button id="dayModeTomorrow" onclick="setDayMode('tomorrow')" style="padding:12px;border-radius:10px;border:1.5px solid var(--border);background:transparent;color:var(--text-soft);font-family:'Heebo',sans-serif;font-size:17px;font-weight:700;cursor:pointer">📅 מחר</button>
       </div>
     </div>
@@ -1236,7 +1262,7 @@ document.head.appendChild(link);
       </div>
       <div style="font-size:17px;color:var(--text-soft);margin-bottom:8px;font-weight:600">סיכום של</div>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
-        <button id="summaryModeToday" onclick="setSummaryMode('today')" style="padding:12px;border-radius:10px;border:1.5px solid var(--primary);background:rgba(232,213,176,0.1);color:var(--primary);font-family:'Heebo',sans-serif;font-size:17px;font-weight:700;cursor:pointer">📅 היום</button>
+        <button id="summaryModeToday" onclick="setSummaryMode('today')" style="padding:12px;border-radius:10px;border:1.5px solid var(--primary);background:var(--primary-glow);color:var(--primary);font-family:'Heebo',sans-serif;font-size:17px;font-weight:700;cursor:pointer">📅 היום</button>
         <button id="summaryModeYesterday" onclick="setSummaryMode('yesterday')" style="padding:12px;border-radius:10px;border:1.5px solid var(--border);background:transparent;color:var(--text-soft);font-family:'Heebo',sans-serif;font-size:17px;font-weight:700;cursor:pointer">📅 יום קודם</button>
       </div>
     </div>
@@ -1265,7 +1291,7 @@ document.head.appendChild(link);
         <input id="newPass2" type="password" placeholder="אימות סיסמה" class="form-input" style="padding-left:40px">
         <span onclick="togglePassView('newPass2','eye2')" id="eye2" style="position:absolute;left:12px;top:50%;transform:translateY(-50%);cursor:pointer;font-size:18px;user-select:none">👁️</span>
       </div>
-      <button type="submit" style="background:var(--primary-glow);border:1px solid rgba(201,165,92,0.25);color:var(--primary);padding:12px 24px;font-family:'Heebo',sans-serif;font-size:15px;font-weight:600;cursor:pointer;letter-spacing:1px;width:100%;border-radius:var(--radius-sm)">עדכן סיסמה</button>
+      <button type="submit" style="background:var(--primary-glow);border:1px solid var(--primary-border);color:var(--primary);padding:12px 24px;font-family:'Heebo',sans-serif;font-size:15px;font-weight:600;cursor:pointer;letter-spacing:1px;width:100%;border-radius:var(--radius-sm)">עדכן סיסמה</button>
       <div id="passChangeMsg" style="font-size:18px;margin-top:8px;min-height:16px;text-align:center"></div>
     </form>
   </div>
@@ -1430,7 +1456,7 @@ document.head.appendChild(link);
       <input type="tel" id="mybookings-phone" placeholder="050-0000000" autocomplete="tel" dir="ltr"
         style="flex:1;padding:14px 16px;border-radius:var(--radius-md);border:1px solid var(--border);background:var(--card);color:var(--text);font-family:'Heebo',sans-serif;font-size:16px;outline:none;transition:border-color 0.2s"
         aria-label="מספר טלפון לחיפוש תורים">
-      <button onclick="lookupMyBookings()" style="padding:14px 22px;border-radius:var(--radius-md);border:none;background:var(--primary);color:var(--bg);font-family:'Heebo',sans-serif;font-size:14px;font-weight:700;cursor:pointer;white-space:nowrap;box-shadow:0 2px 12px rgba(201,165,92,0.2)">🔍 חפש</button>
+      <button onclick="lookupMyBookings()" style="padding:14px 22px;border-radius:var(--radius-md);border:none;background:var(--primary);color:var(--bg);font-family:'Heebo',sans-serif;font-size:14px;font-weight:700;cursor:pointer;white-space:nowrap;box-shadow:0 2px 12px var(--primary-border-soft)">🔍 חפש</button>
     </div>
     <div id="myBookingsList"></div>
   </div>
@@ -1456,7 +1482,7 @@ document.head.appendChild(link);
       <div style="font-size:28px;font-family:'Bebas Neue',sans-serif;color:var(--primary);letter-spacing:2px" id="suc-price"></div>
     </div>
   </div>
-  <button onclick="addToCalendar()" style="margin-bottom:12px;background:var(--primary-glow);border:1px solid rgba(201,165,92,0.3);color:var(--primary);padding:15px 40px;font-family:'Heebo',sans-serif;font-size:15px;font-weight:600;cursor:pointer;letter-spacing:1px;border-radius:var(--radius-md);width:100%;max-width:300px;transition:all 0.15s">
+  <button onclick="addToCalendar()" style="margin-bottom:12px;background:var(--primary-glow);border:1px solid var(--primary-border);color:var(--primary);padding:15px 40px;font-family:'Heebo',sans-serif;font-size:15px;font-weight:600;cursor:pointer;letter-spacing:1px;border-radius:var(--radius-md);width:100%;max-width:300px;transition:all 0.15s">
     📅 הוסף ליומן הטלפון
   </button>
   <div style="font-size:12px;color:var(--text-soft);margin-bottom:20px;letter-spacing:0.5px">⏰ תזכורת שעה לפני התור ביומן</div>
@@ -1477,7 +1503,7 @@ document.head.appendChild(link);
       <div style="font-size:17px;color:var(--text-soft);margin-bottom:20px;line-height:1.6">
         התקן את האפליקציה על הטלפון שלך לגישה מהירה ונוחה
       </div>
-      <button id="installPwaBtn" onclick="triggerInstall()" style="width:100%;background:var(--primary);color:var(--bg);border:none;padding:16px;font-family:'Heebo',sans-serif;font-size:15px;font-weight:700;cursor:pointer;border-radius:var(--radius-md);margin-bottom:12px;box-shadow:0 4px 20px rgba(201,165,92,0.2)">
+      <button id="installPwaBtn" onclick="triggerInstall()" style="width:100%;background:var(--primary);color:var(--bg);border:none;padding:16px;font-family:'Heebo',sans-serif;font-size:15px;font-weight:700;cursor:pointer;border-radius:var(--radius-md);margin-bottom:12px;box-shadow:0 4px 20px var(--primary-border-soft)">
         📲 התקן עכשיו
       </button>
     </div>
@@ -1750,6 +1776,28 @@ function goTo(id) {
   if (id === 'details') { fillSummary(); autoFillCustomer(); }
   if (id === 'home') renderServicesGrid();
   if (id === 'mybookings') renderMyBookings();
+  if (id === 'success') launchConfetti();
+}
+
+function launchConfetti() {
+  const existing = document.querySelector('.confetti-container');
+  if (existing) existing.remove();
+  const container = document.createElement('div');
+  container.className = 'confetti-container';
+  const colors = ['var(--primary)', 'var(--success)', 'var(--info)', '#ff6b6b', '#ffd93d'];
+  for (let i = 0; i < 40; i++) {
+    const piece = document.createElement('div');
+    piece.className = 'confetti-piece';
+    piece.style.left = Math.random() * 100 + '%';
+    piece.style.background = colors[i % colors.length];
+    piece.style.animationDelay = (Math.random() * 0.8) + 's';
+    piece.style.borderRadius = Math.random() > 0.5 ? '50%' : '2px';
+    piece.style.width = (6 + Math.random() * 6) + 'px';
+    piece.style.height = (6 + Math.random() * 6) + 'px';
+    container.appendChild(piece);
+  }
+  document.body.appendChild(container);
+  setTimeout(() => container.remove(), 3500);
 }
 
 // ─── SERVICE SELECT ───
@@ -2290,7 +2338,7 @@ function renderAdminServices() {
     <div style="background:var(--card);border:1px solid var(--border);padding:16px;margin-bottom:10px;border-radius:var(--radius-md)">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
         <div style="font-size:24px">${s.icon}</div>
-        <button onclick="deleteService(${i})" style="background:rgba(239,68,68,0.08);border:1px solid rgba(239,68,68,0.2);color:var(--red);padding:6px 12px;font-size:13px;cursor:pointer;font-family:'Heebo',sans-serif;border-radius:var(--radius-sm)">הסר</button>
+        <button onclick="deleteService(${i})" style="background:var(--red-glow);border:1px solid var(--red-border);color:var(--red);padding:6px 12px;font-size:13px;cursor:pointer;font-family:'Heebo',sans-serif;border-radius:var(--radius-sm)">הסר</button>
       </div>
       <label style="font-size:12px;color:var(--text-soft);margin-bottom:4px;display:block">שם שירות
       <input value="${s.name}" onchange="updateService(${i},'name',this.value)"
@@ -2313,7 +2361,7 @@ function renderAdminServices() {
       <div>
         <div style="font-size:12px;color:var(--text-soft);margin-bottom:6px">מיקום שירות</div>
         <div style="display:flex;gap:6px">
-          <button onclick="updateService(${i},'location','shop')" style="flex:1;padding:8px 4px;font-size:14px;cursor:pointer;font-family:'Heebo',sans-serif;border-radius:var(--radius-sm);border:1px solid ${(s.location||'shop')==='shop'?'rgba(201,165,92,0.3)':'var(--border)'};background:${(s.location||'shop')==='shop'?'var(--primary-glow)':'var(--bg2)'};color:${(s.location||'shop')==='shop'?'var(--primary)':'var(--text-soft)'}">🏪 מספרה</button>
+          <button onclick="updateService(${i},'location','shop')" style="flex:1;padding:8px 4px;font-size:14px;cursor:pointer;font-family:'Heebo',sans-serif;border-radius:var(--radius-sm);border:1px solid ${(s.location||'shop')==='shop'?'var(--primary-border)':'var(--border)'};background:${(s.location||'shop')==='shop'?'var(--primary-glow)':'var(--bg2)'};color:${(s.location||'shop')==='shop'?'var(--primary)':'var(--text-soft)'}">🏪 מספרה</button>
           <button onclick="updateService(${i},'location','both')" style="flex:1;padding:8px 4px;font-size:14px;cursor:pointer;font-family:'Heebo',sans-serif;border-radius:var(--radius-sm);border:1px solid ${s.location==='both'?'rgba(100,180,255,0.3)':'var(--border)'};background:${s.location==='both'?'rgba(100,180,255,0.08)':'var(--bg2)'};color:${s.location==='both'?'var(--info)':'var(--text-soft)'}">🏠 עד בית הלקוח</button>
 
         </div>
@@ -2598,12 +2646,12 @@ function renderBlockedDays() {
       rangeLabel += ` עד ${dt.getDate()} ב${HEBREW_MONTHS[dt.getMonth()]}`;
     }
     return `
-    <div style="background:rgba(239,68,68,0.05);border:1px solid rgba(239,68,68,0.15);padding:14px 16px;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center;border-radius:var(--radius-sm)">
+    <div style="background:var(--red-glow);border:1px solid var(--red-border-soft);padding:14px 16px;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center;border-radius:var(--radius-sm)">
       <div>
         <div style="font-weight:700;font-size:15px;color:var(--red)">🏖️ ${rangeLabel}</div>
         ${b.reason ? `<div style="font-size:13px;color:var(--text-soft);margin-top:3px">${b.reason}</div>` : ''}
       </div>
-      <button onclick="deleteBlockedDay(${blocked.indexOf(b)})" style="background:rgba(239,68,68,0.08);border:1px solid rgba(239,68,68,0.2);color:var(--red);padding:6px 12px;font-size:13px;cursor:pointer;font-family:'Heebo',sans-serif;border-radius:var(--radius-sm)">הסר</button>
+      <button onclick="deleteBlockedDay(${blocked.indexOf(b)})" style="background:var(--red-glow);border:1px solid var(--red-border);color:var(--red);padding:6px 12px;font-size:13px;cursor:pointer;font-family:'Heebo',sans-serif;border-radius:var(--radius-sm)">הסר</button>
     </div>`;
   }).join('');
 }
@@ -2647,13 +2695,13 @@ function renderShortDays() {
     const label = 'יום ' + dayNames[d.getDay()] + ', ' + d.getDate() + ' ב' + HEBREW_MONTHS[d.getMonth()];
     const breakLabel = s.breakFrom && s.breakTo ? ' | הפסקה: ' + s.breakFrom + '-' + s.breakTo : '';
     const noteHtml = s.note ? '<div style="font-size:13px;color:var(--text-soft);margin-top:2px">' + s.note + '</div>' : '';
-    return '<div style="background:var(--primary-glow);border:1px solid rgba(201,165,92,0.15);padding:14px 16px;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center;border-radius:var(--radius-sm)">' +
+    return '<div style="background:var(--primary-glow);border:1px solid var(--primary-glow);padding:14px 16px;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center;border-radius:var(--radius-sm)">' +
       '<div>' +
         '<div style="font-weight:700;font-size:14px;color:var(--primary)">⏱️ ' + label + '</div>' +
         '<div style="font-size:13px;color:var(--text-soft);margin-top:3px">' + s.from + ' - ' + s.to + breakLabel + '</div>' +
         noteHtml +
       '</div>' +
-      '<button onclick="deleteShortDay(\'' + s.date + '\')" style="background:rgba(239,68,68,0.08);border:1px solid rgba(239,68,68,0.2);color:var(--red);padding:6px 12px;font-size:13px;cursor:pointer;font-family:\'Heebo\',sans-serif;border-radius:var(--radius-sm)">הסר</button>' +
+      '<button onclick="deleteShortDay(\'' + s.date + '\')" style="background:var(--red-glow);border:1px solid var(--red-border);color:var(--red);padding:6px 12px;font-size:13px;cursor:pointer;font-family:\'Heebo\',sans-serif;border-radius:var(--radius-sm)">הסר</button>' +
     '</div>';
   }).join('');
 }
@@ -2725,7 +2773,7 @@ function renderAdminHomeVisits() {
         <div style="font-weight:700;font-size:14px;color:var(--info)">🏠 יום ${dayNames[d.getDay()]}, ${d.getDate()} ב${HEBREW_MONTHS[d.getMonth()]}</div>
         <div style="font-size:13px;color:var(--text-soft);margin-top:3px">${v.from} — ${v.to}</div>
       </div>
-      <button onclick="deleteHomeVisit(${visits.indexOf(v)})" style="background:rgba(239,68,68,0.08);border:1px solid rgba(239,68,68,0.2);color:var(--red);padding:6px 12px;font-size:13px;cursor:pointer;font-family:'Heebo',sans-serif;border-radius:var(--radius-sm)">הסר</button>
+      <button onclick="deleteHomeVisit(${visits.indexOf(v)})" style="background:var(--red-glow);border:1px solid var(--red-border);color:var(--red);padding:6px 12px;font-size:13px;cursor:pointer;font-family:'Heebo',sans-serif;border-radius:var(--radius-sm)">הסר</button>
     </div>`;
   }).join('');
 }
@@ -2858,7 +2906,7 @@ async function filterAdminByDate() {
   document.getElementById('adminDateLabel').textContent = label;
 
   const list = document.getElementById('adminBookingsList');
-  list.innerHTML = `<div style="text-align:center;padding:32px;color:var(--text-soft);font-size:14px">⏳ טוען תורים...</div>`;
+  list.innerHTML = '<div class="skeleton skeleton-card"></div><div class="skeleton skeleton-card"></div><div class="skeleton skeleton-card"></div>';
 
   // Try to load from Google Sheets first
   let bookings = [];
@@ -2953,7 +3001,7 @@ async function filterAdminByDate() {
               ${isDone ? '✓ שולם' : '✗ לא שולם'}
             </button>
             <button onclick="adminCancelBooking('${b.confirmNum||b.ConfirmNum||''}','${b.date||dateStr}','${b.time||b.Time||''}','${b.phone||b.clientPhone||b.ClientPhone||''}','${b.name||b.clientName||b.ClientName||''}')"
-              style="padding:10px 14px;border-radius:var(--radius-sm);border:1px solid rgba(239,68,68,0.25);background:rgba(239,68,68,0.06);color:var(--red);font-family:'Heebo',sans-serif;font-size:13px;font-weight:700;cursor:pointer;margin-top:6px;width:100%">
+              style="padding:10px 14px;border-radius:var(--radius-sm);border:1px solid var(--red-border);background:var(--red-glow);color:var(--red);font-family:'Heebo',sans-serif;font-size:13px;font-weight:700;cursor:pointer;margin-top:6px;width:100%">
               🚫 בטל תור
             </button>
           </div>
@@ -3003,7 +3051,7 @@ async function renderMyBookings(phoneOverride) {
       return;
     }
   } else {
-    list.innerHTML = '<div style="text-align:center;padding:24px;color:var(--text-soft);font-size:14px">⏳ טוען תורים...</div>';
+    list.innerHTML = '<div class="skeleton skeleton-card"></div><div class="skeleton skeleton-card"></div><div class="skeleton skeleton-card"></div>';
     try {
       const res = await fetch(APPS_SCRIPT_URL + '?action=getByPhone&phone=' + encodeURIComponent(phone));
       const data = await res.json();
@@ -3039,7 +3087,7 @@ async function renderMyBookings(phoneOverride) {
     const isPast = b.date < today;
     const isCancelled = b.cancelled;
     return `
-    <div style="background:var(--card);border:1px solid ${isCancelled ? 'rgba(239,68,68,0.15)' : isPast ? 'var(--border)' : 'var(--border-hover)'};padding:16px;margin-bottom:10px;border-radius:var(--radius-md);opacity:${isCancelled || isPast ? '0.6' : '1'}">
+    <div style="background:var(--card);border:1px solid ${isCancelled ? 'var(--red-border-soft)' : isPast ? 'var(--border)' : 'var(--border-hover)'};padding:16px;margin-bottom:10px;border-radius:var(--radius-md);opacity:${isCancelled || isPast ? '0.6' : '1'}">
       <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px">
         <div>
           <div style="font-weight:700;font-size:15px;color:${isCancelled ? 'var(--red)' : isPast ? 'var(--text-soft)' : 'var(--text)'}">${b.service}</div>
@@ -3050,7 +3098,7 @@ async function renderMyBookings(phoneOverride) {
           <div style="font-family:'Bebas Neue',sans-serif;font-size:20px;color:var(--primary)">₪${b.price}</div>
           ${!isPast && !isCancelled ? `
           <button onclick="cancelMyBooking('${b.confirmNum}', '${b.date}', '${b.time}')"
-            style="margin-top:8px;background:rgba(239,68,68,0.08);border:1px solid rgba(239,68,68,0.25);color:var(--red);padding:6px 12px;font-family:'Heebo',sans-serif;font-size:13px;cursor:pointer;border-radius:var(--radius-sm);white-space:nowrap">
+            style="margin-top:8px;background:var(--red-glow);border:1px solid var(--red-border);color:var(--red);padding:6px 12px;font-family:'Heebo',sans-serif;font-size:13px;cursor:pointer;border-radius:var(--radius-sm);white-space:nowrap">
             ❌ בטל תור
           </button>` : ''}
         </div>
@@ -3354,7 +3402,7 @@ function selectReportType(type) {
     const field = document.getElementById('rfield-' + t);
     if (btn) {
       btn.style.borderColor = t === type ? 'var(--primary)' : 'var(--border)';
-      btn.style.background = t === type ? 'rgba(232,213,176,0.1)' : 'transparent';
+      btn.style.background = t === type ? 'var(--primary-glow)' : 'transparent';
       btn.style.color = t === type ? 'var(--primary)' : 'var(--text-soft)';
     }
     if (field) field.style.display = t === type ? 'block' : 'none';
@@ -3403,7 +3451,7 @@ function showChart(period) {
     const btn = document.getElementById('chartBtn-' + p);
     if (btn) {
       btn.style.borderColor = p === period ? 'var(--primary)' : 'var(--border)';
-      btn.style.background = p === period ? 'rgba(232,213,176,0.1)' : 'transparent';
+      btn.style.background = p === period ? 'var(--primary-glow)' : 'transparent';
       btn.style.color = p === period ? 'var(--primary)' : 'var(--text-soft)';
     }
   });
@@ -4261,7 +4309,7 @@ function selectReportType(type) {
     const field = document.getElementById('rfield-' + t);
     if (btn) {
       btn.style.borderColor = t === type ? 'var(--primary)' : 'var(--border)';
-      btn.style.background = t === type ? 'rgba(232,213,176,0.1)' : 'transparent';
+      btn.style.background = t === type ? 'var(--primary-glow)' : 'transparent';
       btn.style.color = t === type ? 'var(--primary)' : 'var(--text-soft)';
     }
     if (field) field.style.display = t === type ? 'block' : 'none';
@@ -4310,7 +4358,7 @@ function showChart(period) {
     const btn = document.getElementById('chartBtn-' + p);
     if (btn) {
       btn.style.borderColor = p === period ? 'var(--primary)' : 'var(--border)';
-      btn.style.background = p === period ? 'rgba(232,213,176,0.1)' : 'transparent';
+      btn.style.background = p === period ? 'var(--primary-glow)' : 'transparent';
       btn.style.color = p === period ? 'var(--primary)' : 'var(--text-soft)';
     }
   });
@@ -4790,14 +4838,14 @@ function setSummaryMode(mode) {
   const yestBtn = document.getElementById('summaryModeYesterday');
   if (mode === 'today') {
     todayBtn.style.borderColor = 'var(--primary)';
-    todayBtn.style.background = 'rgba(232,213,176,0.1)';
+    todayBtn.style.background = 'var(--primary-glow)';
     todayBtn.style.color = 'var(--primary)';
     yestBtn.style.borderColor = 'var(--border)';
     yestBtn.style.background = 'transparent';
     yestBtn.style.color = 'var(--text-soft)';
   } else {
     yestBtn.style.borderColor = 'var(--primary)';
-    yestBtn.style.background = 'rgba(232,213,176,0.1)';
+    yestBtn.style.background = 'var(--primary-glow)';
     yestBtn.style.color = 'var(--primary)';
     todayBtn.style.borderColor = 'var(--border)';
     todayBtn.style.background = 'transparent';
@@ -4811,14 +4859,14 @@ function setDayMode(mode) {
   const tomorrowBtn = document.getElementById('dayModeTomorrow');
   if (mode === 'today') {
     todayBtn.style.borderColor = 'var(--primary)';
-    todayBtn.style.background = 'rgba(232,213,176,0.1)';
+    todayBtn.style.background = 'var(--primary-glow)';
     todayBtn.style.color = 'var(--primary)';
     tomorrowBtn.style.borderColor = 'var(--border)';
     tomorrowBtn.style.background = 'transparent';
     tomorrowBtn.style.color = 'var(--text-soft)';
   } else {
     tomorrowBtn.style.borderColor = 'var(--primary)';
-    tomorrowBtn.style.background = 'rgba(232,213,176,0.1)';
+    tomorrowBtn.style.background = 'var(--primary-glow)';
     tomorrowBtn.style.color = 'var(--primary)';
     todayBtn.style.borderColor = 'var(--border)';
     todayBtn.style.background = 'transparent';
