@@ -827,7 +827,7 @@ if ('serviceWorker' in navigator) {
     </div>
 
     <div style="margin-top:32px;display:flex;flex-direction:column;align-items:center;gap:12px">
-      <button onclick="showInstallModal()" style="background:transparent;border:1px solid var(--primary-glow);color:var(--text-soft);padding:14px 24px;font-family:'Heebo',sans-serif;font-size:14px;cursor:pointer;border-radius:60px;letter-spacing:1px;transition:all 0.15s;min-height:44px">
+      <button id="homeInstallBtn" onclick="triggerInstall()" style="background:transparent;border:1px solid var(--primary-glow);color:var(--text-soft);padding:14px 24px;font-family:'Heebo',sans-serif;font-size:14px;cursor:pointer;border-radius:60px;letter-spacing:1px;transition:all 0.15s;min-height:44px">
         📲 הוסף למסך הבית
       </button>
       <span id="adminToggle" onclick="toggleAdminLogin()" style="font-size:12px;color:var(--text-soft);cursor:pointer;letter-spacing:1px;user-select:none;opacity:0.4;padding:6px 16px">כניסת מנהל</span>
@@ -4727,32 +4727,43 @@ window.addEventListener('appinstalled', () => {
   deferredPrompt = null;
   const banner = document.getElementById('installBanner');
   if (banner) banner.style.display = 'none';
+  const homeBtn = document.getElementById('homeInstallBtn');
+  if (homeBtn) homeBtn.style.display = 'none';
 });
+if (window.matchMedia('(display-mode: standalone)').matches || navigator.standalone) {
+  document.addEventListener('DOMContentLoaded', () => {
+    const homeBtn = document.getElementById('homeInstallBtn');
+    if (homeBtn) homeBtn.style.display = 'none';
+  });
+}
 function triggerInstall() {
+  const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+  if (isIOS) {
+    showInstallModal();
+    return;
+  }
   if (deferredPrompt) {
     deferredPrompt.prompt();
     deferredPrompt.userChoice.then(() => {
       document.getElementById('installBanner').style.display = 'none';
+      const homeBtn = document.getElementById('homeInstallBtn');
+      if (homeBtn) homeBtn.style.display = 'none';
       deferredPrompt = null;
     });
   } else {
-    const btn = document.getElementById('installPwaBtn');
-    btn.textContent = '⏳ מכין התקנה...';
     if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.getRegistrations().then(regs => {
-        regs.forEach(r => r.unregister());
-        return navigator.serviceWorker.register('gm-sw.js');
-      }).then(() => {
+      navigator.serviceWorker.register('gm-sw.js').then(() => {
         setTimeout(() => {
           if (deferredPrompt) {
             deferredPrompt.prompt();
             deferredPrompt.userChoice.then(() => { deferredPrompt = null; });
           } else {
-            btn.textContent = '📲 התקן עכשיו';
-            alert('לחץ על תפריט הדפדפן (⋮) ובחר "הוסף למסך הבית"');
+            showInstallModal();
           }
-        }, 1500);
+        }, 2000);
       });
+    } else {
+      showInstallModal();
     }
   }
 }
