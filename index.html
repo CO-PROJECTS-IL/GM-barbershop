@@ -3131,7 +3131,7 @@ async function renderMyBookings(phoneOverride) {
   document.getElementById('tabFutureCount').textContent = _bookingsFuture.length > 0 ? `(${_bookingsFuture.length})` : '';
   document.getElementById('tabPastCount').textContent = _bookingsPast.length > 0 ? `(${_bookingsPast.length})` : '';
 
-  switchBookingsTab(_bookingsFuture.length > 0 ? 'future' : 'past');
+  switchBookingsTab('future');
 }
 
 let _bookingsFuture = [];
