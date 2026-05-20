@@ -3103,14 +3103,15 @@ async function renderMyBookings(phoneOverride) {
 
   localStorage.setItem('gm_my_bookings', JSON.stringify(history.slice(0, 30)));
 
+  const visible = history.filter(b => !b.cancelled);
   const actionsBar = document.getElementById('myBookingsActions');
-  if (history.length === 0) {
+  if (visible.length === 0) {
     list.innerHTML = '<div style="text-align:center;padding:32px;color:var(--grey);font-size:18px">אין תורים</div>';
     if (actionsBar) actionsBar.style.display = 'none';
     return;
   }
 
-  const hasFuture = history.some(b => !b.cancelled && b.date >= today);
+  const hasFuture = visible.some(b => b.date >= today);
   if (actionsBar) actionsBar.style.display = hasFuture ? 'flex' : 'none';
   _multiSelectMode = false;
   const toggleBtn = document.getElementById('multiSelectToggle');
@@ -3118,7 +3119,7 @@ async function renderMyBookings(phoneOverride) {
   const cancelSelBtn = document.getElementById('cancelSelectedBtn');
   if (cancelSelBtn) cancelSelBtn.style.display = 'none';
 
-  const sorted = [...history].sort((a,b) => {
+  const sorted = [...visible].sort((a,b) => {
     if (a.date >= today && b.date < today) return -1;
     if (a.date < today && b.date >= today) return 1;
     return a.date.localeCompare(b.date) || a.time.localeCompare(b.time);
@@ -3126,19 +3127,18 @@ async function renderMyBookings(phoneOverride) {
 
   list.innerHTML = sorted.map(b => {
     const isPast = b.date < today;
-    const isCancelled = b.cancelled;
-    const canCancel = !isPast && !isCancelled;
+    const canCancel = !isPast;
     return `
-    <div class="mybooking-card" data-confirm="${b.confirmNum}" data-date="${b.date}" data-time="${b.time}" data-cancancel="${canCancel}" style="background:var(--card);border:1px solid ${isCancelled ? 'var(--red-border-soft)' : isPast ? 'var(--border)' : 'var(--border-hover)'};padding:16px;margin-bottom:10px;border-radius:var(--radius-md);opacity:${isCancelled || isPast ? '0.6' : '1'};transition:border-color 0.15s">
+    <div class="mybooking-card" data-confirm="${b.confirmNum}" data-date="${b.date}" data-time="${b.time}" data-cancancel="${canCancel}" style="background:var(--card);border:1px solid ${isPast ? 'var(--border)' : 'var(--border-hover)'};padding:16px;margin-bottom:10px;border-radius:var(--radius-md);opacity:${isPast ? '0.6' : '1'};transition:border-color 0.15s">
       <div style="display:flex;justify-content:space-between;align-items:flex-start">
         <div style="display:flex;align-items:flex-start;gap:12px;flex:1">
           <div class="multi-check" style="display:none;margin-top:2px">
             <input type="checkbox" class="booking-checkbox" data-confirm="${b.confirmNum}" style="width:20px;height:20px;accent-color:var(--red);cursor:pointer" onchange="updateSelectedCount()" ${!canCancel ? 'disabled' : ''}>
           </div>
           <div>
-            <div style="font-weight:700;font-size:15px;color:${isCancelled ? 'var(--red)' : isPast ? 'var(--text-soft)' : 'var(--text)'}">${b.service}</div>
+            <div style="font-weight:700;font-size:15px;color:${isPast ? 'var(--text-soft)' : 'var(--text)'}">${b.service}</div>
             <div style="font-size:13px;color:var(--text-soft);margin-top:2px">${b.dateLabel} · ${b.time}</div>
-            <div style="font-size:12px;color:var(--muted);margin-top:2px">#${b.confirmNum} ${isCancelled ? '· ❌ בוטל' : isPast ? '· ✓ הושלם' : '· ⏳ קרוב'}</div>
+            <div style="font-size:12px;color:var(--muted);margin-top:2px">#${b.confirmNum} ${isPast ? '· ✓ הושלם' : '· ⏳ קרוב'}</div>
           </div>
         </div>
         <div style="text-align:left" class="single-cancel">
@@ -3180,50 +3180,43 @@ function cancelSelectedBookings() {
   const checked = document.querySelectorAll('.booking-checkbox:checked:not(:disabled)');
   if (checked.length === 0) return;
   if (!confirm(`האם אתה בטוח שברצונך לבטל ${checked.length} תורים?`)) return;
+  const count = checked.length;
   checked.forEach(cb => {
     const card = cb.closest('.mybooking-card');
-    const confirmNum = card.dataset.confirm;
-    const date = card.dataset.date;
-    const time = card.dataset.time;
-
-    let history = JSON.parse(localStorage.getItem('gm_my_bookings') || '[]');
-    const idx = history.findIndex(b => String(b.confirmNum) === String(confirmNum));
-    if (idx !== -1) { history[idx].cancelled = true; localStorage.setItem('gm_my_bookings', JSON.stringify(history)); }
-
-    const allBookings = JSON.parse(localStorage.getItem('gm_bookings') || '[]');
-    const cancelledB = allBookings.find(b => String(b.confirmNum) === String(confirmNum));
-    const dur = cancelledB ? (cancelledB.serviceDuration || 30) : 30;
-    let bookings = allBookings.filter(b => String(b.confirmNum) !== String(confirmNum));
-    localStorage.setItem('gm_bookings', JSON.stringify(bookings));
-    fetch(APPS_SCRIPT_URL + '?action=cancelBooking&confirmNum=' + encodeURIComponent(confirmNum) + '&date=' + date + '&time=' + encodeURIComponent(time) + '&serviceDuration=' + dur);
+    _removeCancelledBooking(card.dataset.confirm, card.dataset.date, card.dataset.time);
   });
-  renderMyBookings();
-  showToast(`${checked.length} תורים בוטלו בהצלחה`);
+  _multiSelectMode = false;
+  const toggleBtn = document.getElementById('multiSelectToggle');
+  if (toggleBtn) toggleBtn.textContent = '☑️ בחר תורים';
+  const cancelSelBtn = document.getElementById('cancelSelectedBtn');
+  if (cancelSelBtn) cancelSelBtn.style.display = 'none';
+  showToast(`${count} תורים בוטלו בהצלחה`);
 }
 
 function cancelMyBooking(confirmNum, date, time) {
   if (!confirm('האם אתה בטוח שברצונך לבטל את התור?')) return;
-  
-  // Mark as cancelled in local booking history
+  _removeCancelledBooking(confirmNum, date, time);
+  showToast('התור בוטל בהצלחה');
+}
+
+function _removeCancelledBooking(confirmNum, date, time) {
   let history = JSON.parse(localStorage.getItem('gm_my_bookings') || '[]');
   const idx = history.findIndex(b => String(b.confirmNum) === String(confirmNum));
-  if (idx !== -1) {
-    history[idx].cancelled = true;
-    localStorage.setItem('gm_my_bookings', JSON.stringify(history));
-  }
+  if (idx !== -1) { history[idx].cancelled = true; localStorage.setItem('gm_my_bookings', JSON.stringify(history)); }
 
-  // Find service duration BEFORE removing from storage
   const allBookings = JSON.parse(localStorage.getItem('gm_bookings') || '[]');
   const cancelledB = allBookings.find(b => String(b.confirmNum) === String(confirmNum));
-  const cancelDuration = cancelledB ? (cancelledB.serviceDuration || 30) : 30;
+  const dur = cancelledB ? (cancelledB.serviceDuration || 30) : 30;
+  localStorage.setItem('gm_bookings', JSON.stringify(allBookings.filter(b => String(b.confirmNum) !== String(confirmNum))));
+  fetch(APPS_SCRIPT_URL + '?action=cancelBooking&confirmNum=' + encodeURIComponent(confirmNum) + '&date=' + date + '&time=' + encodeURIComponent(time) + '&serviceDuration=' + dur);
 
-  // Remove from active bookings list (so slot becomes free)
-  let bookings = allBookings.filter(b => String(b.confirmNum) !== String(confirmNum));
-  localStorage.setItem('gm_bookings', JSON.stringify(bookings));
-  fetch(APPS_SCRIPT_URL + '?action=cancelBooking&confirmNum=' + encodeURIComponent(confirmNum) + '&date=' + date + '&time=' + encodeURIComponent(time) + '&serviceDuration=' + cancelDuration);
-
-  renderMyBookings();
-  showToast('התור בוטל בהצלחה');
+  const card = document.querySelector(`.mybooking-card[data-confirm="${confirmNum}"]`);
+  if (card) { card.style.transition = 'opacity 0.3s, transform 0.3s'; card.style.opacity = '0'; card.style.transform = 'scale(0.95)'; setTimeout(() => card.remove(), 300); }
+  const remaining = document.querySelectorAll('.mybooking-card');
+  if (remaining.length <= 1) {
+    const actionsBar = document.getElementById('myBookingsActions');
+    if (actionsBar) actionsBar.style.display = 'none';
+  }
 }
 
 // ─── GOOGLE APPS SCRIPT CONFIG ───
