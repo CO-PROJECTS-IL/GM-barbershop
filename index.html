@@ -1167,7 +1167,7 @@ if ('serviceWorker' in navigator) {
       <div style="font-size:17px;letter-spacing:3px;color:var(--text-soft);margin-bottom:12px;font-weight:700;text-transform:uppercase">כתובת לקבלת מיילים</div>
       <div style="background:rgba(232,213,176,0.06);border:1px solid var(--border);border-radius:10px;padding:12px 16px;margin-bottom:10px;display:flex;align-items:center;gap:8px">
         <span style="font-size:18px">✉️</span>
-        <span id="currentEmailDisplay" style="font-size:17px;color:var(--primary);font-weight:600">meirgm10@gmail.com</span>
+        <span id="currentEmailDisplay" style="font-size:17px;color:var(--primary);font-weight:600">טוען...</span>
       </div>
       <input id="adminEmailInput" type="email" placeholder="שנה כתובת מייל"
         style="width:100%;background:var(--card2);border:1px solid var(--border);color:var(--text);padding:13px 16px;font-family:'Heebo',sans-serif;font-size:18px;outline:none;border-radius:10px;direction:ltr;text-align:left">
@@ -1623,11 +1623,8 @@ function pushConfigToSheets() {
     blockedDays: getBlockedDays(),
     shortDays: getShortDays()
   };
-  // mode: no-cors נדרש כדי לעקוף מגבלות CORS של Apps Script
   fetch(APPS_SCRIPT_URL, {
     method: 'POST',
-    mode: 'no-cors',
-    headers: { 'Content-Type': 'text/plain' },
     body: JSON.stringify(payload)
   }).catch(e => console.warn('Config save error:', e));
 }
@@ -1697,13 +1694,13 @@ function renderServicesGrid(filterHome=false) {
 
   let html = filteredServices.map((s, i) => `
     <div class="service-card"
-      onclick="selectService(this, '${s.name}', ${s.price}, '${s.duration} דק׳', ${filterHome})"
+      onclick="selectService(this, ${escAttr(JSON.stringify(s.name))}, ${parseInt(s.price)||0}, '${parseInt(s.duration)||30} דק׳', ${filterHome})"
       style="${filteredServices.length % 2 !== 0 && i === filteredServices.length-1 ? 'grid-column:1/-1' : ''}">
       <div class="service-check">✓</div>
-      <span class="service-icon">${s.icon}</span>
-      <div class="service-name">${s.name}</div>
-      <div class="service-duration">⏱ ${s.duration} דקות</div>
-      <div class="service-price">₪${s.price}</div>
+      <span class="service-icon">${esc(s.icon)}</span>
+      <div class="service-name">${esc(s.name)}</div>
+      <div class="service-duration">⏱ ${parseInt(s.duration)||30} דקות</div>
+      <div class="service-price">₪${parseInt(s.price)||0}</div>
     </div>
   `).join('');
 
@@ -2145,10 +2142,11 @@ async function confirmBooking() {
   const email = document.getElementById('inp-email').value.trim();
   const notes = document.getElementById('inp-notes').value.trim();
   const address = document.getElementById('inp-address').value.trim();
-  if (!name) { shake('inp-name'); return; }
-  if (!phone) { shake('inp-phone'); return; }
-  if (!email || !email.includes('@')) { shake('inp-email'); return; }
+  if (!name || name.length > 100) { shake('inp-name'); return; }
+  if (!phone || !/^0[5-9]\d{7,8}$/.test(phone.replace(/[-\s]/g, ''))) { shake('inp-phone'); showToast('מספר טלפון לא תקין'); return; }
+  if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { shake('inp-email'); return; }
   if (state.isHomeVisit && !address) { shake('inp-address'); return; }
+  if (notes && notes.length > 500) { showToast('הערות ארוכות מדי'); return; }
 
   // Re-check slot availability from server before booking
   const submitBtn = document.querySelector('#bookingForm button[type="submit"]');
@@ -2176,7 +2174,8 @@ async function confirmBooking() {
   const d = parseDateLocal(state.selectedDate);
   const dayNames = ['ראשון','שני','שלישי','רביעי','חמישי','שישי','שבת'];
   const dateLabel = `יום ${dayNames[d.getDay()]}, ${d.getDate()} ב${HEBREW_MONTHS[d.getMonth()]}`;
-  const confirmNum = 'GM-' + Math.floor(1000 + Math.random() * 9000);
+  const _rnd = new Uint32Array(1); crypto.getRandomValues(_rnd);
+  const confirmNum = 'GM-' + String(_rnd[0]).slice(0, 8).padStart(8, '0');
 
   // Save customer info for next time
   localStorage.setItem('gm_last_customer', JSON.stringify({ name, phone, email }));
@@ -2197,11 +2196,11 @@ async function confirmBooking() {
   });
 
   document.getElementById('confirmNum').textContent = `אישור #${confirmNum}`;
-  document.getElementById('suc-service').innerHTML = `${state.service} <small>${state.serviceDuration}</small>`;
-  document.getElementById('suc-datetime').innerHTML = `${dateLabel} <small>שעה ${state.selectedTime}</small>`;
-  document.getElementById('suc-name').innerHTML = `${name} <small>${phone}</small>`;
+  document.getElementById('suc-service').innerHTML = `${esc(state.service)} <small>${esc(state.serviceDuration)}</small>`;
+  document.getElementById('suc-datetime').innerHTML = `${esc(dateLabel)} <small>שעה ${esc(state.selectedTime)}</small>`;
+  document.getElementById('suc-name').innerHTML = `${esc(name)} <small>${esc(phone)}</small>`;
   document.getElementById('suc-price').textContent = `₪${state.servicePrice}`;
-  document.getElementById('successMsg').innerHTML = `תודה ${name}! 🎉<br>מחכים לך ב-GM המספרה`;
+  document.getElementById('successMsg').innerHTML = `תודה ${esc(name)}! 🎉<br>מחכים לך ב-GM המספרה`;
 
   // Save booking history for customer
   saveBookingHistory({
@@ -2815,43 +2814,71 @@ function deleteHomeVisit(i) {
   renderAdminHomeVisits();
 }
 
+// ─── SECURITY: HTML ESCAPE ───
+function esc(s) { if (!s) return ''; const d = document.createElement('div'); d.textContent = String(s); return d.innerHTML; }
+function escAttr(s) { return esc(s).replace(/'/g, '&#39;').replace(/"/g, '&quot;'); }
+
 // ─── ADMIN ───
-const ADMIN_PASS_KEY = 'gm_admin_pass';
-function getAdminPass() {
-  return localStorage.getItem(ADMIN_PASS_KEY) || 'gm2024';
-}
+let _adminToken = '';
 function toggleAdminLogin() {
   const box = document.getElementById('adminLoginBox');
   box.style.display = box.style.display === 'none' ? 'block' : 'none';
   if (box.style.display === 'block') document.getElementById('adminPassInput').focus();
 }
-function checkAdminPass() {
+async function checkAdminPass() {
   const val = document.getElementById('adminPassInput').value;
   const err = document.getElementById('adminErrMsg');
-  if (val === getAdminPass()) {
-    document.getElementById('adminPassInput').value = '';
-    document.getElementById('adminLoginBox').style.display = 'none';
-    err.textContent = '';
-    initAdminPanel();
-    goTo('admin');
-  } else {
-    err.textContent = 'סיסמה שגויה';
-    document.getElementById('adminPassInput').value = '';
+  if (!val) { err.textContent = 'הכנס סיסמה'; return; }
+  err.textContent = '⏳ מאמת...';
+  try {
+    const res = await fetch(APPS_SCRIPT_URL + '?action=adminLogin&pass=' + encodeURIComponent(val));
+    const data = await res.json();
+    if (data.success && data.token) {
+      _adminToken = data.token;
+      sessionStorage.setItem('gm_admin_token', _adminToken);
+      document.getElementById('adminPassInput').value = '';
+      document.getElementById('adminLoginBox').style.display = 'none';
+      err.textContent = '';
+      initAdminPanel();
+      goTo('admin');
+    } else {
+      err.textContent = 'סיסמה שגויה';
+      document.getElementById('adminPassInput').value = '';
+      setTimeout(() => { err.textContent = ''; }, 2000);
+    }
+  } catch(e) {
+    err.textContent = 'שגיאת חיבור, נסה שוב';
     setTimeout(() => { err.textContent = ''; }, 2000);
   }
 }
-function changeAdminPass() {
+async function changeAdminPass() {
   const p1 = document.getElementById('newPass1').value.trim();
   const p2 = document.getElementById('newPass2').value.trim();
   const msg = document.getElementById('passChangeMsg');
-  if (!p1) { msg.style.color='var(--error-border)'; msg.textContent='הכנס סיסמה חדשה'; return; }
+  if (!p1 || p1.length < 6) { msg.style.color='var(--error-border)'; msg.textContent='הסיסמה חייבת להכיל לפחות 6 תווים'; return; }
   if (p1 !== p2) { msg.style.color='var(--error-border)'; msg.textContent='הסיסמאות לא תואמות'; return; }
-  localStorage.setItem(ADMIN_PASS_KEY, p1);
-  document.getElementById('newPass1').value = '';
-  document.getElementById('newPass2').value = '';
-  msg.style.color = 'var(--success-msg)';
-  msg.textContent = '✓ הסיסמה עודכנה בהצלחה';
+  msg.textContent = '⏳ מעדכן...';
+  try {
+    const res = await fetch(APPS_SCRIPT_URL + '?action=changeAdminPass&token=' + encodeURIComponent(_adminToken) + '&newPass=' + encodeURIComponent(p1));
+    const data = await res.json();
+    if (data.success) {
+      document.getElementById('newPass1').value = '';
+      document.getElementById('newPass2').value = '';
+      msg.style.color = 'var(--success-msg)';
+      msg.textContent = '✓ הסיסמה עודכנה בהצלחה';
+    } else {
+      msg.style.color = 'var(--error-border)';
+      msg.textContent = 'שגיאה בעדכון הסיסמה';
+    }
+  } catch(e) {
+    msg.style.color = 'var(--error-border)';
+    msg.textContent = 'שגיאת חיבור';
+  }
   setTimeout(() => { msg.textContent = ''; }, 3000);
+}
+function getAdminToken() {
+  if (!_adminToken) _adminToken = sessionStorage.getItem('gm_admin_token') || '';
+  return _adminToken;
 }
 
 // Real bookings stored in localStorage
@@ -2882,9 +2909,13 @@ function saveBooking(booking) {
       });
       localStorage.setItem('gm_waitlist', JSON.stringify(filtered));
 
-      // Also notify Apps Script to remove from Sheets waitlist
+      // Also notify Apps Script to remove from Sheets waitlist (POST to keep PII out of URL)
       if (phone || email) {
-        fetch(APPS_SCRIPT_URL + '?action=removeWaitlist&date=' + booking.date + '&phone=' + encodeURIComponent(phone) + '&email=' + encodeURIComponent(email));
+        fetch(APPS_SCRIPT_URL, {
+          method: 'POST',
+          mode: 'no-cors',
+          body: JSON.stringify({ action: 'removeWaitlist', date: booking.date, phone, email })
+        });
       }
     }
   } catch(e) {}
@@ -2966,10 +2997,10 @@ async function filterAdminByDate() {
       const isDone = isAppointmentDone(b.date || dateStr, b.time || b.Time || '');
       const waPhone = (b.phone||'').replace(/\D/g,'').replace(/^0/,'972');
       return `<div style="display:flex;justify-content:space-between;align-items:center;padding:6px 0;gap:8px;${isDone ? 'opacity:0.5;text-decoration:line-through' : ''}">
-        <span style="font-size:15px;font-weight:600;color:var(--text)">${b.name}</span>
+        <span style="font-size:15px;font-weight:600;color:var(--text)">${esc(b.name)}</span>
         <div style="display:flex;align-items:center;gap:8px">
-          <a href="https://wa.me/${waPhone}" target="_blank" rel="noopener" style="color:var(--whatsapp);font-size:18px;text-decoration:none;line-height:1" aria-label="שלח הודעת וואטסאפ ל${b.name}">💬</a>
-          <span style="font-size:15px;font-weight:700;color:var(--primary)">${b.time}</span>
+          <a href="https://wa.me/${encodeURIComponent(waPhone)}" target="_blank" rel="noopener" style="color:var(--whatsapp);font-size:18px;text-decoration:none;line-height:1" aria-label="שלח הודעת וואטסאפ ל${escAttr(b.name)}">💬</a>
+          <span style="font-size:15px;font-weight:700;color:var(--primary)">${esc(b.time)}</span>
         </div>
       </div>`;
     }).join('');
@@ -2988,43 +3019,49 @@ async function filterAdminByDate() {
     .sort((a,b) => (a.time||'').localeCompare(b.time||''))
     .map(b => {
       const isDone = isAppointmentDone(b.date || dateStr, b.time || b.Time || '');
+      const waPhone = (b.phone||'').replace(/\D/g,'').replace(/^0/,'972');
+      const safeDate = escAttr(b.date||dateStr);
+      const safeTime = escAttr(b.time||b.Time||'');
+      const safeConfirm = escAttr(b.confirmNum||b.ConfirmNum||'');
+      const safePhone = escAttr(b.phone||b.clientPhone||b.ClientPhone||'');
+      const safeName = escAttr(b.name||b.clientName||b.ClientName||'');
       return `
-      <div id="booking-${b.time||b.Time}" style="background:var(--card);border:1px solid ${isDone ? 'var(--success)' : 'var(--border)'};padding:16px;margin-bottom:10px;border-radius:12px;opacity:${isDone ? '0.7' : '1'}">
+      <div id="booking-${esc(b.time||b.Time)}" style="background:var(--card);border:1px solid ${isDone ? 'var(--success)' : 'var(--border)'};padding:16px;margin-bottom:10px;border-radius:12px;opacity:${isDone ? '0.7' : '1'}">
         <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:10px">
           <div style="flex:1">
-            <div style="font-size:13px;color:var(--text-soft);margin-bottom:10px;font-weight:600;letter-spacing:1px">#${b.confirmNum||''}</div>
+            <div style="font-size:13px;color:var(--text-soft);margin-bottom:10px;font-weight:600;letter-spacing:1px">#${esc(b.confirmNum||'')}</div>
             <div style="display:grid;gap:6px">
               <div style="display:flex;gap:6px;align-items:center">
                 <span style="font-size:13px;color:var(--text-soft);min-width:44px">לקוח:</span>
-                <span style="font-weight:700;font-size:16px;${isDone ? 'text-decoration:line-through;color:var(--text-soft)' : ''}">${b.name}</span>
+                <span style="font-weight:700;font-size:16px;${isDone ? 'text-decoration:line-through;color:var(--text-soft)' : ''}">${esc(b.name)}</span>
               </div>
               <div style="display:flex;gap:6px;align-items:center">
                 <span style="font-size:13px;color:var(--text-soft);min-width:44px">שעה:</span>
-                <span style="font-weight:700;font-size:16px;color:var(--primary)">${b.time}</span>
+                <span style="font-weight:700;font-size:16px;color:var(--primary)">${esc(b.time)}</span>
               </div>
               <div style="display:flex;gap:6px;align-items:center">
                 <span style="font-size:13px;color:var(--text-soft);min-width:44px">טיפול:</span>
-                <span style="font-size:15px">${b.service}</span>
+                <span style="font-size:15px">${esc(b.service)}</span>
               </div>
               <div style="display:flex;gap:6px;align-items:center">
                 <span style="font-size:13px;color:var(--text-soft);min-width:44px">טלפון:</span>
-                <span style="font-size:15px">${b.phone}</span>
+                <span style="font-size:15px">${esc(b.phone)}</span>
               </div>
               ${b.homeVisit === 'כן' ? '<div style="font-size:14px;color:var(--info);margin-top:2px">🏠 הגעה לבית</div>' : ''}
-              ${b.notes ? `<div style="font-size:14px;color:var(--text-soft);margin-top:2px">💬 ${b.notes}</div>` : ''}
+              ${b.notes ? `<div style="font-size:14px;color:var(--text-soft);margin-top:2px">💬 ${esc(b.notes)}</div>` : ''}
             </div>
           </div>
           <div style="display:flex;flex-direction:column;align-items:flex-end;gap:8px;min-width:100px">
-            <div style="font-size:22px;font-weight:900;color:var(--primary)">₪${b.price||''}</div>
-            <button onclick="toggleAppointmentDone('${b.date||dateStr}','${b.time||b.Time||''}',${b.price||0},this)"
+            <div style="font-size:22px;font-weight:900;color:var(--primary)">₪${esc(b.price||'')}</div>
+            <button onclick="toggleAppointmentDone('${safeDate}','${safeTime}',${parseInt(b.price)||0},this)"
               style="padding:10px 18px;border-radius:10px;border:none;background:${isDone ? 'var(--status-paid)' : 'var(--status-unpaid)'};color:var(--white);font-family:'Heebo',sans-serif;font-size:15px;font-weight:700;cursor:pointer;min-width:90px">
               ${isDone ? '✓ שולם' : '✗ לא שולם'}
             </button>
-            <a href="https://wa.me/${(b.phone||'').replace(/\D/g,'').replace(/^0/,'972')}" target="_blank" rel="noopener"
+            <a href="https://wa.me/${encodeURIComponent(waPhone)}" target="_blank" rel="noopener"
               style="display:block;text-align:center;padding:10px 14px;border-radius:var(--radius-sm);border:1px solid var(--whatsapp);background:rgba(37,211,102,0.08);color:var(--whatsapp);font-family:'Heebo',sans-serif;font-size:13px;font-weight:700;text-decoration:none;margin-top:6px;width:100%;box-sizing:border-box">
               💬 וואטסאפ
             </a>
-            <button onclick="adminCancelBooking('${b.confirmNum||b.ConfirmNum||''}','${b.date||dateStr}','${b.time||b.Time||''}','${b.phone||b.clientPhone||b.ClientPhone||''}','${b.name||b.clientName||b.ClientName||''}')"
+            <button onclick="adminCancelBooking('${safeConfirm}','${safeDate}','${safeTime}','${safePhone}','${safeName}')"
               style="padding:10px 14px;border-radius:var(--radius-sm);border:1px solid var(--red-border);background:var(--red-glow);color:var(--red);font-family:'Heebo',sans-serif;font-size:13px;font-weight:700;cursor:pointer;margin-top:6px;width:100%">
               🚫 בטל תור
             </button>
@@ -3175,23 +3212,26 @@ function switchBookingsTab(tab) {
 
 function _renderBookingCard(b, isPast) {
   const canCancel = !isPast;
+  const safeConfirm = escAttr(b.confirmNum);
+  const safeDate = escAttr(b.date);
+  const safeTime = escAttr(b.time);
   return `
-    <div class="mybooking-card" data-confirm="${b.confirmNum}" data-date="${b.date}" data-time="${b.time}" data-cancancel="${canCancel}" style="background:var(--card);border:1px solid ${isPast ? 'var(--border)' : 'var(--border-hover)'};padding:16px;margin-bottom:10px;border-radius:var(--radius-md);opacity:${isPast ? '0.5' : '1'};transition:border-color 0.15s">
+    <div class="mybooking-card" data-confirm="${safeConfirm}" data-date="${safeDate}" data-time="${safeTime}" data-cancancel="${canCancel}" style="background:var(--card);border:1px solid ${isPast ? 'var(--border)' : 'var(--border-hover)'};padding:16px;margin-bottom:10px;border-radius:var(--radius-md);opacity:${isPast ? '0.5' : '1'};transition:border-color 0.15s">
       <div style="display:flex;justify-content:space-between;align-items:flex-start">
         <div style="display:flex;align-items:flex-start;gap:12px;flex:1">
           <div class="multi-check" style="display:none;margin-top:2px">
-            <input type="checkbox" class="booking-checkbox" data-confirm="${b.confirmNum}" style="width:20px;height:20px;accent-color:var(--red);cursor:pointer" onchange="updateSelectedCount()" ${!canCancel ? 'disabled' : ''}>
+            <input type="checkbox" class="booking-checkbox" data-confirm="${safeConfirm}" style="width:20px;height:20px;accent-color:var(--red);cursor:pointer" onchange="updateSelectedCount()" ${!canCancel ? 'disabled' : ''}>
           </div>
           <div>
-            <div style="font-weight:700;font-size:15px;color:${isPast ? 'var(--text-soft)' : 'var(--text)'}">${b.service}</div>
-            <div style="font-size:13px;color:var(--text-soft);margin-top:2px">${b.dateLabel} · ${b.time}</div>
-            <div style="font-size:12px;color:var(--muted);margin-top:2px">#${b.confirmNum} ${isPast ? '· ✓ הושלם' : '· ⏳ קרוב'}</div>
+            <div style="font-weight:700;font-size:15px;color:${isPast ? 'var(--text-soft)' : 'var(--text)'}">${esc(b.service)}</div>
+            <div style="font-size:13px;color:var(--text-soft);margin-top:2px">${esc(b.dateLabel)} · ${esc(b.time)}</div>
+            <div style="font-size:12px;color:var(--muted);margin-top:2px">#${esc(b.confirmNum)} ${isPast ? '· ✓ הושלם' : '· ⏳ קרוב'}</div>
           </div>
         </div>
         <div style="text-align:left" class="single-cancel">
-          ${b.price ? `<div style="font-family:'Bebas Neue',sans-serif;font-size:20px;color:var(--primary)">₪${b.price}</div>` : ''}
+          ${b.price ? `<div style="font-family:'Bebas Neue',sans-serif;font-size:20px;color:var(--primary)">₪${esc(b.price)}</div>` : ''}
           ${canCancel ? `
-          <button onclick="cancelMyBooking('${b.confirmNum}', '${b.date}', '${b.time}')"
+          <button onclick="cancelMyBooking('${safeConfirm}', '${safeDate}', '${safeTime}')"
             style="margin-top:8px;background:var(--red-glow);border:1px solid var(--red-border);color:var(--red);padding:6px 12px;font-family:'Heebo',sans-serif;font-size:13px;cursor:pointer;border-radius:var(--radius-sm);white-space:nowrap">
             ❌ בטל תור
           </button>` : ''}
@@ -3287,13 +3327,13 @@ function showFullDayModal(dateStr) {
       <div style="text-align:center;margin-bottom:20px">
         <div style="font-size:36px;margin-bottom:8px">📅</div>
         <div style="font-size:18px;font-weight:700;color:var(--text)">אין תורים פנויים</div>
-        <div style="font-size:15px;color:var(--text-soft);margin-top:6px">${dateLabel}</div>
+        <div style="font-size:15px;color:var(--text-soft);margin-top:6px">${esc(dateLabel)}</div>
       </div>
       <div style="background:rgba(230,57,70,0.08);border:1px solid rgba(230,57,70,0.2);border-radius:12px;padding:16px;margin-bottom:20px;text-align:center">
         <div style="font-size:14px;color:var(--red);font-weight:600">היום מלא — לא נשארו תורים</div>
         <div style="font-size:13px;color:var(--text-soft);margin-top:4px">הצטרף לרשימת ההמתנה ונעדכן אותך אם יתפנה תור</div>
       </div>
-      <button onclick="showWaitlistForm('${dateStr}', '${dateLabel}')"
+      <button onclick="showWaitlistForm('${escAttr(dateStr)}', '${escAttr(dateLabel)}')"
         style="width:100%;background:var(--primary);color:var(--bg);border:none;padding:16px;font-family:'Heebo',sans-serif;font-size:16px;font-weight:700;cursor:pointer;border-radius:14px;margin-bottom:10px">
         📋 הצטרף לרשימת ההמתנה
       </button>
@@ -3311,7 +3351,7 @@ function showWaitlistForm(dateStr, dateLabel) {
 
   const services = getServices();
   const servicesOptions = services.map(s =>
-    `<option value="${s.id}" data-duration="${s.duration}" data-name="${s.name}">${s.name} (${s.duration} דק׳) - ₪${s.price}</option>`
+    `<option value="${escAttr(s.id)}" data-duration="${parseInt(s.duration)||30}" data-name="${escAttr(s.name)}">${esc(s.name)} (${parseInt(s.duration)||30} דק׳) - ₪${parseInt(s.price)||0}</option>`
   ).join('');
 
   const form = document.createElement('div');
@@ -3371,9 +3411,13 @@ async function submitWaitlist(dateStr, dateLabel) {
   waitlist.push(entry);
   localStorage.setItem('gm_waitlist', JSON.stringify(waitlist));
 
-  // Save to Sheets via Apps Script
+  // Save to Sheets via Apps Script (POST to keep PII out of URL)
   try {
-    await fetch(APPS_SCRIPT_URL + '?action=addWaitlist&name=' + encodeURIComponent(name) + '&phone=' + encodeURIComponent(phone) + '&email=' + encodeURIComponent(email) + '&date=' + dateStr + '&dateLabel=' + encodeURIComponent(dateLabel) + '&serviceId=' + encodeURIComponent(serviceId) + '&serviceName=' + encodeURIComponent(serviceName) + '&serviceDuration=' + serviceDuration);
+    await fetch(APPS_SCRIPT_URL, {
+      method: 'POST',
+      mode: 'no-cors',
+      body: JSON.stringify({ action: 'addWaitlist', name, phone, email, date: dateStr, dateLabel, serviceId, serviceName, serviceDuration })
+    });
   } catch(e) {}
 
   document.getElementById('waitlistForm').remove();
@@ -3511,9 +3555,13 @@ async function submitUnsubscribe() {
   if (!unsub.includes(email)) unsub.push(email);
   localStorage.setItem('gm_unsubscribed', JSON.stringify(unsub));
 
-  // Also notify Apps Script
+  // Also notify Apps Script (POST to keep PII out of URL)
   try {
-    await fetch(APPS_SCRIPT_URL + '?action=unsubscribe&email=' + encodeURIComponent(email));
+    await fetch(APPS_SCRIPT_URL, {
+      method: 'POST',
+      mode: 'no-cors',
+      body: JSON.stringify({ action: 'unsubscribe', email })
+    });
   } catch(e) {}
 
   if (msgEl) { msgEl.textContent = '✅ המייל הוסר מרשימת התפוצה'; msgEl.style.color = 'var(--success)'; }
@@ -4032,31 +4080,43 @@ function loadImagesTab() {
   }
 }
 
+function _safeImgUrl(url) {
+  if (!url || typeof url !== 'string') return '';
+  if (url.startsWith('https://res.cloudinary.com/')) return url;
+  if (url.startsWith('data:image/')) return url;
+  return '';
+}
 function applyImagesToApp() {
   const imgs = getImageSettings();
 
   // Apply logo to splash
   const splashPole = document.querySelector('.splash-pole');
   if (splashPole) {
-    if (imgs.logo) {
+    const safeLogoUrl = _safeImgUrl(imgs.logo);
+    if (safeLogoUrl) {
       splashPole.style.display = 'none';
       const existing = document.getElementById('splashLogo');
+      const imgEl = document.createElement('img');
+      imgEl.src = safeLogoUrl;
+      imgEl.style.cssText = 'width:100%;height:100%;object-fit:cover';
       if (!existing) {
         const logoEl = document.createElement('div');
         logoEl.id = 'splashLogo';
         logoEl.style.cssText = 'width:90px;height:90px;border-radius:50%;overflow:hidden;margin:0 auto 16px;border:2px solid rgba(232,213,176,0.3)';
-        logoEl.innerHTML = `<img src="${imgs.logo}" style="width:100%;height:100%;object-fit:cover">`;
+        logoEl.appendChild(imgEl);
         splashPole.parentNode.insertBefore(logoEl, splashPole);
       } else {
-        existing.innerHTML = `<img src="${imgs.logo}" style="width:100%;height:100%;object-fit:cover">`;
+        existing.innerHTML = '';
+        existing.appendChild(imgEl);
       }
     }
   }
 
   // Apply cover to splash background
   const splashBg = document.querySelector('.splash-bg');
-  if (splashBg && imgs.cover) {
-    splashBg.style.backgroundImage = `url(${imgs.cover})`;
+  const safeCoverUrl = _safeImgUrl(imgs.cover);
+  if (splashBg && safeCoverUrl) {
+    splashBg.style.backgroundImage = `url(${CSS.escape(safeCoverUrl)})`;
     splashBg.style.backgroundSize = 'cover';
     splashBg.style.backgroundPosition = 'center';
     splashBg.style.opacity = '0.3';
@@ -4106,14 +4166,12 @@ async function saveBookingToSheets(booking) {
       confirmNum: booking.confirmNum || ''
     };
 
-    // Use fetch with no-cors
-    fetch(APPS_SCRIPT_URL, {
+    const res = await fetch(APPS_SCRIPT_URL, {
       method: 'POST',
-      mode: 'no-cors',
       body: JSON.stringify(payload)
     });
-
-    console.log('✅ Booking sent to Google Sheets');
+    const data = await res.json();
+    if (!data.success) console.warn('Sheets save warning:', data);
   } catch(e) {
     console.warn('Sheets save error:', e);
   }
@@ -4174,658 +4232,6 @@ function openWhatsAppCustomer() {
   window.open(`https://wa.me/${phone}?text=${msg}`, '_blank');
 }
 
-// ─── WAITLIST ───
-function getWaitlist() {
-  try { return JSON.parse(localStorage.getItem('gm_waitlist') || '[]'); }
-  catch(e) { return []; }
-}
-
-function showFullDayModal(dateStr) {
-  const [y,m,d] = dateStr.split('-');
-  const date = new Date(parseInt(y), parseInt(m)-1, parseInt(d));
-  const dayNames = ['ראשון','שני','שלישי','רביעי','חמישי','שישי','שבת'];
-  const MONTHS = ['ינואר','פברואר','מרץ','אפריל','מאי','יוני','יולי','אוגוסט','ספטמבר','אוקטובר','נובמבר','דצמבר'];
-  const dateLabel = `יום ${dayNames[date.getDay()]}, ${d} ב${MONTHS[date.getMonth()]} ${y}`;
-
-  const modal = document.createElement('div');
-  modal.id = 'fullDayModal';
-  modal.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:9999;display:flex;align-items:flex-end;justify-content:center';
-  modal.innerHTML = `
-    <div style="background:var(--card);border-radius:24px 24px 0 0;padding:28px 24px 40px;width:100%;max-width:500px;animation:slideUp 0.3s ease">
-      <div style="text-align:center;margin-bottom:20px">
-        <div style="font-size:36px;margin-bottom:8px">📅</div>
-        <div style="font-size:18px;font-weight:700;color:var(--text)">אין תורים פנויים</div>
-        <div style="font-size:15px;color:var(--text-soft);margin-top:6px">${dateLabel}</div>
-      </div>
-      <div style="background:rgba(230,57,70,0.08);border:1px solid rgba(230,57,70,0.2);border-radius:12px;padding:16px;margin-bottom:20px;text-align:center">
-        <div style="font-size:14px;color:var(--red);font-weight:600">היום מלא — לא נשארו תורים</div>
-        <div style="font-size:13px;color:var(--text-soft);margin-top:4px">הצטרף לרשימת ההמתנה ונעדכן אותך אם יתפנה תור</div>
-      </div>
-      <button onclick="showWaitlistForm('${dateStr}', '${dateLabel}')"
-        style="width:100%;background:var(--primary);color:var(--bg);border:none;padding:16px;font-family:'Heebo',sans-serif;font-size:16px;font-weight:700;cursor:pointer;border-radius:14px;margin-bottom:10px">
-        📋 הצטרף לרשימת ההמתנה
-      </button>
-      <button onclick="document.getElementById('fullDayModal').remove()"
-        style="width:100%;background:transparent;border:1px solid var(--border);color:var(--text-soft);padding:14px;font-family:'Heebo',sans-serif;font-size:15px;cursor:pointer;border-radius:14px">
-        בחר יום אחר
-      </button>
-    </div>`;
-  document.body.appendChild(modal);
-}
-
-function showWaitlistForm(dateStr, dateLabel) {
-  const modal = document.getElementById('fullDayModal');
-  if (modal) modal.remove();
-
-  const services = getServices();
-  const servicesOptions = services.map(s =>
-    `<option value="${s.id}" data-duration="${s.duration}" data-name="${s.name}">${s.name} (${s.duration} דק׳) - ₪${s.price}</option>`
-  ).join('');
-
-  const form = document.createElement('div');
-  form.id = 'waitlistForm';
-  form.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:9999;display:flex;align-items:flex-end;justify-content:center;overflow-y:auto';
-  form.innerHTML = `
-    <div style="background:var(--card);border-radius:24px 24px 0 0;padding:28px 24px 40px;width:100%;max-width:500px;animation:slideUp 0.3s ease">
-      <div style="text-align:center;margin-bottom:20px">
-        <div style="font-size:28px;font-weight:900;color:var(--text)">רשימת המתנה</div>
-        <div style="font-size:15px;color:var(--primary);margin-top:6px">${dateLabel}</div>
-      </div>
-      <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:20px">
-        <input id="wl-name" type="text" placeholder="שם מלא" autocomplete="name"
-          style="width:100%;background:var(--bg);border:1px solid var(--border);color:var(--text);padding:14px;font-family:'Heebo',sans-serif;font-size:16px;outline:none;border-radius:12px">
-        <input id="wl-phone" type="tel" placeholder="טלפון" autocomplete="tel" dir="ltr"
-          style="width:100%;background:var(--bg);border:1px solid var(--border);color:var(--text);padding:14px;font-family:'Heebo',sans-serif;font-size:16px;outline:none;border-radius:12px">
-        <input id="wl-email" type="email" placeholder="מייל (לקבלת עדכון)" autocomplete="email" dir="ltr"
-          style="width:100%;background:var(--bg);border:1px solid var(--border);color:var(--text);padding:14px;font-family:'Heebo',sans-serif;font-size:16px;outline:none;border-radius:12px">
-        <div>
-          <div style="font-size:13px;color:var(--text-soft);margin-bottom:6px">איזה שירות תרצה?</div>
-          <select id="wl-service"
-            style="width:100%;background:var(--bg);border:1px solid var(--border);color:var(--text);padding:14px;font-family:'Heebo',sans-serif;font-size:15px;outline:none;border-radius:12px">
-            <option value="">-- בחר שירות --</option>
-            ${servicesOptions}
-          </select>
-        </div>
-      </div>
-      <button onclick="submitWaitlist('${dateStr}', '${dateLabel}')"
-        style="width:100%;background:var(--primary);color:var(--bg);border:none;padding:16px;font-family:'Heebo',sans-serif;font-size:16px;font-weight:700;cursor:pointer;border-radius:14px;margin-bottom:10px">
-        אני רוצה להיכנס לרשימה ✓
-      </button>
-      <button onclick="document.getElementById('waitlistForm').remove()"
-        style="width:100%;background:transparent;border:1px solid var(--border);color:var(--text-soft);padding:14px;font-family:'Heebo',sans-serif;font-size:15px;cursor:pointer;border-radius:14px">
-        ביטול
-      </button>
-    </div>`;
-  document.body.appendChild(form);
-}
-
-async function submitWaitlist(dateStr, dateLabel) {
-  const name = document.getElementById('wl-name').value.trim();
-  const phone = document.getElementById('wl-phone').value.trim();
-  const email = document.getElementById('wl-email').value.trim();
-  const serviceEl = document.getElementById('wl-service');
-  const serviceId = serviceEl ? serviceEl.value : '';
-  const serviceOpt = serviceEl ? serviceEl.options[serviceEl.selectedIndex] : null;
-  const serviceName = serviceOpt ? serviceOpt.dataset.name || serviceOpt.text : '';
-  const serviceDuration = serviceOpt ? parseInt(serviceOpt.dataset.duration) || 30 : 30;
-
-  if (!name || !phone) { showToast('יש למלא שם וטלפון'); return; }
-  if (!serviceId) { showToast('יש לבחור שירות'); return; }
-
-  const entry = { name, phone, email, date: dateStr, dateLabel, serviceId, serviceName, serviceDuration, addedAt: new Date().toISOString() };
-
-  // Save locally
-  const waitlist = getWaitlist();
-  waitlist.push(entry);
-  localStorage.setItem('gm_waitlist', JSON.stringify(waitlist));
-
-  // Save to Sheets via Apps Script
-  try {
-    await fetch(APPS_SCRIPT_URL + '?action=addWaitlist&name=' + encodeURIComponent(name) + '&phone=' + encodeURIComponent(phone) + '&email=' + encodeURIComponent(email) + '&date=' + dateStr + '&dateLabel=' + encodeURIComponent(dateLabel) + '&serviceId=' + encodeURIComponent(serviceId) + '&serviceName=' + encodeURIComponent(serviceName) + '&serviceDuration=' + serviceDuration);
-  } catch(e) {}
-
-  document.getElementById('waitlistForm').remove();
-
-  // Show confirmation modal
-  const confirm = document.createElement('div');
-  confirm.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:9999;display:flex;align-items:center;justify-content:center;padding:20px';
-  confirm.innerHTML = `
-    <div style="background:var(--card);border:1px solid var(--border);border-radius:20px;padding:28px 24px;max-width:360px;width:100%;text-align:center">
-      <div style="font-size:48px;margin-bottom:12px">📋</div>
-      <div style="font-size:20px;font-weight:900;color:var(--text);margin-bottom:8px">נרשמת בהצלחה!</div>
-      <div style="font-size:15px;color:var(--text-soft);margin-bottom:6px">הצטרפת לרשימת ההמתנה ל:</div>
-      <div style="font-size:17px;font-weight:700;color:var(--primary);margin-bottom:20px">${dateLabel}</div>
-      <div style="font-size:14px;color:var(--text-soft);margin-bottom:20px">נשלח אליך עדכון במייל אם יתפנה תור המתאים לשירות שביקשת</div>
-      <button onclick="this.closest('div[style*=fixed]').remove()"
-        style="width:100%;background:var(--primary);color:var(--bg);border:none;padding:14px;font-family:'Heebo',sans-serif;font-size:16px;font-weight:700;cursor:pointer;border-radius:12px">
-        מעולה, תודה!
-      </button>
-    </div>`;
-  document.body.appendChild(confirm);
-}
-
-// ─── NEXT AVAILABLE SLOT ───
-function findNextSlotForService() {
-  const duration = state.serviceDuration ? parseInt(state.serviceDuration) : 30;
-  findNextSlot(duration);
-}
-
-function findNextSlot(duration) {
-  duration = duration || 30;
-  const today = new Date();
-  const hours = getWorkingHours();
-  const bookings = JSON.parse(localStorage.getItem('gm_bookings') || '[]');
-
-  function toMins(t) {
-    if (!t) return 0;
-    const [h, m] = t.split(':').map(Number);
-    return h * 60 + m;
-  }
-  function toTime(mins) {
-    return String(Math.floor(mins/60)).padStart(2,'0') + ':' + String(mins%60).padStart(2,'0');
-  }
-  function pad(n) { return String(n).padStart(2,'0'); }
-  function dateStr(d) {
-    return d.getFullYear() + '-' + pad(d.getMonth()+1) + '-' + pad(d.getDate());
-  }
-
-  // Search next 14 days
-  for (let d = 0; d < 14; d++) {
-    const checkDate = new Date(today);
-    checkDate.setDate(today.getDate() + d);
-    const dayOfWeek = checkDate.getDay();
-    const workDay = hours[dayOfWeek];
-    if (!workDay || !workDay.open) continue;
-
-    const ds = dateStr(checkDate);
-    const dayBookings = bookings.filter(b => b.date === ds);
-    const takenIntervals = dayBookings.map(b => ({
-      start: toMins(b.time),
-      end: toMins(b.time) + (parseInt(b.serviceDuration) || 30)
-    }));
-
-    const rangeStart = toMins(workDay.from);
-    const rangeEnd = toMins(workDay.to);
-    let cur = d === 0 ? Math.max(rangeStart, toMins(toTime(today.getHours() * 60 + today.getMinutes() + 30))) : rangeStart;
-    // Round up to next 30 min
-    cur = Math.ceil(cur / 30) * 30; // Round to 30-min boundary
-
-    while (cur + duration <= rangeEnd) {
-      const slotEnd = cur + duration;
-      const overlaps = takenIntervals.some(t => cur < t.end && slotEnd > t.start);
-      if (!overlaps) {
-        // Found!
-        const dayNames = ['ראשון','שני','שלישי','רביעי','חמישי','שישי','שבת'];
-        const label = d === 0 ? 'היום' : d === 1 ? 'מחר' : 'יום ' + dayNames[dayOfWeek];
-        const msg = `התור הפנוי הקרוב: ${label}, ${pad(checkDate.getDate())}/${pad(checkDate.getMonth()+1)} בשעה ${toTime(cur)}`;
-        
-        // Show as toast + option to book
-        showNextSlotModal(msg, ds, toTime(cur));
-        return;
-      }
-      cur += 30;
-    }
-  }
-  showToast('אין תורים פנויים ב-14 הימים הקרובים');
-}
-
-function showNextSlotModal(msg, date, time) {
-  const modal = document.createElement('div');
-  modal.id = 'nextSlotModal';
-  modal.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:9999;display:flex;align-items:center;justify-content:center;padding:20px';
-  modal.innerHTML = `
-    <div style="background:var(--card);border:1px solid var(--border);border-radius:20px;padding:28px 24px;max-width:360px;width:100%;text-align:center">
-      <div style="font-size:36px;margin-bottom:12px">⚡</div>
-      <div style="font-size:18px;font-weight:700;color:var(--text);margin-bottom:20px">${msg}</div>
-      <button onclick="bookNextSlotNow('${date}','${time}')"
-        style="width:100%;background:var(--primary);color:var(--bg);border:none;padding:14px;font-family:'Heebo',sans-serif;font-size:16px;font-weight:700;cursor:pointer;border-radius:12px;margin-bottom:10px">
-        קבע תור עכשיו
-      </button>
-      <button onclick="document.getElementById('nextSlotModal').remove()"
-        style="width:100%;background:transparent;border:1px solid var(--border);color:var(--text-soft);padding:12px;font-family:'Heebo',sans-serif;font-size:15px;cursor:pointer;border-radius:12px">
-        קבע תור אחר
-      </button>
-    </div>`;
-  document.body.appendChild(modal);
-}
-
-function bookNextSlotNow(date, time) {
-  // Remove modal
-  const modal = document.getElementById('nextSlotModal');
-  if (modal) modal.remove();
-  
-  // Set selected date and time in state
-  state.selectedDate = date;
-  state.selectedTime = time;
-  
-  // Go directly to step 3 (details)
-  goTo('details');
-}
-
-// ─── MARKETING / UNSUBSCRIBE ───
-function showUnsubscribe() {
-  const box = document.getElementById('unsubscribeBox');
-  if (box) box.style.display = box.style.display === 'none' ? 'block' : 'none';
-}
-
-async function submitUnsubscribe() {
-  const emailEl = document.getElementById('inp-unsub-email');
-  const msgEl = document.getElementById('unsubMsg');
-  const email = emailEl ? emailEl.value.trim() : '';
-  if (!email) { if (msgEl) msgEl.textContent = 'יש להכניס כתובת מייל'; return; }
-
-  // Save to unsubscribed list in localStorage
-  const unsub = JSON.parse(localStorage.getItem('gm_unsubscribed') || '[]');
-  if (!unsub.includes(email)) unsub.push(email);
-  localStorage.setItem('gm_unsubscribed', JSON.stringify(unsub));
-
-  // Also notify Apps Script
-  try {
-    await fetch(APPS_SCRIPT_URL + '?action=unsubscribe&email=' + encodeURIComponent(email));
-  } catch(e) {}
-
-  if (msgEl) { msgEl.textContent = '✅ המייל הוסר מרשימת התפוצה'; msgEl.style.color = 'var(--success)'; }
-  if (emailEl) emailEl.value = '';
-}
-
-function isUnsubscribed(email) {
-  const unsub = JSON.parse(localStorage.getItem('gm_unsubscribed') || '[]');
-  return unsub.includes(email);
-}
-
-// ─── REPORTS ───
-
-
-function selectReportType(type) {
-  currentReportType = type;
-  ['daily','range','monthly'].forEach(t => {
-    const btn = document.getElementById('rtype-' + t);
-    const field = document.getElementById('rfield-' + t);
-    if (btn) {
-      btn.style.borderColor = t === type ? 'var(--primary)' : 'var(--border)';
-      btn.style.background = t === type ? 'var(--primary-glow)' : 'transparent';
-      btn.style.color = t === type ? 'var(--primary)' : 'var(--text-soft)';
-    }
-    if (field) field.style.display = t === type ? 'block' : 'none';
-  });
-}
-
-async function downloadReportSmart() {
-  let from, to;
-  const msg = document.getElementById('reportsMsg');
-
-  if (currentReportType === 'daily') {
-    const d = document.getElementById('reportSingleDate').value;
-    if (!d) { msg.textContent = 'בחר תאריך'; return; }
-    from = d; to = d;
-  } else if (currentReportType === 'range') {
-    from = document.getElementById('reportFromDate').value;
-    to = document.getElementById('reportToDate').value;
-    if (!from || !to) { msg.textContent = 'בחר תאריכים'; return; }
-  } else {
-    const year = document.getElementById('reportYear').value;
-    const month = document.getElementById('reportMonth').value;
-    from = year + '-' + month + '-01';
-    const lastDay = new Date(parseInt(year), parseInt(month), 0).getDate();
-    to = year + '-' + month + '-' + String(lastDay).padStart(2,'0');
-  }
-
-  msg.textContent = '⏳ מכין דוח...';
-  try {
-    const res = await fetch(APPS_SCRIPT_URL + '?action=getReportData&from=' + from + '&to=' + to);
-    const data = await res.json();
-    if (!data.success) throw new Error('fetch failed');
-    generateExcelReport(data.appointments, currentReportType, from, to);
-    msg.textContent = '✅ הדוח הורד!';
-  } catch(e) {
-    const all = JSON.parse(localStorage.getItem('gm_bookings') || '[]');
-    const filtered = all.filter(b => b.date >= from && b.date <= to);
-    generateExcelReport(filtered, currentReportType, from, to);
-    msg.textContent = '✅ הדוח הורד!';
-  }
-  setTimeout(() => { msg.textContent = ''; }, 4000);
-}
-
-function showChart(period) {
-  // Update button styles
-  ['week','month'].forEach(p => {
-    const btn = document.getElementById('chartBtn-' + p);
-    if (btn) {
-      btn.style.borderColor = p === period ? 'var(--primary)' : 'var(--border)';
-      btn.style.background = p === period ? 'var(--primary-glow)' : 'transparent';
-      btn.style.color = p === period ? 'var(--primary)' : 'var(--text-soft)';
-    }
-  });
-
-  const bookings = JSON.parse(localStorage.getItem('gm_bookings') || '[]');
-  const done = getDoneAppointments();
-  const today = new Date();
-  const days = period === 'week' ? 7 : 30;
-
-  // Build data arrays
-  const labels = [];
-  const revenues = [];
-  const counts = [];
-
-  for (let i = days - 1; i >= 0; i--) {
-    const d = new Date(today);
-    d.setDate(today.getDate() - i);
-    const pad = n => String(n).padStart(2,'0');
-    const ds = d.getFullYear() + '-' + pad(d.getMonth()+1) + '-' + pad(d.getDate());
-    const label = period === 'week' 
-      ? ['א','ב','ג','ד','ה','ו','ש'][d.getDay()] + ' ' + pad(d.getDate()) + '/' + pad(d.getMonth()+1)
-      : pad(d.getDate()) + '/' + pad(d.getMonth()+1);
-    
-    labels.push(label);
-    
-    // Revenue from done appointments
-    const dayDone = done[ds] || {};
-    const rev = Object.values(dayDone).reduce((s,v) => s+(Number(v.price)||0), 0);
-    revenues.push(rev);
-    
-    const dayBookings = bookings.filter(b => b.date === ds).length;
-    counts.push(dayBookings);
-  }
-
-  const totalRevenue = revenues.reduce((s,v) => s+v, 0);
-  const totalBookings = counts.reduce((s,v) => s+v, 0);
-  const avgRevenue = totalBookings > 0 ? Math.round(totalRevenue / days) : 0;
-
-  // Update stats
-  const statsEl = document.getElementById('chartStats');
-  if (statsEl) {
-    statsEl.innerHTML = [
-      { label: 'סה"כ הכנסות', value: '₪' + totalRevenue, color: 'var(--primary)' },
-      { label: 'סה"כ תורים', value: totalBookings, color: 'var(--text)' },
-      { label: 'ממוצע יומי', value: '₪' + avgRevenue, color: 'var(--info)' }
-    ].map(s => `
-      <div style="background:var(--bg);border-radius:10px;padding:12px;text-align:center">
-        <div style="font-size:20px;font-weight:900;color:${s.color}">${s.value}</div>
-        <div style="font-size:12px;color:var(--text-soft);margin-top:3px">${s.label}</div>
-      </div>`).join('');
-  }
-
-  // Draw chart
-  const canvas = document.getElementById('revenueChart');
-  if (!canvas) return;
-  const ctx = canvas.getContext('2d');
-  canvas.width = canvas.offsetWidth * window.devicePixelRatio || 600;
-  canvas.height = 200 * window.devicePixelRatio || 200;
-  ctx.scale(window.devicePixelRatio || 1, window.devicePixelRatio || 1);
-
-  const w = canvas.offsetWidth || 300;
-  const h = 200;
-  ctx.clearRect(0, 0, w, h);
-
-  if (revenues.every(v => v === 0)) {
-    ctx.fillStyle = 'rgba(255,255,255,0.2)';
-    ctx.font = '16px Heebo';
-    ctx.textAlign = 'center';
-    ctx.fillText('אין נתונים לתקופה זו', w/2, h/2);
-    return;
-  }
-
-  const maxRev = Math.max(...revenues, 1);
-  const barW = (w - 40) / labels.length;
-  const chartH = h - 50;
-  const bottomY = h - 30;
-
-  // Grid lines
-  for (let g = 0; g <= 4; g++) {
-    const y = bottomY - (g/4) * chartH;
-    ctx.strokeStyle = 'rgba(255,255,255,0.05)';
-    ctx.lineWidth = 1;
-    ctx.beginPath();
-    ctx.moveTo(30, y);
-    ctx.lineTo(w, y);
-    ctx.stroke();
-    if (g > 0) {
-      ctx.fillStyle = 'rgba(255,255,255,0.3)';
-      ctx.font = '10px Heebo';
-      ctx.textAlign = 'right';
-      ctx.fillText('₪' + Math.round(maxRev * g/4), 28, y + 4);
-    }
-  }
-
-  // Bars
-  labels.forEach((label, i) => {
-    const barH = (revenues[i] / maxRev) * chartH;
-    const x = 35 + i * barW;
-    const y = bottomY - barH;
-
-    // Gradient bar
-    const grad = ctx.createLinearGradient(0, y, 0, bottomY);
-    grad.addColorStop(0, '#c9a84c');
-    grad.addColorStop(1, 'rgba(201,168,76,0.3)');
-    ctx.fillStyle = revenues[i] > 0 ? grad : 'rgba(255,255,255,0.05)';
-    ctx.beginPath();
-    ctx.roundRect(x + 2, y, barW - 6, barH, 4);
-    ctx.fill();
-
-    // Label
-    if (period === 'week' || i % 5 === 0) {
-      ctx.fillStyle = 'rgba(255,255,255,0.4)';
-      ctx.font = '10px Heebo';
-      ctx.textAlign = 'center';
-      ctx.fillText(label, x + barW/2, bottomY + 14);
-    }
-  });
-}
-
-function initReportsTab() {
-  const today = new Date().toISOString().split('T')[0];
-  setTimeout(() => showChart('week'), 100);
-  const fromEl = document.getElementById('reportFromDate');
-  const toEl = document.getElementById('reportToDate');
-  const sendEl = document.getElementById('reportSendDate');
-  const singleEl = document.getElementById('reportSingleDate');
-  if (fromEl && !fromEl.value) fromEl.value = today;
-  if (toEl && !toEl.value) toEl.value = today;
-  if (sendEl && !sendEl.value) sendEl.value = today;
-  if (singleEl && !singleEl.value) singleEl.value = today;
-
-  // Populate year dropdown
-  const yearEl = document.getElementById('reportYear');
-  if (yearEl && !yearEl.options.length) {
-    const curYear = new Date().getFullYear();
-    for (let y = curYear; y >= curYear - 3; y--) {
-      const opt = document.createElement('option');
-      opt.value = String(y);
-      opt.textContent = String(y);
-      yearEl.appendChild(opt);
-    }
-  }
-  // Set current month
-  const monthEl = document.getElementById('reportMonth');
-  if (monthEl) monthEl.value = String(new Date().getMonth()+1).padStart(2,'0');
-}
-
-async function sendWorkPlanForDate() {
-  const date = document.getElementById('reportSendDate').value;
-  if (!date) return;
-  const msg = document.getElementById('reportsMsg');
-  msg.textContent = '⏳ שולח...';
-  await fetch(APPS_SCRIPT_URL + '?action=sendWorkPlanForDate&date=' + date);
-  msg.textContent = '📋 תכנית העבודה נשלחה ל-' + formatDate(date) + '!';
-  setTimeout(() => { msg.textContent = ''; }, 4000);
-}
-
-async function sendSummaryForDate() {
-  const date = document.getElementById('reportSendDate').value;
-  if (!date) return;
-  const msg = document.getElementById('reportsMsg');
-  msg.textContent = '⏳ שולח...';
-  await fetch(APPS_SCRIPT_URL + '?action=sendSummaryForDate&date=' + date);
-  msg.textContent = '📊 הסיכום נשלח ל-' + formatDate(date) + '!';
-  setTimeout(() => { msg.textContent = ''; }, 4000);
-}
-
-function formatDate(dateStr) {
-  const [y,m,d] = dateStr.split('-');
-  return d + '/' + m + '/' + y;
-}
-
-async function downloadReport(type) {
-  const from = document.getElementById('reportFromDate').value;
-  const to = document.getElementById('reportToDate').value;
-  if (!from || !to) { alert('בחר תאריכים'); return; }
-  const msg = document.getElementById('reportsMsg');
-  msg.textContent = '⏳ מכין דוח...';
-
-  try {
-    const res = await fetch(APPS_SCRIPT_URL + '?action=getReportData&from=' + from + '&to=' + to);
-    const data = await res.json();
-    if (!data.success) throw new Error('fetch failed');
-    generateExcelReport(data.appointments, type, from, to);
-    msg.textContent = '✅ הדוח הורד בהצלחה!';
-  } catch(e) {
-    // Fallback: use local bookings
-    const all = JSON.parse(localStorage.getItem('gm_bookings') || '[]');
-    const filtered = all.filter(b => b.date >= from && b.date <= to);
-    generateExcelReport(filtered, type, from, to);
-    msg.textContent = '✅ הדוח הורד בהצלחה!';
-  }
-  setTimeout(() => { msg.textContent = ''; }, 4000);
-}
-
-function generateExcelReport(appointments, type, from, to) {
-  // Group by date
-  const byDate = {};
-  appointments.forEach(a => {
-    const d = a.date || a.Date || '';
-    if (!byDate[d]) byDate[d] = [];
-    byDate[d].push(a);
-  });
-
-  const dates = Object.keys(byDate).sort();
-  const dayNames = ['ראשון','שני','שלישי','רביעי','חמישי','שישי','שבת'];
-
-  let csvRows = [];
-
-  // Header
-  csvRows.push(['GM המספרה - דוח ' + (type === 'daily' ? 'יומי' : type === 'weekly' ? 'שבועי' : 'חודשי')]);
-  csvRows.push(['מתאריך: ' + formatDate(from) + ' עד: ' + formatDate(to)]);
-  csvRows.push([]);
-
-  // Summary
-  const totalAppts = appointments.length;
-  const totalRevenue = appointments.reduce((s,a) => s + (Number(a.price||a.Price)||0), 0);
-  csvRows.push(['סיכום כללי']);
-  csvRows.push(['סה"כ תורים', totalAppts]);
-  csvRows.push(['סה"כ הכנסות', '₪' + totalRevenue]);
-  csvRows.push([]);
-
-  // By date
-  csvRows.push(['פירוט לפי יום']);
-  csvRows.push(['תאריך', 'יום', 'מספר תורים', 'הכנסות', 'שירותים']);
-  dates.forEach(d => {
-    const appts = byDate[d];
-    const rev = appts.reduce((s,a) => s+(Number(a.price||a.Price)||0), 0);
-    const services = appts.map(a => a.service||a.Service||'').filter(Boolean).join(', ');
-    const dt = new Date(d);
-    const dayName = dayNames[dt.getDay()];
-    csvRows.push([formatDate(d), dayName, appts.length, '₪' + rev, services]);
-  });
-
-  csvRows.push([]);
-
-  // Detail
-  csvRows.push(['פירוט תורים']);
-  csvRows.push(['תאריך', 'שעה', 'לקוח', 'טלפון', 'שירות', 'מחיר', 'הגיע לבית']);
-  appointments.sort((a,b) => (a.date||a.Date||'').localeCompare(b.date||b.Date||'')).forEach(a => {
-    csvRows.push([
-      formatDate(a.date||a.Date||''),
-      a.time||a.Time||'',
-      a.clientName||a.ClientName||'',
-      a.clientPhone||a.ClientPhone||'',
-      a.service||a.Service||'',
-      a.price||a.Price||'',
-      (a.homeVisit||a.HomeVisit) === 'כן' || (a.homeVisit||a.HomeVisit) === true ? 'כן' : 'לא'
-    ]);
-  });
-
-  // Convert to CSV with BOM for Excel Hebrew support
-  const bom = '﻿';
-  const csv = bom + csvRows.map(row => row.map(cell => '"' + String(cell||'').replace(/"/g,'""') + '"').join(',')).join('\n');
-  const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = 'GM_report_' + from + '_to_' + to + '.csv';
-  a.click();
-  URL.revokeObjectURL(url);
-}
-
-async function downloadCustomers() {
-  const msg = document.getElementById('reportsMsg');
-  msg.textContent = '⏳ מכין מאגר לקוחות...';
-
-  let allAppts = [];
-  try {
-    const res = await fetch(APPS_SCRIPT_URL + '?action=getAll');
-    const data = await res.json();
-    if (data.success) allAppts = data.appointments;
-  } catch(e) {
-    allAppts = JSON.parse(localStorage.getItem('gm_bookings') || '[]');
-  }
-
-  // Get unsubscribed list
-  const unsubscribed = JSON.parse(localStorage.getItem('gm_unsubscribed') || '[]');
-
-  // Deduplicate by phone - only include consented customers
-  const customerMap = {};
-  allAppts.forEach(a => {
-    const phone = String(a.clientPhone||a.ClientPhone||'').trim();
-    const email = String(a.email||a.Email||'').trim().toLowerCase();
-    if (!phone) return;
-    // Skip if unsubscribed
-    if (email && unsubscribed.includes(email)) return;
-    // Skip if explicitly declined marketing
-    if (a.marketingConsent === false || a.marketingConsent === 'false') return;
-    if (!customerMap[phone]) {
-      customerMap[phone] = {
-        name: a.clientName||a.ClientName||'',
-        phone: phone,
-        email: a.email||a.Email||'',
-        address: a.address||a.Address||'',
-        firstVisit: a.date||a.Date||'',
-        lastVisit: a.date||a.Date||'',
-        visits: 0,
-        totalSpent: 0
-      };
-    }
-    customerMap[phone].visits++;
-    customerMap[phone].totalSpent += Number(a.price||a.Price||0);
-    const d = a.date||a.Date||'';
-    if (d > customerMap[phone].lastVisit) customerMap[phone].lastVisit = d;
-    if (d < customerMap[phone].firstVisit) customerMap[phone].firstVisit = d;
-  });
-
-  const customers = Object.values(customerMap).sort((a,b) => b.visits - a.visits);
-
-  const bom = '﻿';
-  let csvRows = [];
-  csvRows.push(['GM המספרה - מאגר לקוחות']);
-  csvRows.push(['עודכן:', new Date().toLocaleDateString('he-IL')]);
-  csvRows.push(['סה"כ לקוחות:', customers.length]);
-  csvRows.push([]);
-  csvRows.push(['שם', 'טלפון', 'מייל', 'כתובת', 'ביקור ראשון', 'ביקור אחרון', 'מספר ביקורים', 'סה"כ הוצאה']);
-  customers.forEach(c => {
-    csvRows.push([c.name, c.phone, c.email, c.address, formatDate(c.firstVisit), formatDate(c.lastVisit), c.visits, '₪' + c.totalSpent]);
-  });
-
-  const csv = bom + csvRows.map(row => row.map(cell => '"' + String(cell||'').replace(/"/g,'""') + '"').join(',')).join('\n');
-  const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = 'GM_customers_' + new Date().toISOString().split('T')[0] + '.csv';
-  a.click();
-  URL.revokeObjectURL(url);
-
-  msg.textContent = '✅ מאגר ' + customers.length + ' לקוחות הורד!';
-  setTimeout(() => { msg.textContent = ''; }, 4000);
-}
 
 // ─── PWA INSTALL ───
 let deferredPrompt;
@@ -5054,7 +4460,7 @@ async function loadEmailSettings() {
       document.getElementById('emailMinute').value = minute || '00';
       currentDayMode = dayMode || 'today';
       setDayMode(currentDayMode);
-      const email = adminEmail || 'meirgm10@gmail.com';
+      const email = adminEmail || '';
       document.getElementById('currentEmailDisplay').textContent = email;
       document.getElementById('adminEmailInput').value = '';
       document.getElementById('adminEmailInput').placeholder = email;
@@ -5088,8 +4494,11 @@ async function saveEmailSettings() {
   try {
     const summaryHour = document.getElementById('summaryHour').value;
     const summaryMinute = document.getElementById('summaryMinute').value;
-    const url = APPS_SCRIPT_URL_EMAIL + '?action=saveSettings&hour=' + hour + '&minute=' + minute + '&dayMode=' + currentDayMode + '&adminEmail=' + encodeURIComponent(adminEmail) + '&summaryHour=' + summaryHour + '&summaryMinute=' + summaryMinute + '&summaryDayMode=' + currentSummaryMode;
-    await fetch(url);
+    await fetch(APPS_SCRIPT_URL_EMAIL, {
+      method: 'POST',
+      mode: 'no-cors',
+      body: JSON.stringify({ action: 'saveSettings', hour, minute, dayMode: currentDayMode, adminEmail, summaryHour, summaryMinute, summaryDayMode: currentSummaryMode })
+    });
     document.getElementById('currentEmailDisplay').textContent = adminEmail;
     document.getElementById('adminEmailInput').value = '';
     document.getElementById('adminEmailInput').placeholder = adminEmail;
@@ -5286,15 +4695,15 @@ function renderAdminWaitlistInline(dateStr) {
   section.style.display = 'block';
   list.innerHTML = waitlist.map(w => `
     <div style="background:var(--bg);border:1px solid rgba(100,180,255,0.15);border-radius:12px;padding:12px;margin-bottom:8px">
-      <div style="font-size:16px;font-weight:700;margin-bottom:2px">${w.name}</div>
-      <div style="font-size:14px;color:var(--text-soft);margin-bottom:3px">${w.phone}</div>
-      <div style="font-size:13px;color:var(--primary);margin-bottom:10px">✂️ ${w.serviceName || ''}</div>
+      <div style="font-size:16px;font-weight:700;margin-bottom:2px">${esc(w.name)}</div>
+      <div style="font-size:14px;color:var(--text-soft);margin-bottom:3px">${esc(w.phone)}</div>
+      <div style="font-size:13px;color:var(--primary);margin-bottom:10px">✂️ ${esc(w.serviceName || '')}</div>
       <div style="display:flex;gap:8px">
-        <button onclick="sendWhatsAppToWaitlist('${w.phone}','${w.name}','${dateStr}',getFirstAvailableTime('${dateStr}',${w.serviceDuration||30}))"
+        <button onclick="sendWhatsAppToWaitlist('${escAttr(w.phone)}','${escAttr(w.name)}','${escAttr(dateStr)}',getFirstAvailableTime('${escAttr(dateStr)}',${parseInt(w.serviceDuration)||30}))"
           style="flex:1;background:rgba(37,211,102,0.1);border:1px solid rgba(37,211,102,0.4);color:var(--whatsapp);padding:9px 4px;font-family:'Heebo',sans-serif;font-size:13px;font-weight:700;cursor:pointer;border-radius:10px">
           📱 שלח הודעה
         </button>
-        <button onclick="callCustomer('${w.phone}')"
+        <button onclick="callCustomer('${escAttr(w.phone)}')"
           style="flex:1;background:rgba(100,180,255,0.1);border:1px solid rgba(100,180,255,0.3);color:var(--info);padding:9px 4px;font-family:'Heebo',sans-serif;font-size:13px;font-weight:700;cursor:pointer;border-radius:10px">
           📞 חייג
         </button>
@@ -5316,11 +4725,11 @@ function showAdminWaitlist() {
     ? '<div style="text-align:center;padding:20px;color:var(--text-soft)">אין ממתינים ליום זה</div>'
     : waitlist.map((w, i) => `
       <div style="background:var(--bg);border:1px solid var(--border);border-radius:12px;padding:14px;margin-bottom:10px">
-        <div style="font-size:17px;font-weight:700;margin-bottom:2px">${w.name}</div>
-        <div style="font-size:14px;color:var(--text-soft);margin-bottom:4px">${w.phone}${w.email ? ' · ' + w.email : ''}</div>
-        <div style="font-size:14px;color:var(--primary);margin-bottom:10px">✂️ ${w.serviceName || ''} ${w.serviceDuration ? '(' + w.serviceDuration + ' דק׳)' : ''}</div>
+        <div style="font-size:17px;font-weight:700;margin-bottom:2px">${esc(w.name)}</div>
+        <div style="font-size:14px;color:var(--text-soft);margin-bottom:4px">${esc(w.phone)}${w.email ? ' · ' + esc(w.email) : ''}</div>
+        <div style="font-size:14px;color:var(--primary);margin-bottom:10px">✂️ ${esc(w.serviceName || '')} ${w.serviceDuration ? '(' + parseInt(w.serviceDuration) + ' דק׳)' : ''}</div>
         <div style="display:flex;gap:8px">
-          <button onclick="sendWhatsAppToWaitlist('${w.phone}','${w.name}','${dateStr}',getFirstAvailableTime('${dateStr}',${w.serviceDuration||30}))"
+          <button onclick="sendWhatsAppToWaitlist('${escAttr(w.phone)}','${escAttr(w.name)}','${escAttr(dateStr)}',getFirstAvailableTime('${escAttr(dateStr)}',${parseInt(w.serviceDuration)||30}))"
             style="flex:1;background:rgba(37,211,102,0.1);border:1px solid rgba(37,211,102,0.4);color:var(--whatsapp);padding:10px 6px;font-family:'Heebo',sans-serif;font-size:13px;font-weight:700;cursor:pointer;border-radius:10px">
             📱 שלח הודעה ללקוח
           </button>
