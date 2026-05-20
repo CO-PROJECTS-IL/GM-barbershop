@@ -5,4 +5,6 @@ self.addEventListener('activate', e => {
       .then(() => self.clients.claim())
   );
 });
-self.addEventListener('fetch', () => {});
+self.addEventListener('fetch', e => {
+  e.respondWith(fetch(e.request));
+});
