@@ -3041,40 +3041,57 @@ async function renderMyBookings(phoneOverride) {
   const list = document.getElementById('myBookingsList');
   const today = new Date().toISOString().split('T')[0];
 
-  // Pre-fill phone input from saved data
   const phoneInput = document.getElementById('mybookings-phone');
   const lastCustomer = JSON.parse(localStorage.getItem('gm_last_customer') || 'null');
-  const phone = phoneOverride || (lastCustomer && lastCustomer.phone) || '';
+  const phone = phoneOverride || (phoneInput && phoneInput.value.trim()) || (lastCustomer && lastCustomer.phone) || '';
   if (phoneInput && !phoneInput.value && phone) phoneInput.value = phone;
 
-  let history = getBookingHistory();
-
   if (!phone) {
-    if (history.length === 0) {
-      list.innerHTML = '<div style="text-align:center;padding:32px;color:var(--grey);font-size:16px">הזן מספר טלפון כדי לחפש את התורים שלך</div>';
-      return;
-    }
-  } else {
-    list.innerHTML = '<div class="skeleton skeleton-card"></div><div class="skeleton skeleton-card"></div><div class="skeleton skeleton-card"></div>';
-    try {
-      const res = await fetch(APPS_SCRIPT_URL + '?action=getByPhone&phone=' + encodeURIComponent(phone));
-      const data = await res.json();
-      if (data.success && data.appointments && data.appointments.length > 0) {
-        const HEBREW_MONTHS_SHORT = ['ינואר','פברואר','מרץ','אפריל','מאי','יוני','יולי','אוגוסט','ספטמבר','אוקטובר','נובמבר','דצמבר'];
-        const sheetsBookings = data.appointments.map(a => {
-          const d = a.date ? new Date(a.date + 'T12:00:00') : null;
-          const dateLabel = d ? 'יום ' + ['ראשון','שני','שלישי','רביעי','חמישי','שישי','שבת'][d.getDay()] + ', ' + d.getDate() + ' ב' + HEBREW_MONTHS_SHORT[d.getMonth()] : a.date;
-          return { confirmNum: a.confirmNum || '', date: a.date || '', time: a.time || '', service: a.service || '', price: a.price || 0, dateLabel: dateLabel, cancelled: false };
-        });
-        const cancelledNums = new Set(history.filter(b => b.cancelled).map(b => String(b.confirmNum)));
-        const merged = sheetsBookings.map(b => ({ ...b, cancelled: cancelledNums.has(String(b.confirmNum)) }));
-        const sheetsNums = new Set(sheetsBookings.map(b => String(b.confirmNum)));
-        const localOnly = history.filter(b => !sheetsNums.has(String(b.confirmNum)));
-        history = [...merged, ...localOnly];
-        localStorage.setItem('gm_my_bookings', JSON.stringify(history.slice(0, 20)));
-      }
-    } catch(e) { /* use local history */ }
+    list.innerHTML = '<div style="text-align:center;padding:32px;color:var(--grey);font-size:16px">הזן מספר טלפון כדי לחפש את התורים שלך</div>';
+    return;
   }
+
+  list.innerHTML = '<div class="skeleton skeleton-card"></div><div class="skeleton skeleton-card"></div><div class="skeleton skeleton-card"></div>';
+  const localHistory = getBookingHistory();
+  const cancelledNums = new Set(localHistory.filter(b => b.cancelled).map(b => String(b.confirmNum)));
+  let history = [];
+
+  try {
+    const res = await fetch(APPS_SCRIPT_URL + '?action=getByPhone&phone=' + encodeURIComponent(phone));
+    const data = await res.json();
+    if (data.success && data.appointments && data.appointments.length > 0) {
+      const HEBREW_MONTHS_SHORT = ['ינואר','פברואר','מרץ','אפריל','מאי','יוני','יולי','אוגוסט','ספטמבר','אוקטובר','נובמבר','דצמבר'];
+      history = data.appointments.map(a => {
+        const confirmNum = a[''] || a.confirmNum || a.ConfirmNum || '';
+        const rawDate = a.Date || a.date || '';
+        const rawTime = a.Time || a.time || '';
+        const service = a.Service || a.service || '';
+        const price = a.Price || a.price || 0;
+
+        let dateStr = '';
+        let d = null;
+        if (rawDate) {
+          d = new Date(rawDate);
+          dateStr = d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
+        }
+
+        let timeStr = '';
+        if (rawTime && rawTime.includes('T')) {
+          const t = new Date(rawTime);
+          timeStr = String(t.getHours()).padStart(2,'0') + ':' + String(t.getMinutes()).padStart(2,'0');
+        } else if (rawTime) {
+          timeStr = rawTime;
+        }
+
+        const dateLabel = d ? 'יום ' + ['ראשון','שני','שלישי','רביעי','חמישי','שישי','שבת'][d.getDay()] + ', ' + d.getDate() + ' ב' + HEBREW_MONTHS_SHORT[d.getMonth()] : dateStr;
+        return { confirmNum, date: dateStr, time: timeStr, service, price, dateLabel, cancelled: cancelledNums.has(String(confirmNum)) };
+      });
+    }
+  } catch(e) {
+    history = localHistory.filter(b => b.phone === phone || b.phone === phone.replace(/-/g, ''));
+  }
+
+  localStorage.setItem('gm_my_bookings', JSON.stringify(history.slice(0, 30)));
 
   if (history.length === 0) {
     list.innerHTML = '<div style="text-align:center;padding:32px;color:var(--grey);font-size:18px">אין תורים</div>';
@@ -3099,7 +3116,7 @@ async function renderMyBookings(phoneOverride) {
           <div style="font-size:12px;color:var(--muted);margin-top:2px">#${b.confirmNum} ${isCancelled ? '· ❌ בוטל' : isPast ? '· ✓ הושלם' : '· ⏳ קרוב'}</div>
         </div>
         <div style="text-align:left">
-          <div style="font-family:'Bebas Neue',sans-serif;font-size:20px;color:var(--primary)">₪${b.price}</div>
+          ${b.price ? `<div style="font-family:'Bebas Neue',sans-serif;font-size:20px;color:var(--primary)">₪${b.price}</div>` : ''}
           ${!isPast && !isCancelled ? `
           <button onclick="cancelMyBooking('${b.confirmNum}', '${b.date}', '${b.time}')"
             style="margin-top:8px;background:var(--red-glow);border:1px solid var(--red-border);color:var(--red);padding:6px 12px;font-family:'Heebo',sans-serif;font-size:13px;cursor:pointer;border-radius:var(--radius-sm);white-space:nowrap">
