@@ -828,7 +828,7 @@ if ('serviceWorker' in navigator) {
 
     <div style="margin-top:12px">
       <button onclick="goTo('mybookings')" style="background:none;border:1px solid var(--primary-border-soft);color:var(--text-soft);padding:14px 32px;font-family:'Heebo',sans-serif;font-size:13px;font-weight:600;letter-spacing:1px;cursor:pointer;border-radius:60px;transition:all 0.15s;min-height:44px">
-        📋 היסטוריית התורים שלי
+        📋 התורים שלי
       </button>
     </div>
 
@@ -1453,14 +1453,24 @@ if ('serviceWorker' in navigator) {
   <div style="padding:20px">
     <div style="font-family:'Heebo',sans-serif;font-size:24px;font-weight:800;margin-bottom:6px">התורים שלי</div>
     <div style="font-size:14px;color:var(--text-soft);margin-bottom:20px">הזן מספר טלפון כדי למצוא את התורים שלך</div>
-    <div style="display:flex;gap:10px;margin-bottom:24px">
+    <div style="display:flex;gap:10px;margin-bottom:20px">
       <label for="mybookings-phone" class="sr-only">מספר טלפון לחיפוש תורים</label>
       <input type="tel" id="mybookings-phone" placeholder="050-0000000" autocomplete="tel" dir="ltr"
         style="flex:1;padding:14px 16px;border-radius:var(--radius-md);border:1px solid var(--border);background:var(--card);color:var(--text);font-family:'Heebo',sans-serif;font-size:16px;outline:none;transition:border-color 0.2s"
         aria-label="מספר טלפון לחיפוש תורים">
       <button onclick="lookupMyBookings()" style="padding:14px 22px;border-radius:var(--radius-md);border:none;background:var(--primary);color:var(--bg);font-family:'Heebo',sans-serif;font-size:14px;font-weight:700;cursor:pointer;white-space:nowrap;box-shadow:0 2px 12px var(--primary-border-soft)">🔍 חפש</button>
     </div>
-    <div id="myBookingsActions" style="display:none;margin-bottom:16px;display:none;gap:10px;align-items:center">
+    <div id="mybookingsTabs" style="display:none;display:none;margin-bottom:16px">
+      <div style="display:flex;border-radius:var(--radius-md);overflow:hidden;border:1px solid var(--border)">
+        <button id="tabFuture" onclick="switchBookingsTab('future')" style="flex:1;padding:12px;font-family:'Heebo',sans-serif;font-size:14px;font-weight:700;cursor:pointer;border:none;transition:all 0.2s;background:var(--primary);color:var(--bg)">
+          תורים קרובים <span id="tabFutureCount"></span>
+        </button>
+        <button id="tabPast" onclick="switchBookingsTab('past')" style="flex:1;padding:12px;font-family:'Heebo',sans-serif;font-size:14px;font-weight:700;cursor:pointer;border:none;transition:all 0.2s;background:var(--card);color:var(--text-soft)">
+          היסטוריה <span id="tabPastCount"></span>
+        </button>
+      </div>
+    </div>
+    <div id="myBookingsActions" style="display:none;margin-bottom:16px;gap:10px;align-items:center">
       <button id="multiSelectToggle" onclick="toggleMultiSelect()" style="padding:10px 18px;border-radius:var(--radius-md);border:1px solid var(--border);background:var(--card);color:var(--text-soft);font-family:'Heebo',sans-serif;font-size:13px;cursor:pointer;white-space:nowrap">☑️ בחר תורים</button>
       <button id="cancelSelectedBtn" onclick="cancelSelectedBookings()" style="display:none;padding:10px 18px;border-radius:var(--radius-md);border:1px solid var(--red-border);background:var(--red-glow);color:var(--red);font-family:'Heebo',sans-serif;font-size:13px;font-weight:700;cursor:pointer;white-space:nowrap">❌ בטל נבחרים (<span id="selectedCount">0</span>)</button>
     </div>
@@ -3101,48 +3111,66 @@ async function renderMyBookings(phoneOverride) {
     history = localHistory.filter(b => b.phone === phone || b.phone === phone.replace(/-/g, ''));
   }
 
-  localStorage.setItem('gm_my_bookings', JSON.stringify(history.slice(0, 30)));
+  localStorage.setItem('gm_my_bookings', JSON.stringify(history.slice(0, 50)));
 
   const allVisible = history.filter(b => !b.cancelled);
-  const future = allVisible.filter(b => b.date >= today);
-  const past = allVisible.filter(b => b.date < today);
+  _bookingsFuture = allVisible.filter(b => b.date >= today).sort((a,b) => a.date.localeCompare(b.date) || a.time.localeCompare(b.time));
+  _bookingsPast = allVisible.filter(b => b.date < today).sort((a,b) => b.date.localeCompare(a.date) || b.time.localeCompare(a.time));
+
+  const tabs = document.getElementById('mybookingsTabs');
   const actionsBar = document.getElementById('myBookingsActions');
 
   if (allVisible.length === 0) {
     list.innerHTML = '<div style="text-align:center;padding:32px;color:var(--grey);font-size:18px">אין תורים</div>';
+    if (tabs) tabs.style.display = 'none';
     if (actionsBar) actionsBar.style.display = 'none';
     return;
   }
 
-  if (actionsBar) actionsBar.style.display = future.length > 0 ? 'flex' : 'none';
+  if (tabs) tabs.style.display = 'block';
+  document.getElementById('tabFutureCount').textContent = _bookingsFuture.length > 0 ? `(${_bookingsFuture.length})` : '';
+  document.getElementById('tabPastCount').textContent = _bookingsPast.length > 0 ? `(${_bookingsPast.length})` : '';
+
+  switchBookingsTab(_bookingsFuture.length > 0 ? 'future' : 'past');
+}
+
+let _bookingsFuture = [];
+let _bookingsPast = [];
+let _currentBookingsTab = 'future';
+
+function switchBookingsTab(tab) {
+  _currentBookingsTab = tab;
+  const list = document.getElementById('myBookingsList');
+  const actionsBar = document.getElementById('myBookingsActions');
+  const btnFuture = document.getElementById('tabFuture');
+  const btnPast = document.getElementById('tabPast');
+
+  btnFuture.style.background = tab === 'future' ? 'var(--primary)' : 'var(--card)';
+  btnFuture.style.color = tab === 'future' ? 'var(--bg)' : 'var(--text-soft)';
+  btnPast.style.background = tab === 'past' ? 'var(--primary)' : 'var(--card)';
+  btnPast.style.color = tab === 'past' ? 'var(--bg)' : 'var(--text-soft)';
+
   _multiSelectMode = false;
   const toggleBtn = document.getElementById('multiSelectToggle');
   if (toggleBtn) toggleBtn.textContent = '☑️ בחר תורים';
   const cancelSelBtn = document.getElementById('cancelSelectedBtn');
   if (cancelSelBtn) cancelSelBtn.style.display = 'none';
 
-  const sortedFuture = [...future].sort((a,b) => a.date.localeCompare(b.date) || a.time.localeCompare(b.time));
-  const sortedPast = [...past].sort((a,b) => b.date.localeCompare(a.date) || b.time.localeCompare(a.time));
-
-  let html = sortedFuture.map(b => _renderBookingCard(b, false)).join('');
-
-  if (sortedPast.length > 0) {
-    html += `<div style="text-align:center;margin:20px 0 10px">
-      <button onclick="document.getElementById('pastBookings').style.display=document.getElementById('pastBookings').style.display==='none'?'block':'none';this.textContent=document.getElementById('pastBookings').style.display==='none'?'📂 הצג היסטוריה (${sortedPast.length})':'📁 הסתר היסטוריה'"
-        style="background:none;border:1px solid var(--border);color:var(--text-soft);padding:10px 20px;font-family:'Heebo',sans-serif;font-size:13px;cursor:pointer;border-radius:var(--radius-md)">
-        📂 הצג היסטוריה (${sortedPast.length})
-      </button>
-    </div>
-    <div id="pastBookings" style="display:none">
-      ${sortedPast.map(b => _renderBookingCard(b, true)).join('')}
-    </div>`;
+  if (tab === 'future') {
+    if (actionsBar) actionsBar.style.display = _bookingsFuture.length > 0 ? 'flex' : 'none';
+    if (_bookingsFuture.length === 0) {
+      list.innerHTML = '<div style="text-align:center;padding:32px;color:var(--grey);font-size:16px">אין תורים קרובים</div>';
+    } else {
+      list.innerHTML = _bookingsFuture.map(b => _renderBookingCard(b, false)).join('');
+    }
+  } else {
+    if (actionsBar) actionsBar.style.display = 'none';
+    if (_bookingsPast.length === 0) {
+      list.innerHTML = '<div style="text-align:center;padding:32px;color:var(--grey);font-size:16px">אין היסטוריית תורים</div>';
+    } else {
+      list.innerHTML = _bookingsPast.map(b => _renderBookingCard(b, true)).join('');
+    }
   }
-
-  if (future.length === 0) {
-    html = '<div style="text-align:center;padding:24px;color:var(--grey);font-size:16px;margin-bottom:16px">אין תורים קרובים</div>' + html;
-  }
-
-  list.innerHTML = html;
 }
 
 function _renderBookingCard(b, isPast) {
