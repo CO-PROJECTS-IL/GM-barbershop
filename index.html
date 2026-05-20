@@ -3103,33 +3103,52 @@ async function renderMyBookings(phoneOverride) {
 
   localStorage.setItem('gm_my_bookings', JSON.stringify(history.slice(0, 30)));
 
-  const visible = history.filter(b => !b.cancelled);
+  const allVisible = history.filter(b => !b.cancelled);
+  const future = allVisible.filter(b => b.date >= today);
+  const past = allVisible.filter(b => b.date < today);
   const actionsBar = document.getElementById('myBookingsActions');
-  if (visible.length === 0) {
+
+  if (allVisible.length === 0) {
     list.innerHTML = '<div style="text-align:center;padding:32px;color:var(--grey);font-size:18px">אין תורים</div>';
     if (actionsBar) actionsBar.style.display = 'none';
     return;
   }
 
-  const hasFuture = visible.some(b => b.date >= today);
-  if (actionsBar) actionsBar.style.display = hasFuture ? 'flex' : 'none';
+  if (actionsBar) actionsBar.style.display = future.length > 0 ? 'flex' : 'none';
   _multiSelectMode = false;
   const toggleBtn = document.getElementById('multiSelectToggle');
   if (toggleBtn) toggleBtn.textContent = '☑️ בחר תורים';
   const cancelSelBtn = document.getElementById('cancelSelectedBtn');
   if (cancelSelBtn) cancelSelBtn.style.display = 'none';
 
-  const sorted = [...visible].sort((a,b) => {
-    if (a.date >= today && b.date < today) return -1;
-    if (a.date < today && b.date >= today) return 1;
-    return a.date.localeCompare(b.date) || a.time.localeCompare(b.time);
-  });
+  const sortedFuture = [...future].sort((a,b) => a.date.localeCompare(b.date) || a.time.localeCompare(b.time));
+  const sortedPast = [...past].sort((a,b) => b.date.localeCompare(a.date) || b.time.localeCompare(a.time));
 
-  list.innerHTML = sorted.map(b => {
-    const isPast = b.date < today;
-    const canCancel = !isPast;
-    return `
-    <div class="mybooking-card" data-confirm="${b.confirmNum}" data-date="${b.date}" data-time="${b.time}" data-cancancel="${canCancel}" style="background:var(--card);border:1px solid ${isPast ? 'var(--border)' : 'var(--border-hover)'};padding:16px;margin-bottom:10px;border-radius:var(--radius-md);opacity:${isPast ? '0.6' : '1'};transition:border-color 0.15s">
+  let html = sortedFuture.map(b => _renderBookingCard(b, false)).join('');
+
+  if (sortedPast.length > 0) {
+    html += `<div style="text-align:center;margin:20px 0 10px">
+      <button onclick="document.getElementById('pastBookings').style.display=document.getElementById('pastBookings').style.display==='none'?'block':'none';this.textContent=document.getElementById('pastBookings').style.display==='none'?'📂 הצג היסטוריה (${sortedPast.length})':'📁 הסתר היסטוריה'"
+        style="background:none;border:1px solid var(--border);color:var(--text-soft);padding:10px 20px;font-family:'Heebo',sans-serif;font-size:13px;cursor:pointer;border-radius:var(--radius-md)">
+        📂 הצג היסטוריה (${sortedPast.length})
+      </button>
+    </div>
+    <div id="pastBookings" style="display:none">
+      ${sortedPast.map(b => _renderBookingCard(b, true)).join('')}
+    </div>`;
+  }
+
+  if (future.length === 0) {
+    html = '<div style="text-align:center;padding:24px;color:var(--grey);font-size:16px;margin-bottom:16px">אין תורים קרובים</div>' + html;
+  }
+
+  list.innerHTML = html;
+}
+
+function _renderBookingCard(b, isPast) {
+  const canCancel = !isPast;
+  return `
+    <div class="mybooking-card" data-confirm="${b.confirmNum}" data-date="${b.date}" data-time="${b.time}" data-cancancel="${canCancel}" style="background:var(--card);border:1px solid ${isPast ? 'var(--border)' : 'var(--border-hover)'};padding:16px;margin-bottom:10px;border-radius:var(--radius-md);opacity:${isPast ? '0.5' : '1'};transition:border-color 0.15s">
       <div style="display:flex;justify-content:space-between;align-items:flex-start">
         <div style="display:flex;align-items:flex-start;gap:12px;flex:1">
           <div class="multi-check" style="display:none;margin-top:2px">
@@ -3151,7 +3170,6 @@ async function renderMyBookings(phoneOverride) {
         </div>
       </div>
     </div>`;
-  }).join('');
 }
 
 let _multiSelectMode = false;
