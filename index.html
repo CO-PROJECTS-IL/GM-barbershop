@@ -3799,7 +3799,7 @@ function showInstallModal() {
   document.getElementById('iosInstructions').style.display = isIOS ? 'block' : 'none';
   document.getElementById('androidInstructions').style.display = isIOS ? 'none' : 'block';
   const btn = document.getElementById('installPwaBtn');
-  if (!isIOS && deferredPrompt) {
+  if (!isIOS) {
     btn.textContent = '📲 התקן אפליקציה';
     btn.style.opacity = '1';
     btn.onclick = triggerInstall;
@@ -4724,7 +4724,7 @@ function triggerInstall() {
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker.getRegistrations().then(regs => {
         regs.forEach(r => r.unregister());
-        return navigator.serviceWorker.register(location.pathname.replace(/\/[^/]*$/, '/') + 'gm-sw.js');
+        return navigator.serviceWorker.register('gm-sw.js');
       }).then(() => {
         setTimeout(() => {
           if (deferredPrompt) {
