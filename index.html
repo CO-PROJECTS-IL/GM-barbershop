@@ -24,6 +24,7 @@ if ('serviceWorker' in navigator) {
 <title>GM המספרה</title>
 <link rel="icon" type="image/jpeg" href="https://res.cloudinary.com/dyvx2rz4s/image/upload/q_auto/f_auto/v1776721264/%D7%9C%D7%95%D7%92%D7%95_%D7%92%D7%95%D7%9C%D7%9F_%D7%94%D7%A1%D7%A4%D7%A8_jhd89p.jpg">
 <link rel="apple-touch-icon" href="https://res.cloudinary.com/dyvx2rz4s/image/upload/q_auto/f_auto/v1776721264/%D7%9C%D7%95%D7%92%D7%95_%D7%92%D7%95%D7%9C%D7%9F_%D7%94%D7%A1%D7%A4%D7%A8_jhd89p.jpg">
+<link rel="manifest" href="manifest.json">
 
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Heebo:wght@300;400;500;600;700;800;900&family=Bebas+Neue&display=swap" rel="stylesheet">
 <style>
@@ -793,30 +794,8 @@ if ('serviceWorker' in navigator) {
   }
 </style>
 <script>
-// Dynamic manifest
-const basePath = location.pathname.replace(/\/[^/]*$/, '/');
-const manifestData = {
-  name: "GM המספרה",
-  short_name: "GM",
-  start_url: basePath,
-  scope: basePath,
-  id: basePath,
-  display: "standalone",
-  background_color: "#0b0d11",
-  theme_color: "#0b0d11",
-  icons: [
-    { src: "https://res.cloudinary.com/dyvx2rz4s/image/upload/q_auto/f_auto/v1776721264/%D7%9C%D7%95%D7%92%D7%95_%D7%92%D7%95%D7%9C%D7%9F_%D7%94%D7%A1%D7%A4%D7%A8_jhd89p.jpg", sizes: "192x192", type: "image/jpeg" },
-    { src: "https://res.cloudinary.com/dyvx2rz4s/image/upload/q_auto/f_auto/v1776721264/%D7%9C%D7%95%D7%92%D7%95_%D7%92%D7%95%D7%9C%D7%9F_%D7%94%D7%A1%D7%A4%D7%A8_jhd89p.jpg", sizes: "512x512", type: "image/jpeg" }
-  ]
-};
-const blob = new Blob([JSON.stringify(manifestData)], {type: 'application/json'});
-const manifestURL = URL.createObjectURL(blob);
-const link = document.createElement('link');
-link.rel = 'manifest';
-link.href = manifestURL;
-document.head.appendChild(link);
 if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.register(basePath + 'gm-sw.js').catch(() => {});
+  navigator.serviceWorker.register('gm-sw.js').catch(() => {});
 }
 </script>
 </head>
