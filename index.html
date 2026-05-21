@@ -2166,7 +2166,11 @@ async function confirmBooking() {
         return;
       }
     }
-  } catch(e) { /* proceed with local check if server unreachable */ }
+  } catch(e) {
+    showToast('לא ניתן לאמת זמינות. נסה שוב.');
+    if (submitBtn) { submitBtn.disabled = false; submitBtn.textContent = 'אישור הזמנה ←'; }
+    return;
+  }
   if (submitBtn) { submitBtn.disabled = false; submitBtn.textContent = 'אישור הזמנה ←'; }
 
   const d = parseDateLocal(state.selectedDate);
@@ -2211,16 +2215,26 @@ async function confirmBooking() {
     confirmNum, dateLabel
   });
 
-  // Save to Google Sheets
-  saveBookingToSheets({
-    name, phone, email, notes, address,
-    service: state.service,
-    time: state.selectedTime,
-    date: state.selectedDate,
-    price: state.servicePrice,
-    isHomeVisit: state.isHomeVisit,
-    confirmNum
-  });
+  // Save to Google Sheets (server validates no double-booking)
+  try {
+    await saveBookingToSheets({
+      name, phone, email, notes, address,
+      service: state.service,
+      time: state.selectedTime,
+      date: state.selectedDate,
+      price: state.servicePrice,
+      isHomeVisit: state.isHomeVisit,
+      serviceDuration: parseInt(state.serviceDuration) || 30,
+      confirmNum
+    });
+  } catch(e) {
+    if (e.message === 'slot_taken') {
+      showToast('השעה ' + state.selectedTime + ' כבר נתפסה! בחר שעה אחרת');
+      goTo('date');
+      selectDate(state.selectedDate, document.querySelector('.cal-cell.selected'));
+      return;
+    }
+  }
 
   goTo('success');
 }
@@ -4147,29 +4161,29 @@ const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxFZuupD6PTeVyF
 
 // ─── SAVE TO GOOGLE SHEETS (via Apps Script) ───
 async function saveBookingToSheets(booking) {
-  try {
-    const payload = {
-      date: booking.date,
-      time: booking.time,
-      service: booking.service,
-      duration: booking.serviceDuration || '',
-      clientName: booking.name,
-      clientPhone: booking.phone,
-      notes: (booking.notes || '') + (booking.address ? ' | כתובת: ' + booking.address : ''),
-      homeVisit: booking.isHomeVisit || false,
-      price: booking.price || 0,
-      confirmNum: booking.confirmNum || ''
-    };
+  const payload = {
+    date: booking.date,
+    time: booking.time,
+    service: booking.service,
+    duration: booking.serviceDuration || '',
+    clientName: booking.name,
+    clientPhone: booking.phone,
+    notes: (booking.notes || '') + (booking.address ? ' | כתובת: ' + booking.address : ''),
+    homeVisit: booking.isHomeVisit || false,
+    price: booking.price || 0,
+    confirmNum: booking.confirmNum || ''
+  };
 
-    const res = await fetch(APPS_SCRIPT_URL, {
-      method: 'POST',
-      body: JSON.stringify(payload)
-    });
-    const data = await res.json();
-    if (!data.success) console.warn('Sheets save warning:', data);
-  } catch(e) {
-    console.warn('Sheets save error:', e);
+  const res = await fetch(APPS_SCRIPT_URL, {
+    method: 'POST',
+    body: JSON.stringify(payload)
+  });
+  const data = await res.json();
+  if (!data.success && data.error === 'slot_taken') {
+    throw new Error('slot_taken');
   }
+  if (!data.success) console.warn('Sheets save warning:', data);
+  return data;
 }
 
 // ─── LOAD BOOKINGS FROM GOOGLE SHEETS (for admin) ───
